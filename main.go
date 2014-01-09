@@ -12,6 +12,7 @@ import (
     "io"
     "log"
     "os"
+    "os/user"
     "path/filepath"
     "strconv"
     "strings"
@@ -38,7 +39,17 @@ func main() {
     if (*source_text) == "stdin" {
         fp = os.Stdin
     } else {
-        path, _ := filepath.Abs(*source_text)
+        var path string
+        usr, _ := user.Current()
+        dir := usr.HomeDir + "/"
+        fmt.Println(*source_text)
+        if (*source_text)[:2] == "~/" {
+            path = strings.Replace(*source_text, "~/", dir, 1)
+        } else {
+            path = *source_text
+        }
+        path, _ = filepath.Abs(path)
+        fmt.Println(path)
         fp, _ = os.Open(path)
         defer fp.Close()
     }
@@ -131,16 +142,19 @@ func loadRow(tableName *string, values *[]string, db *sql.DB) error {
         return nil
     }
     var buffer bytes.Buffer
+    vals := make([]interface{}, 0)
     buffer.WriteString("INSERT INTO " + (*tableName) + " VALUES (")
     for i, val := range *values {
-        buffer.WriteString("'" + val + "'")
+        buffer.WriteString("?")
         if i != len(*values)-1 {
             buffer.WriteString(", ")
         }
+        vals = append(vals, val)
     }
     buffer.WriteString(");")
-    fmt.Println(buffer.String())
-    _, err := db.Exec(buffer.String())
+    //    fmt.Println(buffer.String())
+    stmt, _ := db.Prepare(buffer.String())
+    _, err := stmt.Exec(vals...)
     if err != nil {
         log.Fatal(err)
     }
