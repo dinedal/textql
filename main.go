@@ -16,12 +16,11 @@ import (
     "path/filepath"
     "strconv"
     "strings"
+    "time"
     "unicode/utf8"
 )
 
 func main() {
-    fmt.Println("Hello")
-
     // Open in memory db
     db, _ := sql.Open("sqlite3", ":memory:")
     defer db.Close()
@@ -42,14 +41,12 @@ func main() {
         var path string
         usr, _ := user.Current()
         dir := usr.HomeDir + "/"
-        fmt.Println(*source_text)
         if (*source_text)[:2] == "~/" {
             path = strings.Replace(*source_text, "~/", dir, 1)
         } else {
             path = *source_text
         }
         path, _ = filepath.Abs(path)
-        fmt.Println(path)
         fp, _ = os.Open(path)
         defer fp.Close()
     }
@@ -81,16 +78,14 @@ func main() {
             headerRow[i] = "c" + strconv.Itoa(i)
         }
     }
-    for _, col := range headerRow {
-        fmt.Printf(col)
-    }
 
     tableName := "tbl"
 
     createTable(&tableName, &headerRow, db)
-
+    t0 := time.Now()
+    tx, _ := db.Begin()
     //Load first row
-    loadRow(&tableName, &first_row, db)
+    loadRow(&tableName, &first_row, tx)
     // Read the data
     eof := false
 
@@ -99,10 +94,13 @@ func main() {
         if file_err == io.EOF {
             eof = true
         } else {
-            loadRow(&tableName, &row, db)
+            loadRow(&tableName, &row, tx)
         }
     }
+    tx.Commit()
+    t1 := time.Now()
 
+    fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
     // Determine what sql to execute
     sqls_to_execute := strings.Split(*commands, ";")
 
@@ -137,7 +135,7 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
     return err
 }
 
-func loadRow(tableName *string, values *[]string, db *sql.DB) error {
+func loadRow(tableName *string, values *[]string, db *sql.Tx) error {
     if len(*values) == 0 {
         return nil
     }
