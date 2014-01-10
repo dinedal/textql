@@ -155,7 +155,6 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
         }
     }
     buffer.WriteString(");")
-    fmt.Println(buffer.String())
     _, err := db.Exec(buffer.String())
     if err != nil {
         log.Fatal(err)
@@ -177,7 +176,6 @@ func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
         }
     }
     buffer.WriteString(");")
-    fmt.Println(buffer.String())
     stmt, err := db.Prepare(buffer.String())
     if err != nil {
         log.Fatal(err)
@@ -288,11 +286,9 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
         b := make([]byte, 10)
         io.ReadFull(rand.Reader, b)
         tmpPath := "/tmp/dankbase_" + fmt.Sprintf("%x", b) + ".db"
-        fmt.Println(tmpPath)
         openPath = tmpPath
     }
 
-    fmt.Println(openPath)
     db, err := sql.Open("sqlite3", openPath)
 
     if err != nil {
