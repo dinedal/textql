@@ -74,23 +74,39 @@ func main() {
     stmt := createLoadStmt(tableName, &headerRow, db)
 
     //Create transaction
-    tx, _ := db.Begin()
+    if *openPath == ":memory:" {
+        //Load first row
+        loadDBRow(tableName, &first_row, db, stmt)
 
-    //Load first row
-    loadRow(tableName, &first_row, tx, stmt)
-    // Read the data
-    eof := false
+        // Read the data
+        eof := false
 
-    for eof == false {
-        row, file_err := reader.Read()
-        if file_err == io.EOF {
-            eof = true
-        } else {
-            loadRow(tableName, &row, tx, stmt)
+        for eof == false {
+            row, file_err := reader.Read()
+            if file_err == io.EOF {
+                eof = true
+            } else {
+                loadDBRow(tableName, &row, db, stmt)
+            }
         }
+    } else {
+        tx, _ := db.Begin()
+        loadTXRow(tableName, &first_row, tx, stmt)
+
+        // Read the data
+        eof := false
+
+        for eof == false {
+            row, file_err := reader.Read()
+            if file_err == io.EOF {
+                eof = true
+            } else {
+                loadTXRow(tableName, &row, tx, stmt)
+            }
+        }
+        tx.Commit()
     }
 
-    tx.Commit()
     t1 := time.Now()
 
     fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
@@ -169,7 +185,22 @@ func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
     return stmt
 }
 
-func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt) error {
+func loadDBRow(tableName *string, values *[]string, db *sql.DB, stmt *sql.Stmt) error {
+    if len(*values) == 0 {
+        return nil
+    }
+    vals := make([]interface{}, 0)
+    for _, val := range *values {
+        vals = append(vals, val)
+    }
+    _, err := stmt.Exec(vals...)
+    if err != nil {
+        log.Println("Bad row: ", err)
+    }
+    return err
+}
+
+func loadTXRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt) error {
     if len(*values) == 0 {
         return nil
     }
