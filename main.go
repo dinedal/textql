@@ -35,21 +35,9 @@ func main() {
     // Open the input source (don't close stdin)
     var fp *os.File
 
-    if (*source_text) == "stdin" {
-        fp = os.Stdin
-    } else {
-        var path string
-        usr, _ := user.Current()
-        dir := usr.HomeDir + "/"
-        if (*source_text)[:2] == "~/" {
-            path = strings.Replace(*source_text, "~/", dir, 1)
-        } else {
-            path = *source_text
-        }
-        path, _ = filepath.Abs(path)
-        fp, _ = os.Open(path)
-        defer fp.Close()
-    }
+    fp = openFileOrStdin(source_text)
+
+    defer fp.Close()
 
     // Init a structured text reader
     reader := csv.NewReader(fp)
@@ -184,4 +172,42 @@ func displayResult(rows *sql.Rows) {
         }
         fmt.Printf("\n")
     }
+}
+
+func openFileOrStdin(path *string) *os.File {
+    var fp *os.File
+    var err error
+    if (*path) == "stdin" {
+        fp = os.Stdin
+        err = nil
+    } else {
+        fp, err = os.Open(*cleanPath(path))
+    }
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    return fp
+}
+
+func cleanPath(path *string) *string {
+    var result string
+    usr, err := user.Current()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    dir := usr.HomeDir + "/"
+    if (*path)[:2] == "~/" {
+        result = strings.Replace(*path, "~/", dir, 1)
+    } else {
+        result = (*path)
+    }
+
+    abs_result, abs_err := filepath.Abs(result)
+    if abs_err != nil {
+        log.Fatal(err)
+    }
+    return &abs_result
 }
