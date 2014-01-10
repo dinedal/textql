@@ -21,22 +21,21 @@ import (
 )
 
 func main() {
-    // Open in memory db
-    db, _ := sql.Open("sqlite3", ":memory:")
-    defer db.Close()
-
     // Parse command line opts
     commands := flag.String("sql", "", "SQL Command(s) to run on the data")
     source_text := flag.String("source", "stdin", "Source file to load, or defaults to stdin")
     delimiter := flag.String("dlm", ",", "Delimiter between fields, (\\t for tab)")
     header := flag.Bool("header", false, "Treat file as having the first row as a header row")
+    tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
     flag.Parse()
 
-    // Open the input source (don't close stdin)
+    // Open in memory db
+    db, _ := sql.Open("sqlite3", ":memory:")
+    defer db.Close()
+
+    // Open the input source
     var fp *os.File
-
     fp = openFileOrStdin(source_text)
-
     defer fp.Close()
 
     // Init a structured text reader
@@ -59,7 +58,7 @@ func main() {
 
     if *header {
         headerRow = first_row
-        first_row = []string{}
+        first_row, _ = reader.Read()
     } else {
         headerRow = make([]string, len(first_row))
         for i := 0; i < len(first_row); i++ {
@@ -67,13 +66,13 @@ func main() {
         }
     }
 
-    tableName := "tbl"
-
-    createTable(&tableName, &headerRow, db)
+    createTable(tableName, &headerRow, db)
     t0 := time.Now()
-    tx, _ := db.Begin()
+
+    stmt := createLoadStmt(tableName, &first_row, db)
+
     //Load first row
-    loadRow(&tableName, &first_row, tx)
+    loadRow(tableName, &first_row, db, stmt)
     // Read the data
     eof := false
 
@@ -82,10 +81,10 @@ func main() {
         if file_err == io.EOF {
             eof = true
         } else {
-            loadRow(&tableName, &row, tx)
+            loadRow(tableName, &row, db, stmt)
         }
     }
-    tx.Commit()
+
     t1 := time.Now()
 
     fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
@@ -123,26 +122,38 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
     return err
 }
 
-func loadRow(tableName *string, values *[]string, db *sql.Tx) error {
+func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
     if len(*values) == 0 {
-        return nil
+        log.Fatal("Nothing to build insert with!")
     }
     var buffer bytes.Buffer
-    vals := make([]interface{}, 0)
+
     buffer.WriteString("INSERT INTO " + (*tableName) + " VALUES (")
-    for i, val := range *values {
+    for i := range *values {
         buffer.WriteString("?")
         if i != len(*values)-1 {
             buffer.WriteString(", ")
         }
-        vals = append(vals, val)
     }
     buffer.WriteString(");")
-    //    fmt.Println(buffer.String())
-    stmt, _ := db.Prepare(buffer.String())
-    _, err := stmt.Exec(vals...)
+    stmt, err := db.Prepare(buffer.String())
     if err != nil {
         log.Fatal(err)
+    }
+    return stmt
+}
+
+func loadRow(tableName *string, values *[]string, db *sql.DB, stmt *sql.Stmt) error {
+    if len(*values) == 0 {
+        return nil
+    }
+    vals := make([]interface{}, 0)
+    for _, val := range *values {
+        vals = append(vals, val)
+    }
+    _, err := stmt.Exec(vals...)
+    if err != nil {
+        log.Println("Bad row: ", err)
     }
     return err
 }
