@@ -9,6 +9,7 @@ import (
     _ "github.com/mattn/go-sqlite3"
 
     "bytes"
+    "crypto/rand"
     "io"
     "log"
     "os"
@@ -28,11 +29,11 @@ func main() {
     header := flag.Bool("header", false, "Treat file as having the first row as a header row")
     tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
     save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
+    console := flag.Bool("console", false, "After all commands are run, open sqlit3 console with this data")
     flag.Parse()
 
     // Open in memory db
-    db := openDB(save_to)
-    defer db.Close()
+    db, openPath := openDB(save_to, console)
 
     // Open the input source
     var fp *os.File
@@ -70,7 +71,7 @@ func main() {
     createTable(tableName, &headerRow, db)
     t0 := time.Now()
 
-    stmt := createLoadStmt(tableName, &first_row, db)
+    stmt := createLoadStmt(tableName, &headerRow, db)
 
     //Create transaction
     tx, _ := db.Begin()
@@ -107,6 +108,25 @@ func main() {
         }
     }
 
+    // Open console
+    if *console {
+        db.Close()
+        // cmd := exec.Command("sqlite3", *openPath)
+        // io.Pipe(sop, os.Stdout)
+        // cmd_err := cmd.Start()
+        // if cmd_err != nil {
+        //     log.Fatal(cmd_err)
+        // }
+        // cmd.Wait()
+        if len(*save_to) == 0 {
+            os.Remove(*openPath)
+        }
+    } else if len(*save_to) == 0 && (*console) {
+        db.Close()
+        os.Remove(*openPath)
+    } else {
+        db.Close()
+    }
 }
 
 func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
@@ -141,6 +161,7 @@ func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
         }
     }
     buffer.WriteString(");")
+    fmt.Println(buffer.String())
     stmt, err := db.Prepare(buffer.String())
     if err != nil {
         log.Fatal(err)
@@ -228,14 +249,23 @@ func cleanPath(path *string) *string {
     return &abs_result
 }
 
-func openDB(path *string) *sql.DB {
+func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
     openPath := ":memory:"
     if len(*path) != 0 {
         openPath = *cleanPath(path)
+    } else if *no_memory {
+        b := make([]byte, 10)
+        io.ReadFull(rand.Reader, b)
+        tmpPath := "/tmp/dankbase_" + fmt.Sprintf("%x", b) + ".db"
+        fmt.Println(tmpPath)
+        openPath = tmpPath
     }
+
+    fmt.Println(openPath)
     db, err := sql.Open("sqlite3", openPath)
+
     if err != nil {
         log.Fatal(err)
     }
-    return db
+    return db, &openPath
 }
