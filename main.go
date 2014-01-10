@@ -27,10 +27,11 @@ func main() {
     delimiter := flag.String("dlm", ",", "Delimiter between fields, (\\t for tab)")
     header := flag.Bool("header", false, "Treat file as having the first row as a header row")
     tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
+    save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
     flag.Parse()
 
     // Open in memory db
-    db, _ := sql.Open("sqlite3", ":memory:")
+    db := openDB(save_to)
     defer db.Close()
 
     // Open the input source
@@ -71,8 +72,11 @@ func main() {
 
     stmt := createLoadStmt(tableName, &first_row, db)
 
+    //Create transaction
+    tx, _ := db.Begin()
+
     //Load first row
-    loadRow(tableName, &first_row, db, stmt)
+    loadRow(tableName, &first_row, tx, stmt)
     // Read the data
     eof := false
 
@@ -81,10 +85,11 @@ func main() {
         if file_err == io.EOF {
             eof = true
         } else {
-            loadRow(tableName, &row, db, stmt)
+            loadRow(tableName, &row, tx, stmt)
         }
     }
 
+    tx.Commit()
     t1 := time.Now()
 
     fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
@@ -143,7 +148,7 @@ func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
     return stmt
 }
 
-func loadRow(tableName *string, values *[]string, db *sql.DB, stmt *sql.Stmt) error {
+func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt) error {
     if len(*values) == 0 {
         return nil
     }
@@ -221,4 +226,16 @@ func cleanPath(path *string) *string {
         log.Fatal(err)
     }
     return &abs_result
+}
+
+func openDB(path *string) *sql.DB {
+    openPath := ":memory:"
+    if len(*path) != 0 {
+        openPath = *cleanPath(path)
+    }
+    db, err := sql.Open("sqlite3", openPath)
+    if err != nil {
+        log.Fatal(err)
+    }
+    return db
 }
