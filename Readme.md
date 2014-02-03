@@ -41,7 +41,7 @@ You may need to `export CC=clang` on OS X.
 Install sqlite3 via whatever means you perfer, and:
 
 ```bash
-go get -u https://github.com/dinedal/textql
+go get -u github.com/dinedal/textql
 ```
 
 ## Usage
