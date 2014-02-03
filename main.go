@@ -83,8 +83,8 @@ func main() {
     tx, _ := db.Begin()
 
     //Load first row
-    stmt := createLoadStmtTx(tableName, &headerRow, tx)
-    loadTXRow(tableName, &first_row, tx, stmt)
+    stmt := createLoadStmt(tableName, &headerRow, tx)
+    loadRow(tableName, &first_row, tx, stmt, verbose)
 
     // Read the data
     eof := false
@@ -96,7 +96,7 @@ func main() {
         } else if file_err != nil {
             log.Fatalln(file_err)
         } else {
-            loadTXRow(tableName, &row, tx, stmt)
+            loadRow(tableName, &row, tx, stmt, verbose)
         }
     }
     tx.Commit()
@@ -125,7 +125,7 @@ func main() {
     if *console {
         db.Close()
 
-        cmd := exec.Command("/usr/bin/sqlite3", *openPath)
+        cmd := exec.Command("sqlite3", *openPath)
         cmd.Stdin = os.Stdin
         cmd.Stdout = os.Stdout
         cmd.Stderr = os.Stderr
@@ -163,7 +163,7 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
     return err
 }
 
-func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
+func createLoadStmt(tableName *string, values *[]string, db *sql.Tx) *sql.Stmt {
     if len(*values) == 0 {
         log.Fatalln("Nothing to build insert with!")
     }
@@ -184,28 +184,7 @@ func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
     return stmt
 }
 
-func createLoadStmtTx(tableName *string, values *[]string, db *sql.Tx) *sql.Stmt {
-    if len(*values) == 0 {
-        log.Fatalln("Nothing to build insert with!")
-    }
-    var buffer bytes.Buffer
-
-    buffer.WriteString("INSERT INTO " + (*tableName) + " VALUES (")
-    for i := range *values {
-        buffer.WriteString("?")
-        if i != len(*values)-1 {
-            buffer.WriteString(", ")
-        }
-    }
-    buffer.WriteString(");")
-    stmt, err := db.Prepare(buffer.String())
-    if err != nil {
-        log.Fatalln(err)
-    }
-    return stmt
-}
-
-func loadDBRow(tableName *string, values *[]string, db *sql.DB, stmt *sql.Stmt) error {
+func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt, verbose *bool) error {
     if len(*values) == 0 {
         return nil
     }
@@ -214,22 +193,7 @@ func loadDBRow(tableName *string, values *[]string, db *sql.DB, stmt *sql.Stmt) 
         vals = append(vals, val)
     }
     _, err := stmt.Exec(vals...)
-    if err != nil {
-        log.Println("Bad row: ", err)
-    }
-    return err
-}
-
-func loadTXRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt) error {
-    if len(*values) == 0 {
-        return nil
-    }
-    vals := make([]interface{}, 0)
-    for _, val := range *values {
-        vals = append(vals, val)
-    }
-    _, err := stmt.Exec(vals...)
-    if err != nil {
+    if err != nil && *verbose {
         log.Println("Bad row: ", err)
     }
     return err
