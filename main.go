@@ -40,7 +40,7 @@ func main() {
 
     seperator := determineSeperator(delimiter)
 
-    // Open in memory db
+    // Open db, in memory if possible
     db, openPath := openDB(save_to, console)
 
     // Open the input source
@@ -76,27 +76,28 @@ func main() {
         }
     }
 
+    // Create the table to load to
     createTable(tableName, &headerRow, db)
+
+    // Start the clock for importing
     t0 := time.Now()
 
-    //Create transaction
+    // Create transaction
     tx, tx_err := db.Begin()
 
     if tx_err != nil {
         log.Fatalln(tx_err)
     }
 
-    //Load first row
+    // Load first row
     stmt := createLoadStmt(tableName, &headerRow, tx)
     loadRow(tableName, &first_row, tx, stmt, verbose)
 
     // Read the data
-    eof := false
-
-    for eof == false {
+    for {
         row, file_err := reader.Read()
         if file_err == io.EOF {
-            eof = true
+            break
         } else if file_err != nil {
             log.Fatalln(file_err)
         } else {
@@ -259,8 +260,8 @@ func cleanPath(path *string) *string {
         log.Fatalln(err)
     }
 
-    dir := usr.HomeDir + "/"
     if (*path)[:2] == "~/" {
+        dir := usr.HomeDir + "/"
         result = strings.Replace(*path, "~/", dir, 1)
     } else {
         result = (*path)
@@ -270,7 +271,10 @@ func cleanPath(path *string) *string {
     if abs_err != nil {
         log.Fatalln(err)
     }
-    return &abs_result
+
+    clean_result := filepath.Clean(abs_result)
+
+    return &clean_result
 }
 
 func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
