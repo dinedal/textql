@@ -13,6 +13,7 @@ import (
     "io"
     "log"
     "os"
+    "os/exec"
     "os/user"
     "path/filepath"
     "strconv"
@@ -31,6 +32,11 @@ func main() {
     save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
     console := flag.Bool("console", false, "After all commands are run, open sqlit3 console with this data")
     flag.Parse()
+
+    if *console && (*source_text == "stdin") {
+        fmt.Println("Can not open console with pipe input, read a file instead")
+        os.Exit(-1)
+    }
 
     // Open in memory db
     db, openPath := openDB(save_to, console)
@@ -127,17 +133,23 @@ func main() {
     // Open console
     if *console {
         db.Close()
-        // cmd := exec.Command("sqlite3", *openPath)
-        // io.Pipe(sop, os.Stdout)
-        // cmd_err := cmd.Start()
-        // if cmd_err != nil {
-        //     log.Fatal(cmd_err)
-        // }
-        // cmd.Wait()
+        cmd := exec.Command("/usr/bin/sqlite3", *openPath)
+        // cmd := exec.Command("/bin/bash")
+        //        cmd := exec.Command("read")
+        //cmd := exec.Command("date")
+        fmt.Println(os.Stdin.Name())
+        //        os.Stdin.Truncate(0)
+        //        os.Stdin.Close()
+        cmd.Stdin = os.Stdin
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
+        c_err := cmd.Run()
+        fmt.Println(c_err)
+        fmt.Println("HELLOOOOO   ", *openPath)
         if len(*save_to) == 0 {
             os.Remove(*openPath)
         }
-    } else if len(*save_to) == 0 && (*console) {
+    } else if len(*save_to) == 0 {
         db.Close()
         os.Remove(*openPath)
     } else {
