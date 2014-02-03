@@ -80,7 +80,11 @@ func main() {
     t0 := time.Now()
 
     //Create transaction
-    tx, _ := db.Begin()
+    tx, tx_err := db.Begin()
+
+    if tx_err != nil {
+        log.Fatalln(tx_err)
+    }
 
     //Load first row
     stmt := createLoadStmt(tableName, &headerRow, tx)
@@ -200,7 +204,12 @@ func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt, ve
 }
 
 func displayResult(rows *sql.Rows) {
-    cols, _ := rows.Columns()
+    cols, cols_err := rows.Columns()
+
+    if cols_err != nil {
+        log.Fatalln(cols_err)
+    }
+
     rawResult := make([][]byte, len(cols))
     result := make([]string, len(cols))
 
