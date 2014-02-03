@@ -3,27 +3,7 @@
 Allows you to easily execute SQL against structured text like CSV or TSV.
 
 Example session:
-
-```bash
-~ cat ~/sample_data.csv
-id,name,value
-1,Paul,5
-2,Jeff,16
-3,Dmitri,-3
-
-~ textql -source ~/sample_data.csv -sql "select count(*) from tbl;"
-4
-~ textql -header -source ~/sample_data.csv -sql "select sum(cast(value as INTEGER)) from tbl;"
-18
-~ cat ~/sample_data.csv | textql -header -sql "select max(id) from tbl;"
-3
-~ textql -header -source ~/sample_data.csv -console
-SQLite version 3.7.13 2012-07-17 17:46:21
-Enter ".help" for instructions
-Enter SQL statements terminated with a ";"
-sqlite> -- Full Fledged SQLite console
-sqlite>
-```
+![textql_usage_session](https://raw.github.com/dinedal/textql/master/textql_usage.gif)
 
 ## Is it any good?
 
