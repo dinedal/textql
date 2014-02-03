@@ -31,12 +31,14 @@ func main() {
     tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
     save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
     console := flag.Bool("console", false, "After all commands are run, open sqlit3 console with this data")
+    verbose := flag.Bool("verbose", false, "Enable verbose logging")
     flag.Parse()
 
     if *console && (*source_text == "stdin") {
-        fmt.Println("Can not open console with pipe input, read a file instead")
-        os.Exit(-1)
+        log.Fatalln("Can not open console with pipe input, read a file instead")
     }
+
+    seperator := determineSeperator(delimiter)
 
     // Open in memory db
     db, openPath := openDB(save_to, console)
@@ -49,24 +51,24 @@ func main() {
     // Init a structured text reader
     reader := csv.NewReader(fp)
     reader.FieldsPerRecord = 0
-
-    // Define the seperator
-    var seperator rune
-
-    if (*delimiter) == "\\t" {
-        seperator = '\t'
-    } else {
-        seperator, _ = utf8.DecodeRuneInString(*delimiter)
-    }
     reader.Comma = seperator
 
     // Read the first row
-    first_row, _ := reader.Read()
+    first_row, read_err := reader.Read()
+
+    if read_err != nil {
+        log.Fatalln(read_err)
+    }
+
     var headerRow []string
 
     if *header {
         headerRow = first_row
-        first_row, _ = reader.Read()
+        first_row, read_err = reader.Read()
+
+        if read_err != nil {
+            log.Fatalln(read_err)
+        }
     } else {
         headerRow = make([]string, len(first_row))
         for i := 0; i < len(first_row); i++ {
@@ -77,45 +79,34 @@ func main() {
     createTable(tableName, &headerRow, db)
     t0 := time.Now()
 
-    stmt := createLoadStmt(tableName, &headerRow, db)
-
     //Create transaction
-    if *openPath == ":memory:" {
-        //Load first row
-        loadDBRow(tableName, &first_row, db, stmt)
+    tx, _ := db.Begin()
 
-        // Read the data
-        eof := false
+    //Load first row
+    stmt := createLoadStmtTx(tableName, &headerRow, tx)
+    loadTXRow(tableName, &first_row, tx, stmt)
 
-        for eof == false {
-            row, file_err := reader.Read()
-            if file_err == io.EOF {
-                eof = true
-            } else {
-                loadDBRow(tableName, &row, db, stmt)
-            }
+    // Read the data
+    eof := false
+
+    for eof == false {
+        row, file_err := reader.Read()
+        if file_err == io.EOF {
+            eof = true
+        } else if file_err != nil {
+            log.Fatalln(file_err)
+        } else {
+            loadTXRow(tableName, &row, tx, stmt)
         }
-    } else {
-        tx, _ := db.Begin()
-        loadTXRow(tableName, &first_row, tx, stmt)
-
-        // Read the data
-        eof := false
-
-        for eof == false {
-            row, file_err := reader.Read()
-            if file_err == io.EOF {
-                eof = true
-            } else {
-                loadTXRow(tableName, &row, tx, stmt)
-            }
-        }
-        tx.Commit()
     }
+    tx.Commit()
 
     t1 := time.Now()
 
-    fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
+    if *verbose {
+        fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
+    }
+
     // Determine what sql to execute
     sqls_to_execute := strings.Split(*commands, ";")
 
@@ -124,7 +115,7 @@ func main() {
         if strings.Trim(sql_cmd, " ") != "" {
             result, err := db.Query(sql_cmd)
             if err != nil {
-                log.Fatal(err)
+                log.Fatalln(err)
             }
             displayResult(result)
         }
@@ -133,21 +124,19 @@ func main() {
     // Open console
     if *console {
         db.Close()
+
         cmd := exec.Command("/usr/bin/sqlite3", *openPath)
-        // cmd := exec.Command("/bin/bash")
-        //        cmd := exec.Command("read")
-        //cmd := exec.Command("date")
-        fmt.Println(os.Stdin.Name())
-        //        os.Stdin.Truncate(0)
-        //        os.Stdin.Close()
         cmd.Stdin = os.Stdin
         cmd.Stdout = os.Stdout
         cmd.Stderr = os.Stderr
-        c_err := cmd.Run()
-        fmt.Println(c_err)
-        fmt.Println("HELLOOOOO   ", *openPath)
+        cmd_err := cmd.Run()
+
         if len(*save_to) == 0 {
             os.Remove(*openPath)
+        }
+
+        if cmd_err != nil {
+            log.Fatalln(cmd_err)
         }
     } else if len(*save_to) == 0 {
         db.Close()
@@ -169,14 +158,14 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
     buffer.WriteString(");")
     _, err := db.Exec(buffer.String())
     if err != nil {
-        log.Fatal(err)
+        log.Fatalln(err)
     }
     return err
 }
 
 func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
     if len(*values) == 0 {
-        log.Fatal("Nothing to build insert with!")
+        log.Fatalln("Nothing to build insert with!")
     }
     var buffer bytes.Buffer
 
@@ -190,7 +179,28 @@ func createLoadStmt(tableName *string, values *[]string, db *sql.DB) *sql.Stmt {
     buffer.WriteString(");")
     stmt, err := db.Prepare(buffer.String())
     if err != nil {
-        log.Fatal(err)
+        log.Fatalln(err)
+    }
+    return stmt
+}
+
+func createLoadStmtTx(tableName *string, values *[]string, db *sql.Tx) *sql.Stmt {
+    if len(*values) == 0 {
+        log.Fatalln("Nothing to build insert with!")
+    }
+    var buffer bytes.Buffer
+
+    buffer.WriteString("INSERT INTO " + (*tableName) + " VALUES (")
+    for i := range *values {
+        buffer.WriteString("?")
+        if i != len(*values)-1 {
+            buffer.WriteString(", ")
+        }
+    }
+    buffer.WriteString(");")
+    stmt, err := db.Prepare(buffer.String())
+    if err != nil {
+        log.Fatalln(err)
     }
     return stmt
 }
@@ -263,7 +273,7 @@ func openFileOrStdin(path *string) *os.File {
     }
 
     if err != nil {
-        log.Fatal(err)
+        log.Fatalln(err)
     }
 
     return fp
@@ -273,7 +283,7 @@ func cleanPath(path *string) *string {
     var result string
     usr, err := user.Current()
     if err != nil {
-        log.Fatal(err)
+        log.Fatalln(err)
     }
 
     dir := usr.HomeDir + "/"
@@ -285,7 +295,7 @@ func cleanPath(path *string) *string {
 
     abs_result, abs_err := filepath.Abs(result)
     if abs_err != nil {
-        log.Fatal(err)
+        log.Fatalln(err)
     }
     return &abs_result
 }
@@ -304,7 +314,18 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
     db, err := sql.Open("sqlite3", openPath)
 
     if err != nil {
-        log.Fatal(err)
+        log.Fatalln(err)
     }
     return db, &openPath
+}
+
+func determineSeperator(delimiter *string) rune {
+    var seperator rune
+
+    if (*delimiter) == "\\t" {
+        seperator = '\t'
+    } else {
+        seperator, _ = utf8.DecodeRuneInString(*delimiter)
+    }
+    return seperator
 }
