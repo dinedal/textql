@@ -5,6 +5,11 @@ Allows you to easily execute SQL against structured text like CSV or TSV.
 Example session:
 ![textql_usage_session](https://raw.github.com/dinedal/textql/master/textql_usage.gif)
 
+## Key differences between textql and sqlite importing
+
+- sqlite import will not accept stdin, breaking unix pipes. textql will happily do so.
+- textql supports quote escaped delimiters, sqlite does not.
+
 ## Is it any good?
 
 [Yes](https://news.ycombinator.com/item?id=3067434)
