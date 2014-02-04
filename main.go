@@ -30,7 +30,7 @@ func main() {
     header := flag.Bool("header", false, "Treat file as having the first row as a header row")
     tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
     save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
-    console := flag.Bool("console", false, "After all commands are run, open sqlit3 console with this data")
+    console := flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
     verbose := flag.Bool("verbose", false, "Enable verbose logging")
     flag.Parse()
 
