@@ -18,7 +18,7 @@ Example session:
 
 You may need to `export CC=clang` on OS X.
 
-Install sqlite3 via whatever means you perfer, and:
+Install sqlite3 via whatever means you prefer, and:
 
 ```bash
 go get -u github.com/dinedal/textql
@@ -27,7 +27,7 @@ go get -u github.com/dinedal/textql
 ## Usage
 
 ```bash
-  -console=false: After all commands are run, open sqlit3 console with this data
+  -console=false: After all commands are run, open sqlite3 console with this data
   -dlm=",": Delimiter between fields, (\t for tab)
   -header=false: Treat file as having the first row as a header row
   -save-to="": If set, sqlite3 db is left on disk at this path
