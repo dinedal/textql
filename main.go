@@ -284,7 +284,7 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
 	} else if *no_memory {
 		b := make([]byte, 10)
 		io.ReadFull(rand.Reader, b)
-		tmpPath := "/tmp/dankbase_" + fmt.Sprintf("%x", b) + ".db"
+		tmpPath := filepath.Join(os.TempDir(), "dankbase_"+fmt.Sprintf("%x", b)+".db")
 		openPath = tmpPath
 	}
 
