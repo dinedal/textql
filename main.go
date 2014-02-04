@@ -153,7 +153,7 @@ func main() {
 
 func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
     var buffer bytes.Buffer
-    buffer.WriteString("CREATE TABLE " + (*tableName) + " (")
+    buffer.WriteString("CREATE TABLE IF NOT EXISTS " + (*tableName) + " (")
     for i, col := range *columnNames {
         buffer.WriteString(col + " TEXT")
         if i != len(*columnNames)-1 {
