@@ -110,7 +110,7 @@ func main() {
 	t1 := time.Now()
 
 	if *verbose {
-		fmt.Printf("Data loaded in: %v\n", t1.Sub(t0))
+		fmt.Fprintf(os.Stderr, "Data loaded in: %v\n", t1.Sub(t0))
 	}
 
 	// Determine what sql to execute
@@ -132,7 +132,7 @@ func main() {
 	t1 = time.Now()
 
 	if *verbose {
-		fmt.Printf("Queries run in: %v\n", t1.Sub(t0))
+		fmt.Fprintf(os.Stderr, "Queries run in: %v\n", t1.Sub(t0))
 	}
 
 	// Open console
@@ -208,7 +208,7 @@ func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt, ve
 	}
 	_, err := stmt.Exec(vals...)
 	if err != nil && *verbose {
-		log.Println("Bad row: ", err)
+		fmt.Fprintln(os.Stderr, "Bad row: ", err)
 	}
 	return err
 }
