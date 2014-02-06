@@ -38,3 +38,10 @@ go get -u github.com/dinedal/textql
   -table-name="tbl": Override the default table name (tbl)
   -verbose=false: Enable verbose logging
 ```
+
+
+## License
+
+New MIT License - Copyright (c) 2014, Paul Bergeron
+
+See LICENSE for details
