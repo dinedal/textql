@@ -16,7 +16,6 @@ Example session:
 
 ## Requirements
 
-- sqlite3
 - Go
 
 ## Install
