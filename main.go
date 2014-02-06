@@ -116,6 +116,8 @@ func main() {
 	// Determine what sql to execute
 	sqls_to_execute := strings.Split(*commands, ";")
 
+	t0 = time.Now()
+
 	// Execute given SQL
 	for _, sql_cmd := range sqls_to_execute {
 		if strings.Trim(sql_cmd, " ") != "" {
@@ -125,6 +127,12 @@ func main() {
 			}
 			displayResult(result)
 		}
+	}
+
+	t1 = time.Now()
+
+	if *verbose {
+		fmt.Printf("Queries run in: %v\n", t1.Sub(t0))
 	}
 
 	// Open console
