@@ -10,6 +10,7 @@ import (
 
 	"bytes"
 	"crypto/rand"
+	"encoding/hex"
 	"io"
 	"log"
 	"os"
@@ -26,7 +27,7 @@ func main() {
 	// Parse command line opts
 	commands := flag.String("sql", "", "SQL Command(s) to run on the data")
 	source_text := flag.String("source", "stdin", "Source file to load, or defaults to stdin")
-	delimiter := flag.String("dlm", ",", "Delimiter between fields, (\\t for tab)")
+	delimiter := flag.String("dlm", ",", "Delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	header := flag.Bool("header", false, "Treat file as having the first row as a header row")
 	tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
 	save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
@@ -299,8 +300,16 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
 func determineSeperator(delimiter *string) rune {
 	var seperator rune
 
-	if (*delimiter) == "\\t" {
+	if (*delimiter) == "tab" {
 		seperator = '\t'
+	} else if strings.Index((*delimiter), "0x") == 0 {
+		dlm, hex_err := hex.DecodeString((*delimiter)[2:])
+
+		if hex_err != nil {
+			log.Fatalln(hex_err)
+		}
+
+		seperator, _ = utf8.DecodeRuneInString(string(dlm))
 	} else {
 		seperator, _ = utf8.DecodeRuneInString(*delimiter)
 	}
