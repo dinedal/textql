@@ -100,7 +100,7 @@ func main() {
 		if file_err == io.EOF {
 			break
 		} else if file_err != nil {
-			log.Fatalln(file_err)
+			log.Println(file_err)
 		} else {
 			loadRow(tableName, &row, tx, stmt, verbose)
 		}
