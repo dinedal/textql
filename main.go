@@ -5,11 +5,11 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io/ioutil"
 
 	_ "github.com/mattn/go-sqlite3"
 
 	"bytes"
-	"crypto/rand"
 	"encoding/hex"
 	"io"
 	"log"
@@ -105,6 +105,7 @@ func main() {
 			loadRow(tableName, &row, tx, stmt, verbose)
 		}
 	}
+	stmt.Close()
 	tx.Commit()
 
 	t1 := time.Now()
@@ -136,9 +137,12 @@ func main() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd_err := cmd.Run()
+		if cmd.Process != nil {
+			cmd.Process.Release()
+		}
 
 		if len(*save_to) == 0 {
-			os.Remove(*openPath)
+			os.RemoveAll(filepath.Dir(*openPath))
 		}
 
 		if cmd_err != nil {
@@ -283,10 +287,11 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
 	if len(*path) != 0 {
 		openPath = *cleanPath(path)
 	} else if *no_memory {
-		b := make([]byte, 10)
-		io.ReadFull(rand.Reader, b)
-		tmpPath := filepath.Join(os.TempDir(), "dankbase_"+fmt.Sprintf("%x", b)+".db")
-		openPath = tmpPath
+		outDir, err := ioutil.TempDir(os.TempDir(), "textql")
+		if err != nil {
+			log.Fatalln(err)
+		}
+		openPath = filepath.Join(outDir, "textql.db")
 	}
 
 	db, err := sql.Open("sqlite3", openPath)
