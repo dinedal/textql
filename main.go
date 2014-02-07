@@ -78,7 +78,7 @@ func main() {
 	}
 
 	// Create the table to load to
-	createTable(tableName, &headerRow, db)
+	createTable(tableName, &headerRow, db, verbose)
 
 	// Start the clock for importing
 	t0 := time.Now()
@@ -164,20 +164,38 @@ func main() {
 	}
 }
 
-func createTable(tableName *string, columnNames *[]string, db *sql.DB) error {
+func createTable(tableName *string, columnNames *[]string, db *sql.DB, verbose *bool) error {
 	var buffer bytes.Buffer
+
 	buffer.WriteString("CREATE TABLE IF NOT EXISTS " + (*tableName) + " (")
+
 	for i, col := range *columnNames {
-		buffer.WriteString(col + " TEXT")
+		var col_name string
+
+		if strings.ContainsAny(col, "-") {
+			col_name = strings.Replace(col, "-", "_", -1)
+			if *verbose {
+				fmt.Fprintf(os.Stderr, "Column %x renamed to %s\n", col, col_name)
+			}
+		} else {
+			col_name = col
+		}
+
+		buffer.WriteString(col_name + " TEXT")
+
 		if i != len(*columnNames)-1 {
 			buffer.WriteString(", ")
 		}
 	}
+
 	buffer.WriteString(");")
+
 	_, err := db.Exec(buffer.String())
+
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	return err
 }
 
