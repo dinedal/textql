@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"regexp"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -172,8 +173,10 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB, verbose *
 	for i, col := range *columnNames {
 		var col_name string
 
-		if strings.ContainsAny(col, "-") {
-			col_name = strings.Replace(col, "-", "_", -1)
+		reg := regexp.MustCompile(`-|\.`)
+
+		if reg.MatchString(col) {
+			col_name = reg.ReplaceAllString(col, "_")
 			if *verbose {
 				fmt.Fprintf(os.Stderr, "Column %x renamed to %s\n", col, col_name)
 			}
