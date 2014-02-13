@@ -43,7 +43,7 @@ func main() {
 		log.Fatalln("Can not open console with pipe input, read a file instead")
 	}
 
-	seperator := determineSeperator(delimiter)
+	separator := determineSeparator(delimiter)
 
 	// Open db, in memory if possible
 	db, openPath := openDB(save_to, console)
@@ -56,7 +56,7 @@ func main() {
 	// Init a structured text reader
 	reader := csv.NewReader(fp)
 	reader.FieldsPerRecord = 0
-	reader.Comma = seperator
+	reader.Comma = separator
 
 	// Read the first row
 	first_row, read_err := reader.Read()
@@ -349,11 +349,11 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
 	return db, &openPath
 }
 
-func determineSeperator(delimiter *string) rune {
-	var seperator rune
+func determineSeparator(delimiter *string) rune {
+	var separator rune
 
 	if (*delimiter) == "tab" {
-		seperator = '\t'
+		separator = '\t'
 	} else if strings.Index((*delimiter), "0x") == 0 {
 		dlm, hex_err := hex.DecodeString((*delimiter)[2:])
 
@@ -361,9 +361,9 @@ func determineSeperator(delimiter *string) rune {
 			log.Fatalln(hex_err)
 		}
 
-		seperator, _ = utf8.DecodeRuneInString(string(dlm))
+		separator, _ = utf8.DecodeRuneInString(string(dlm))
 	} else {
-		seperator, _ = utf8.DecodeRuneInString(*delimiter)
+		separator, _ = utf8.DecodeRuneInString(*delimiter)
 	}
-	return seperator
+	return separator
 }
