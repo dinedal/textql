@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"regexp"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "code.google.com/p/gosqlite/sqlite3"
 
 	"bytes"
 	"encoding/hex"
