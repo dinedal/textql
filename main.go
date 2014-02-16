@@ -173,15 +173,11 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB, verbose *
 	for i, col := range *columnNames {
 		var col_name string
 
-		reg := regexp.MustCompile(`-|\.|:`)
+		reg := regexp.MustCompile(`[^a-zA-Z0-9]`)
 
-		if reg.MatchString(col) {
-			col_name = reg.ReplaceAllString(col, "_")
-			if *verbose {
-				fmt.Fprintf(os.Stderr, "Column %x renamed to %s\n", col, col_name)
-			}
-		} else {
-			col_name = col
+		col_name = reg.ReplaceAllString(col, "_")
+		if *verbose && col_name != col {
+			fmt.Fprintf(os.Stderr, "Column %x renamed to %s\n", col, col_name)
 		}
 
 		buffer.WriteString(col_name + " TEXT")
