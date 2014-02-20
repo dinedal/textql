@@ -24,15 +24,13 @@ import (
 	"unicode/utf8"
 )
 
-var outputHeader bool
-
 func main() {
 	// Parse command line opts
 	commands := flag.String("sql", "", "SQL Command(s) to run on the data")
 	source_text := flag.String("source", "stdin", "Source file to load, or defaults to stdin")
 	delimiter := flag.String("dlm", ",", "Delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	header := flag.Bool("header", false, "Treat file as having the first row as a header row")
-	flag.BoolVar(&outputHeader, "output-header", false, "Display column names in output")
+	outputHeader := flag.Bool("output-header", false, "Display column names in output")
 	tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
 	save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
 	console := flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
@@ -130,7 +128,7 @@ func main() {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			displayResult(result)
+			displayResult(result, outputHeader)
 		}
 	}
 
@@ -144,7 +142,7 @@ func main() {
 	if *console {
 		db.Close()
 		args := []string{*openPath}
-		if outputHeader { 
+		if *outputHeader {
 			args = append(args, "-header")
 		}
 		cmd := exec.Command("sqlite3", args...)
@@ -245,29 +243,28 @@ func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt, ve
 	return err
 }
 
-func displayResult(rows *sql.Rows) {
+func displayResult(rows *sql.Rows, outputHeader *bool) {
 	cols, cols_err := rows.Columns()
 
 	if cols_err != nil {
 		log.Fatalln(cols_err)
 	}
 
-	if outputHeader {
+	if *outputHeader {
 		for i, c := range cols {
 			fmt.Printf("%s", c)
-    		if i != len(cols)-1 {
+			if i != len(cols)-1 {
 				fmt.Printf(", ")
 			}
 		}
 		fmt.Printf("\n")
 	}
-	
 
 	rawResult := make([][]byte, len(cols))
 	result := make([]string, len(cols))
 
 	dest := make([]interface{}, len(cols))
-	for i, _ := range cols {
+	for i := range cols {
 		dest[i] = &rawResult[i]
 	}
 
