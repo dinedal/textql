@@ -45,69 +45,19 @@ func main() {
 	// Open db, in memory if possible
 	db, openPath := openDB(save_to, console)
 
-	// Open the input source
-	var fp *os.File
-	fp = openFileOrStdin(source_text)
-	defer fp.Close()
-
-	// Init a structured text reader
-	reader := csv.NewReader(fp)
-	reader.FieldsPerRecord = 0
-	reader.Comma = seperator
-
-	// Read the first row
-	first_row, read_err := reader.Read()
-
-	if read_err != nil {
-		log.Fatalln(read_err)
-	}
-
-	var headerRow []string
-
-	if *header {
-		headerRow = first_row
-		first_row, read_err = reader.Read()
-
-		if read_err != nil {
-			log.Fatalln(read_err)
-		}
-	} else {
-		headerRow = make([]string, len(first_row))
-		for i := 0; i < len(first_row); i++ {
-			headerRow[i] = "c" + strconv.Itoa(i)
-		}
-	}
-
-	// Create the table to load to
-	createTable(tableName, &headerRow, db, verbose)
+	var source_texts = strings.Split(*source_text, ",")
 
 	// Start the clock for importing
 	t0 := time.Now()
 
-	// Create transaction
-	tx, tx_err := db.Begin()
-
-	if tx_err != nil {
-		log.Fatalln(tx_err)
-	}
-
-	// Load first row
-	stmt := createLoadStmt(tableName, &headerRow, tx)
-	loadRow(tableName, &first_row, tx, stmt, verbose)
-
-	// Read the data
-	for {
-		row, file_err := reader.Read()
-		if file_err == io.EOF {
-			break
-		} else if file_err != nil {
-			log.Println(file_err)
-		} else {
-			loadRow(tableName, &row, tx, stmt, verbose)
+	if len(source_texts) == 1 {
+		loadSource(source_text, tableName, &seperator, header, db, verbose)
+	} else {
+		for i, j := 0, len(source_texts); i < j; i = i + 1 {
+			tmp_tablename := *tableName + strconv.Itoa(i)
+			loadSource(&source_texts[i], &tmp_tablename, &seperator, header, db, verbose)
 		}
 	}
-	stmt.Close()
-	tx.Commit()
 
 	t1 := time.Now()
 
@@ -163,6 +113,69 @@ func main() {
 	} else {
 		db.Close()
 	}
+}
+
+func loadSource(source_text *string, tableName *string, seperator *rune, header *bool, db *sql.DB, verbose *bool) {
+	// Open the input source
+	var fp *os.File
+	fp = openFileOrStdin(source_text)
+	defer fp.Close()
+
+	// Init a structured text reader
+	reader := csv.NewReader(fp)
+	reader.FieldsPerRecord = 0
+	reader.Comma = *seperator
+
+	// Read the first row
+	first_row, read_err := reader.Read()
+
+	if read_err != nil {
+		log.Fatalln(read_err)
+	}
+
+	var headerRow []string
+
+	if *header {
+		headerRow = first_row
+		first_row, read_err = reader.Read()
+
+		if read_err != nil {
+			log.Fatalln(read_err)
+		}
+	} else {
+		headerRow = make([]string, len(first_row))
+		for i := 0; i < len(first_row); i++ {
+			headerRow[i] = "c" + strconv.Itoa(i)
+		}
+	}
+
+	// Create the table to load to
+	createTable(tableName, &headerRow, db, verbose)
+
+	// Create transaction
+	tx, tx_err := db.Begin()
+
+	if tx_err != nil {
+		log.Fatalln(tx_err)
+	}
+
+	// Load first row
+	stmt := createLoadStmt(tableName, &headerRow, tx)
+	loadRow(tableName, &first_row, tx, stmt, verbose)
+
+	// Read the data
+	for {
+		row, file_err := reader.Read()
+		if file_err == io.EOF {
+			break
+		} else if file_err != nil {
+			log.Println(file_err)
+		} else {
+			loadRow(tableName, &row, tx, stmt, verbose)
+		}
+	}
+	stmt.Close()
+	tx.Commit()
 }
 
 func createTable(tableName *string, columnNames *[]string, db *sql.DB, verbose *bool) error {
