@@ -32,6 +32,7 @@ go get -u github.com/dinedal/textql
   -console=false: After all commands are run, open sqlite3 console with this data
   -dlm=",": Delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex
   -header=false: Treat file as having the first row as a header row
+  -outputHeader=false: Display column names in output
   -save-to="": If set, sqlite3 db is left on disk at this path
   -source="stdin": Source file to load, or defaults to stdin
   -sql="": SQL Command(s) to run on the data
