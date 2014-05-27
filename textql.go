@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/dinedal/textql/inputs"
+	"github.com/dinedal/textql/outputs"
 	"github.com/dinedal/textql/storage"
 	"github.com/dinedal/textql/util"
 )
@@ -32,7 +34,17 @@ func main() {
 
 	storage.LoadInput(input)
 
-	storage.ExecuteSQLStrings(strings.Split("select a from tbl;", ";"))
+	queryResults := storage.ExecuteSQLStrings(strings.Split("select * from tbl;", ";"))
+
+	displayOpts := &outputs.CSVOutputOptions{
+		WriteHeader: true,
+		Seperator:   ',',
+		WriteTo:     os.Stdout,
+	}
+
+	outputer := outputs.NewCSVOutput(displayOpts)
+
+	outputer.Show(queryResults)
 
 	storage.SaveTo("./out.db")
 

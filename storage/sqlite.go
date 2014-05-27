@@ -51,7 +51,12 @@ func (this *sqlite3Storage) open() {
 		log.Fatalln(err)
 	}
 
-	db.Ping()
+	err = db.Ping()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	this.connId = len(sqlite3conn) - 1
 	this.db = db
 }
