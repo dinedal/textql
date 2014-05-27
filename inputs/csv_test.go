@@ -39,6 +39,8 @@ func csvOpened(contents string) os.File {
 
 func TestCSVInputFakesHeader(t *testing.T) {
 	fp := csvOpened(simple)
+	defer fp.Close()
+	defer os.Remove(fp.Name())
 
 	opts := &inputs.CSVInputOptions{
 		HasHeader: false,
@@ -52,9 +54,6 @@ func TestCSVInputFakesHeader(t *testing.T) {
 	if !reflect.DeepEqual(input.Header(), expected) {
 		t.Errorf("Header() = %v, want %v", input.Header(), expected)
 	}
-
-	defer fp.Close()
-	defer os.Remove(fp.Name())
 }
 
 func TestCSVInputReadsHeader(t *testing.T) {
@@ -127,5 +126,24 @@ func TestCSVInputReadsBad(t *testing.T) {
 		if !reflect.DeepEqual(row, expected[counter]) {
 			t.Errorf("ReadRecord() = %v, want %v", row, expected[counter])
 		}
+	}
+}
+
+func TestCSVInputHasAName(t *testing.T) {
+	fp := csvOpened(simple)
+	defer fp.Close()
+	defer os.Remove(fp.Name())
+
+	opts := &inputs.CSVInputOptions{
+		HasHeader: true,
+		Seperator: ',',
+		ReadFrom:  fp,
+	}
+
+	input := inputs.NewCSVInput(opts)
+	expected := fp.Name()
+
+	if !reflect.DeepEqual(input.Name(), expected) {
+		t.Errorf("Name() = %v, want %v", input.Name(), expected)
 	}
 }

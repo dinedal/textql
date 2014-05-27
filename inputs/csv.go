@@ -41,6 +41,10 @@ func NewCSVInput(opts *CSVInputOptions) *csvInput {
 	return this
 }
 
+func (this *csvInput) Name() string {
+	return this.options.ReadFrom.Name()
+}
+
 func (this *csvInput) ReadRecord() []string {
 	var row []string
 	var file_err error
