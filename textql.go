@@ -14,8 +14,6 @@ func main() {
 
 	fp := util.OpenFileOrStdin(source_text)
 
-	fmt.Println(fp.Name())
-
 	opts := &inputs.CSVInputOptions{
 		HasHeader: false,
 		Seperator: ',',
@@ -23,6 +21,8 @@ func main() {
 	}
 
 	input := inputs.NewCSVInput(opts)
+
+	fmt.Println(input.Name())
 
 	d := input.ReadRecord()
 	for {

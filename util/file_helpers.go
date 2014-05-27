@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func OpenFileOrStdin(path *string) os.File {
+func OpenFileOrStdin(path *string) *os.File {
 	var fp *os.File
 	var err error
 
@@ -23,7 +23,7 @@ func OpenFileOrStdin(path *string) os.File {
 		log.Fatalln(err)
 	}
 
-	return *fp
+	return fp
 }
 
 func cleanPath(path *string) *string {

@@ -22,13 +22,13 @@ type csvInput struct {
 type CSVInputOptions struct {
 	HasHeader bool
 	Seperator rune
-	ReadFrom  os.File
+	ReadFrom  io.Reader
 }
 
 func NewCSVInput(opts *CSVInputOptions) *csvInput {
 	this := &csvInput{
 		options: opts,
-		reader:  csv.NewReader(&opts.ReadFrom),
+		reader:  csv.NewReader(opts.ReadFrom),
 	}
 	this.firstRow = nil
 
@@ -42,7 +42,13 @@ func NewCSVInput(opts *CSVInputOptions) *csvInput {
 }
 
 func (this *csvInput) Name() string {
-	return this.options.ReadFrom.Name()
+	if as_file, ok := this.options.ReadFrom.(*os.File); ok {
+		if as_file.Name() == "/dev/stdin" {
+			return "stdin"
+		}
+		return as_file.Name()
+	}
+	return "buffer"
 }
 
 func (this *csvInput) ReadRecord() []string {

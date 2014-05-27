@@ -30,11 +30,11 @@ var (
 `
 )
 
-func csvOpened(contents string) os.File {
+func csvOpened(contents string) *os.File {
 	f, _ := ioutil.TempFile("./", "csv")
 	f.WriteString(contents)
 	f.Seek(0, 0)
-	return *f
+	return f
 }
 
 func TestCSVInputFakesHeader(t *testing.T) {
