@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/dinedal/textql/inputs"
+	"github.com/dinedal/textql/storage"
 	"github.com/dinedal/textql/util"
 )
 
@@ -15,7 +17,7 @@ func main() {
 	fp := util.OpenFileOrStdin(source_text)
 
 	opts := &inputs.CSVInputOptions{
-		HasHeader: false,
+		HasHeader: true,
 		Seperator: ',',
 		ReadFrom:  fp,
 	}
@@ -24,12 +26,23 @@ func main() {
 
 	fmt.Println(input.Name())
 
-	d := input.ReadRecord()
-	for {
-		if d == nil {
-			break
-		}
-		fmt.Println(d)
-		d = input.ReadRecord()
-	}
+	storage_opts := &storage.SQLite3Options{}
+
+	storage := storage.NewSQLite3Storage(storage_opts)
+
+	storage.LoadInput(input)
+
+	storage.ExecuteSQLStrings(strings.Split("select a from tbl;", ";"))
+
+	storage.SaveTo("./out.db")
+
+	// d := input.ReadRecord()
+	// for {
+	// 	if d == nil {
+	// 		break
+	// 	}
+	// 	fmt.Println(d)
+	// 	d = input.ReadRecord()
+	// }
+
 }
