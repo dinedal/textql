@@ -29,6 +29,7 @@ func main() {
 	commands := flag.String("sql", "", "SQL Command(s) to run on the data")
 	source_text := flag.String("source", "stdin", "Source file to load, or defaults to stdin")
 	delimiter := flag.String("dlm", ",", "Delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
+	lazyQuotes := flag.Bool("lazy-quotes", false, "Enable LazyQuotes in the csv parser")
 	header := flag.Bool("header", false, "Treat file as having the first row as a header row")
 	outputHeader := flag.Bool("output-header", false, "Display column names in output")
 	tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
@@ -55,6 +56,7 @@ func main() {
 	reader := csv.NewReader(fp)
 	reader.FieldsPerRecord = 0
 	reader.Comma = separator
+	reader.LazyQuotes = *lazyQuotes
 
 	// Read the first row
 	first_row, read_err := reader.Read()
