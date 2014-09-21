@@ -130,7 +130,7 @@ func main() {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			displayResult(result, outputHeader)
+			displayResult(result, outputHeader, separator)
 		}
 	}
 
@@ -241,21 +241,29 @@ func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt, ve
 	return err
 }
 
-func displayResult(rows *sql.Rows, outputHeader *bool) {
+type csvWriter struct {
+	*csv.Writer
+}
+
+func (w csvWriter) put(record []string) {
+	if err := w.Write(record); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func displayResult(rows *sql.Rows, outputHeader *bool, sep rune) {
 	cols, cols_err := rows.Columns()
 
 	if cols_err != nil {
 		log.Fatalln(cols_err)
 	}
 
+	out := csvWriter{csv.NewWriter(os.Stdout)}
+
+	out.Comma = sep
+
 	if *outputHeader {
-		for i, c := range cols {
-			fmt.Printf("%s", c)
-			if i != len(cols)-1 {
-				fmt.Printf(", ")
-			}
-		}
-		fmt.Printf("\n")
+		out.put(cols)
 	}
 
 	rawResult := make([][]byte, len(cols))
@@ -273,14 +281,10 @@ func displayResult(rows *sql.Rows, outputHeader *bool) {
 			result[i] = string(raw)
 		}
 
-		for j, v := range result {
-			fmt.Printf("%s", v)
-			if j != len(result)-1 {
-				fmt.Printf(", ")
-			}
-		}
-		fmt.Printf("\n")
+		out.put(result)
 	}
+
+	out.Flush()
 }
 
 func openFileOrStdin(path *string) *os.File {
