@@ -1,55 +1,56 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/csv"
-	"flag"
-	"fmt"
-	"io/ioutil"
-	"regexp"
-
-	_ "github.com/mattn/go-sqlite3"
-
-	"bytes"
 	"encoding/hex"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
+	"gopkg.in/alecthomas/kingpin.v1"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
 )
 
-func main() {
-	// Parse command line opts
-	commands := flag.String("sql", "", "SQL Command(s) to run on the data")
-	source_text := flag.String("source", "stdin", "Source file to load, or defaults to stdin")
-	delimiter := flag.String("dlm", ",", "Delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
-	lazyQuotes := flag.Bool("lazy-quotes", false, "Enable LazyQuotes in the csv parser")
-	header := flag.Bool("header", false, "Treat file as having the first row as a header row")
-	outputHeader := flag.Bool("output-header", false, "Display column names in output")
-	tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
-	save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
-	console := flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
-	verbose := flag.Bool("verbose", false, "Enable verbose logging")
-	flag.Parse()
+var (
+	app          = kingpin.New(APP_NAME, APP_DESCRIPTION)
+	queries      = app.Flag(FLAG_QUERIES, FLAG_QUERIES_HELP).String()
+	input        = app.Flag(FLAG_INPUT, FLAG_INPUT_HELP).Default("stdin").String()
+	delimiter    = app.Flag(FLAG_DELIMITER, FLAG_DELIMITER_HELP).Default(",").String()
+	lazyQuotes   = app.Flag(FLAG_LAZY_QUOTES, FLAG_LAZY_QUOTES_HELP).Bool()
+	header       = app.Flag(FLAG_HEADER, FLAG_HEADER_HELP).Bool()
+	outputHeader = app.Flag(FLAG_OUTPUT_HEADER, FLAG_OUTPUT_HEADER_HELP).Bool()
+	tableName    = app.Flag(FLAG_TABLE_NAME, FLAG_TABLE_NAME_HELP).Default(DEFAULT_TABLE_NAME).String()
+	saveTo       = app.Flag(FLAG_SAVE_TO, FLAG_SAVE_TO_HELP).String()
+	console      = app.Flag(FLAG_CONSOLE, FLAG_CONSOLE_HELP).Bool()
+	verbose      = app.Flag(FLAG_VERBOSE, FLAG_VERBOSE_HELP).Bool()
+)
 
-	if *console && (*source_text == "stdin") {
-		log.Fatalln("Can not open console with pipe input, read a file instead")
+func main() {
+	app.Parse(os.Args[1:])
+
+	if *console && *input == "stdin" {
+		log.Fatalln(ERR_NO_CONSOLE_STDIN)
 	}
 
 	separator := determineSeparator(delimiter)
 
 	// Open db, in memory if possible
-	db, openPath := openDB(save_to, console)
+	db, openPath := openDB(saveTo, console)
 
 	// Open the input source
 	var fp *os.File
-	fp = openFileOrStdin(source_text)
+	fp = openFileOrStdin(input)
 	defer fp.Close()
 
 	// Init a structured text reader
@@ -119,7 +120,7 @@ func main() {
 	}
 
 	// Determine what sql to execute
-	sqls_to_execute := strings.Split(*commands, ";")
+	sqls_to_execute := strings.Split(*queries, ";")
 
 	t0 = time.Now()
 
@@ -152,19 +153,19 @@ func main() {
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		cmd_err := cmd.Run()
+		FLAG_err := cmd.Run()
 		if cmd.Process != nil {
 			cmd.Process.Release()
 		}
 
-		if len(*save_to) == 0 {
+		if len(*saveTo) == 0 {
 			os.RemoveAll(filepath.Dir(*openPath))
 		}
 
-		if cmd_err != nil {
-			log.Fatalln(cmd_err)
+		if FLAG_err != nil {
+			log.Fatalln(FLAG_err)
 		}
-	} else if len(*save_to) == 0 {
+	} else if len(*saveTo) == 0 {
 		db.Close()
 		os.Remove(*openPath)
 	} else {
