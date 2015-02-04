@@ -18,7 +18,6 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -76,8 +75,15 @@ func main() {
 		}
 	} else {
 		headerRow = make([]string, len(first_row))
+
+		// Name each field after the column
+		reStartDigit, _ := regexp.Compile("^[0-9]")
 		for i := 0; i < len(first_row); i++ {
-			headerRow[i] = "c" + strconv.Itoa(i)
+			if reStartDigit.MatchString(first_row[i]) {
+				headerRow[i] = "c" + first_row[i]
+			} else {
+				headerRow[i] = first_row[i]
+			}
 		}
 	}
 
