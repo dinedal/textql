@@ -77,7 +77,7 @@ func main() {
 		headerRow = make([]string, len(first_row))
 
 		// Name each field after the column
-		reStartDigit, _ := regexp.Compile("^[0-9]")
+		reStartDigit := regexp.MustCompile("^[0-9]")
 		for i := 0; i < len(first_row); i++ {
 			if reStartDigit.MatchString(first_row[i]) {
 				headerRow[i] = "c" + first_row[i]
