@@ -18,7 +18,6 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -29,7 +28,9 @@ func main() {
 	commands := flag.String("sql", "", "SQL Command(s) to run on the data")
 	source_text := flag.String("source", "stdin", "Source file to load, or defaults to stdin")
 	delimiter := flag.String("dlm", ",", "Delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
+	lazyQuotes := flag.Bool("lazy-quotes", false, "Enable LazyQuotes in the csv parser")
 	header := flag.Bool("header", false, "Treat file as having the first row as a header row")
+	outputHeader := flag.Bool("output-header", false, "Display column names in output")
 	tableName := flag.String("table-name", "tbl", "Override the default table name (tbl)")
 	save_to := flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
 	console := flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
@@ -40,7 +41,7 @@ func main() {
 		log.Fatalln("Can not open console with pipe input, read a file instead")
 	}
 
-	seperator := determineSeperator(delimiter)
+	separator := determineSeparator(delimiter)
 
 	// Open db, in memory if possible
 	db, openPath := openDB(save_to, console)
@@ -53,7 +54,8 @@ func main() {
 	// Init a structured text reader
 	reader := csv.NewReader(fp)
 	reader.FieldsPerRecord = 0
-	reader.Comma = seperator
+	reader.Comma = separator
+	reader.LazyQuotes = *lazyQuotes
 
 	// Read the first row
 	first_row, read_err := reader.Read()
@@ -73,8 +75,15 @@ func main() {
 		}
 	} else {
 		headerRow = make([]string, len(first_row))
+
+		// Name each field after the column
+		reStartDigit := regexp.MustCompile("^[0-9]")
 		for i := 0; i < len(first_row); i++ {
-			headerRow[i] = "c" + strconv.Itoa(i)
+			if reStartDigit.MatchString(first_row[i]) {
+				headerRow[i] = "c" + first_row[i]
+			} else {
+				headerRow[i] = first_row[i]
+			}
 		}
 	}
 
@@ -127,7 +136,7 @@ func main() {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			displayResult(result)
+			displayResult(result, outputHeader, separator)
 		}
 	}
 
@@ -140,8 +149,12 @@ func main() {
 	// Open console
 	if *console {
 		db.Close()
+		args := []string{*openPath}
+		if *outputHeader {
+			args = append(args, "-header")
+		}
+		cmd := exec.Command("sqlite3", args...)
 
-		cmd := exec.Command("sqlite3", *openPath)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -234,18 +247,36 @@ func loadRow(tableName *string, values *[]string, db *sql.Tx, stmt *sql.Stmt, ve
 	return err
 }
 
-func displayResult(rows *sql.Rows) {
+type csvWriter struct {
+	*csv.Writer
+}
+
+func (w csvWriter) put(record []string) {
+	if err := w.Write(record); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func displayResult(rows *sql.Rows, outputHeader *bool, sep rune) {
 	cols, cols_err := rows.Columns()
 
 	if cols_err != nil {
 		log.Fatalln(cols_err)
 	}
 
+	out := csvWriter{csv.NewWriter(os.Stdout)}
+
+	out.Comma = sep
+
+	if *outputHeader {
+		out.put(cols)
+	}
+
 	rawResult := make([][]byte, len(cols))
 	result := make([]string, len(cols))
 
 	dest := make([]interface{}, len(cols))
-	for i, _ := range cols {
+	for i := range cols {
 		dest[i] = &rawResult[i]
 	}
 
@@ -256,14 +287,10 @@ func displayResult(rows *sql.Rows) {
 			result[i] = string(raw)
 		}
 
-		for j, v := range result {
-			fmt.Printf("%s", v)
-			if j != len(result)-1 {
-				fmt.Printf(", ")
-			}
-		}
-		fmt.Printf("\n")
+		out.put(result)
 	}
+
+	out.Flush()
 }
 
 func openFileOrStdin(path *string) *os.File {
@@ -327,11 +354,11 @@ func openDB(path *string, no_memory *bool) (*sql.DB, *string) {
 	return db, &openPath
 }
 
-func determineSeperator(delimiter *string) rune {
-	var seperator rune
+func determineSeparator(delimiter *string) rune {
+	var separator rune
 
 	if (*delimiter) == "tab" {
-		seperator = '\t'
+		separator = '\t'
 	} else if strings.Index((*delimiter), "0x") == 0 {
 		dlm, hex_err := hex.DecodeString((*delimiter)[2:])
 
@@ -339,9 +366,9 @@ func determineSeperator(delimiter *string) rune {
 			log.Fatalln(hex_err)
 		}
 
-		seperator, _ = utf8.DecodeRuneInString(string(dlm))
+		separator, _ = utf8.DecodeRuneInString(string(dlm))
 	} else {
-		seperator, _ = utf8.DecodeRuneInString(*delimiter)
+		separator, _ = utf8.DecodeRuneInString(*delimiter)
 	}
-	return seperator
+	return separator
 }
