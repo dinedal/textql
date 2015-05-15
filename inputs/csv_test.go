@@ -1,7 +1,6 @@
 package inputs
 
 import (
-	"github.com/dinedal/textql/inputs"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -42,13 +41,13 @@ func TestCSVInputFakesHeader(t *testing.T) {
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
-	opts := &inputs.CSVInputOptions{
+	opts := &CSVInputOptions{
 		HasHeader: false,
 		Seperator: ',',
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input := NewCSVInput(opts)
 	expected := []string{"c0", "c1", "c2"}
 
 	if !reflect.DeepEqual(input.Header(), expected) {
@@ -61,13 +60,13 @@ func TestCSVInputReadsHeader(t *testing.T) {
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
-	opts := &inputs.CSVInputOptions{
+	opts := &CSVInputOptions{
 		HasHeader: true,
 		Seperator: ',',
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input := NewCSVInput(opts)
 	expected := []string{"a", "b", "c"}
 
 	if !reflect.DeepEqual(input.Header(), expected) {
@@ -80,13 +79,13 @@ func TestCSVInputReadsSimple(t *testing.T) {
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
-	opts := &inputs.CSVInputOptions{
+	opts := &CSVInputOptions{
 		HasHeader: true,
 		Seperator: ',',
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input := NewCSVInput(opts)
 	expected := make([][]string, len(strings.Split(simple, "\n"))-1)
 	expected[0] = []string{"1", "2", "3"}
 	expected[1] = []string{"4", "5", "6"}
@@ -104,13 +103,13 @@ func TestCSVInputReadsBad(t *testing.T) {
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
-	opts := &inputs.CSVInputOptions{
+	opts := &CSVInputOptions{
 		HasHeader: true,
 		Seperator: ',',
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input := NewCSVInput(opts)
 	expected := make([][]string, len(strings.Split(bad, "\n"))-1)
 	expected[0] = []string{"1", "2", ""}
 	expected[1] = []string{"4", "5", "6"}
@@ -134,13 +133,13 @@ func TestCSVInputHasAName(t *testing.T) {
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
-	opts := &inputs.CSVInputOptions{
+	opts := &CSVInputOptions{
 		HasHeader: true,
 		Seperator: ',',
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input := NewCSVInput(opts)
 	expected := fp.Name()
 
 	if !reflect.DeepEqual(input.Name(), expected) {

@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dinedal/textql/inputs"
-	sqlite3 "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
 	"regexp"
+
+	"github.com/dinedal/textql/inputs"
+	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
 type sqlite3Storage struct {
@@ -194,34 +195,23 @@ func (this *sqlite3Storage) SaveTo(path string) {
 	backup_db.Ping()
 	backupConnId := len(sqlite3conn) - 1
 
-	// TODO: When backups are fixed in go-sqlite, remove debug logging and add error checking
-	// https://github.com/mattn/go-sqlite3/issues/104
-
-	log.Println("Start")
-
 	backup, backup_start_err := sqlite3conn[backupConnId].Backup("main", sqlite3conn[this.connId], "main")
 
 	if backup_start_err != nil {
 		log.Fatalln(backup_start_err)
 	}
 
-	log.Println("Perform")
-
-	backup_perform_error := backup.Step(-1)
+	_, backup_perform_error := backup.Step(-1)
 
 	if backup_perform_error != nil {
-		// 	log.Fatalln(backup_perform_error)
+		log.Fatalln(backup_perform_error)
 	}
-
-	log.Println("Finish")
 
 	backup_finish_error := backup.Finish()
 
 	if backup_finish_error != nil {
-		//log.Fatalln(backup_finish_error)
+		log.Fatalln(backup_finish_error)
 	}
-
-	log.Println("Close")
 
 	backup_close_error := backup_db.Close()
 
