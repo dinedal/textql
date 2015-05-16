@@ -40,6 +40,12 @@ func (this *csvOutput) Show(queryResults []*sql.Rows) {
 			log.Fatalln(colsErr)
 		}
 
+		if this.options.WriteHeader {
+			if err := this.writer.Write(cols); err != nil {
+				log.Fatalln(err)
+			}
+		}
+
 		rawResult := make([][]byte, len(cols))
 		result := make([]string, len(cols))
 

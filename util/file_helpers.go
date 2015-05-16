@@ -8,15 +8,18 @@ import (
 	"strings"
 )
 
-func OpenFileOrStdin(path *string) *os.File {
+func OpenFileOrStdDev(path *string) *os.File {
 	var fp *os.File
 	var err error
 
 	if (*path) == "stdin" {
 		fp = os.Stdin
 		err = nil
+	} else if (*path) == "stdout" {
+		fp = os.Stdout
+		err = nil
 	} else {
-		fp, err = os.Open(*cleanPath(path))
+		fp, err = os.Open(*CleanPath(path))
 	}
 
 	if err != nil {
@@ -26,7 +29,7 @@ func OpenFileOrStdin(path *string) *os.File {
 	return fp
 }
 
-func cleanPath(path *string) *string {
+func CleanPath(path *string) *string {
 	var result string
 	usr, err := user.Current()
 	if err != nil {

@@ -7,7 +7,8 @@ import (
 )
 
 type Storage interface {
-	LoadInput(*inputs.Input)
+	LoadInput(*inputs.Input, string)
 	SaveTo(string)
 	ExecuteSQLStrings([]string) []*sql.Rows
+	Close()
 }

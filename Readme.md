@@ -5,10 +5,15 @@ Allows you to easily execute SQL against structured text like CSV or TSV.
 Example session:
 ![textql_usage_session](https://raw.github.com/dinedal/textql/master/textql_usage.gif)
 
+## Major changes!
+
+Since there has been some time since the initial release of textql, I've made some improvements as well as made the project much more modular. There's also been a additional performance tweaks and added functionality, but this comes at the cost of breaking the original command line flags and changing the install command.
+
 ## Key differences between textql and sqlite importing
 
 - sqlite import will not accept stdin, breaking unix pipes. textql will happily do so.
 - textql supports quote escaped delimiters, sqlite does not.
+- textql leverages the sqlite in memory database feature as much as possible and only touches disk if asked.
 
 ## Is it any good?
 
@@ -23,7 +28,7 @@ Example session:
 You may need to `export CC=clang` on OS X.
 
 ```bash
-go get -u github.com/dinedal/textql
+go get -u github.com/dinedal/textql/...
 ```
 
 ## Usage
@@ -43,6 +48,6 @@ go get -u github.com/dinedal/textql
 
 ## License
 
-New MIT License - Copyright (c) 2014, Paul Bergeron
+New MIT License - Copyright (c) 2014, 2015 Paul Bergeron
 
 See LICENSE for details

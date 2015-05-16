@@ -2,13 +2,10 @@ package inputs
 
 import (
 	"encoding/csv"
-	"encoding/hex"
 	"io"
 	"log"
 	"os"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 )
 
 type csvInput struct {
@@ -102,20 +99,4 @@ func (this *csvInput) readHeader() {
 
 func (this *csvInput) Header() []string {
 	return this.header
-}
-
-func (this CSVInputOptions) SetSeperator(delimiter *string) {
-	if (*delimiter) == "tab" {
-		this.Seperator = '\t'
-	} else if strings.Index((*delimiter), "0x") == 0 {
-		dlm, hex_err := hex.DecodeString((*delimiter)[2:])
-
-		if hex_err != nil {
-			log.Fatalln(hex_err)
-		}
-
-		this.Seperator, _ = utf8.DecodeRuneInString(string(dlm))
-	} else {
-		this.Seperator, _ = utf8.DecodeRuneInString(*delimiter)
-	}
 }

@@ -20,9 +20,7 @@ type sqlite3Storage struct {
 	connId  int
 }
 
-type SQLite3Options struct {
-	//	SaveToPath string
-}
+type SQLite3Options struct{}
 
 var (
 	sqlite3conn []*sqlite3.SQLiteConn = []*sqlite3.SQLiteConn{}
@@ -62,8 +60,8 @@ func (this *sqlite3Storage) open() {
 	this.db = db
 }
 
-func (this *sqlite3Storage) LoadInput(input inputs.Input) {
-	this.createTable("tbl", input.Header(), true)
+func (this *sqlite3Storage) LoadInput(input inputs.Input, name string) {
+	this.createTable(name, input.Header(), false)
 
 	tx, tx_err := this.db.Begin()
 
@@ -71,14 +69,14 @@ func (this *sqlite3Storage) LoadInput(input inputs.Input) {
 		log.Fatalln(tx_err)
 	}
 
-	stmt := this.createLoadStmt("tbl", len(input.Header()), tx)
+	stmt := this.createLoadStmt(name, len(input.Header()), tx)
 
 	row := input.ReadRecord()
 	for {
 		if row == nil {
 			break
 		}
-		this.loadRow("tbl", len(input.Header()), row, tx, stmt, true)
+		this.loadRow(name, len(input.Header()), row, tx, stmt, true)
 		row = input.ReadRecord()
 	}
 	stmt.Close()
@@ -131,7 +129,7 @@ func (this *sqlite3Storage) createLoadStmt(tableName string, colCount int, db *s
 	}
 	var buffer bytes.Buffer
 
-	buffer.WriteString("INSERT INTO " + (tableName) + " VALUES (")
+	buffer.WriteString("INSERT INTO [" + (tableName) + "] VALUES (")
 	// Don't write the comma for the last column
 	for i := 1; i <= colCount; i++ {
 		buffer.WriteString("?")
@@ -218,4 +216,8 @@ func (this *sqlite3Storage) SaveTo(path string) {
 	if backup_close_error != nil {
 		log.Fatalln(backup_close_error)
 	}
+}
+
+func (this *sqlite3Storage) Close() {
+	this.db.Close()
 }
