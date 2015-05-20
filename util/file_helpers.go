@@ -8,18 +8,18 @@ import (
 	"strings"
 )
 
-func OpenFileOrStdDev(path *string) *os.File {
+func OpenFileOrStdDev(path string) *os.File {
 	var fp *os.File
 	var err error
 
-	if (*path) == "stdin" {
+	if path == "stdin" {
 		fp = os.Stdin
 		err = nil
-	} else if (*path) == "stdout" {
+	} else if path == "stdout" {
 		fp = os.Stdout
 		err = nil
 	} else {
-		fp, err = os.Open(*CleanPath(path))
+		fp, err = os.Open(CleanPath(path))
 	}
 
 	if err != nil {
@@ -29,18 +29,18 @@ func OpenFileOrStdDev(path *string) *os.File {
 	return fp
 }
 
-func CleanPath(path *string) *string {
+func CleanPath(path string) string {
 	var result string
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if (*path)[:2] == "~/" {
+	if path[:2] == "~/" {
 		dir := usr.HomeDir + "/"
-		result = strings.Replace(*path, "~/", dir, 1)
+		result = strings.Replace(path, "~/", dir, 1)
 	} else {
-		result = (*path)
+		result = path
 	}
 
 	abs_result, abs_err := filepath.Abs(result)
@@ -50,7 +50,7 @@ func CleanPath(path *string) *string {
 
 	clean_result := filepath.Clean(abs_result)
 
-	return &clean_result
+	return clean_result
 }
 
 func RewindFile(fileHandle *os.File) {
