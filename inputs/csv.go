@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"strconv"
 )
 
@@ -14,6 +15,7 @@ type csvInput struct {
 	firstRow        []string
 	header          []string
 	minOutputLength int
+	name            string
 }
 
 type CSVInputOptions struct {
@@ -35,17 +37,21 @@ func NewCSVInput(opts *CSVInputOptions) *csvInput {
 
 	this.readHeader()
 
+	if as_file, ok := this.options.ReadFrom.(*os.File); ok {
+		this.name = path.Base(as_file.Name())
+	} else {
+		this.name = "pipe"
+	}
+
 	return this
 }
 
 func (this *csvInput) Name() string {
-	if as_file, ok := this.options.ReadFrom.(*os.File); ok {
-		if as_file.Name() == "/dev/stdin" {
-			return "stdin"
-		}
-		return as_file.Name()
-	}
-	return "buffer"
+	return this.name
+}
+
+func (this *csvInput) SetName(name string) {
+	this.name = name
 }
 
 func (this *csvInput) ReadRecord() []string {

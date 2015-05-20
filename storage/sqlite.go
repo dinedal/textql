@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"path"
 	"strings"
 
 	"log"
@@ -60,8 +61,9 @@ func (this *sqlite3Storage) open() {
 	this.db = db
 }
 
-func (this *sqlite3Storage) LoadInput(input inputs.Input, name string) {
-	this.createTable(name, input.Header(), false)
+func (this *sqlite3Storage) LoadInput(input inputs.Input) {
+	tableName := strings.Replace(input.Name(), path.Ext(input.Name()), "", -1)
+	this.createTable(tableName, input.Header(), false)
 
 	tx, tx_err := this.db.Begin()
 
@@ -69,14 +71,14 @@ func (this *sqlite3Storage) LoadInput(input inputs.Input, name string) {
 		log.Fatalln(tx_err)
 	}
 
-	stmt := this.createLoadStmt(name, len(input.Header()), tx)
+	stmt := this.createLoadStmt(tableName, len(input.Header()), tx)
 
 	row := input.ReadRecord()
 	for {
 		if row == nil {
 			break
 		}
-		this.loadRow(name, len(input.Header()), row, tx, stmt, true)
+		this.loadRow(tableName, len(input.Header()), row, tx, stmt, true)
 		row = input.ReadRecord()
 	}
 	stmt.Close()

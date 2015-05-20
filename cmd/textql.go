@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path"
 	"strings"
 
 	"github.com/dinedal/textql/inputs"
@@ -53,10 +52,10 @@ func main() {
 	storage := storage.NewSQLite3Storage(storage_opts)
 
 	if (*tableName) != "" {
-		storage.LoadInput(input, *tableName)
-	} else {
-		storage.LoadInput(input, path.Base(input.Name()))
+		input.SetName(*tableName)
 	}
+
+	storage.LoadInput(input)
 
 	queryResults := storage.ExecuteSQLStrings(strings.Split(*commands, ";"))
 
@@ -103,8 +102,6 @@ func main() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd_err := cmd.Run()
-
-		log.Println("ok whut")
 
 		if cmd.Process != nil {
 			cmd.Process.Release()
