@@ -43,20 +43,20 @@ func CleanPath(path string) string {
 		result = path
 	}
 
-	abs_result, abs_err := filepath.Abs(result)
-	if abs_err != nil {
-		log.Fatalln(err)
+	absResult, absErr := filepath.Abs(result)
+	if absErr != nil {
+		log.Fatalln(absErr)
 	}
 
-	clean_result := filepath.Clean(abs_result)
+	cleanResult := filepath.Clean(absResult)
 
-	return clean_result
+	return cleanResult
 }
 
 func RewindFile(fileHandle *os.File) {
-	_, rewind_err := fileHandle.Seek(0, 0)
+	_, rewindErr := fileHandle.Seek(0, 0)
 
-	if rewind_err != nil {
+	if rewindErr != nil {
 		log.Fatalln("Unable to rewind file")
 	}
 }

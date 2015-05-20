@@ -28,20 +28,20 @@ type CommandLineOptions struct {
 }
 
 func NewCommandLineOptions() *CommandLineOptions {
-	opts := CommandLineOptions{}
-	opts.Commands = flag.String("sql", "", "SQL Command(s) to run on the data")
-	opts.SourceFile = flag.String("source", "stdin", "Source file to load, or defaults to stdin")
-	opts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=opts.0x## to specify a character code in hex")
-	opts.Header = flag.Bool("header", false, "Treat file as having the first row as a header row")
-	opts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
-	opts.OutputDelimiter = flag.String("output-dlm", ",", "Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex")
-	opts.OutputFile = flag.String("output-file", "stdout", "Filename to write output to, if empty no output is written")
-	opts.TableName = flag.String("table-name", "", "Override the default table name (input file name or stdin)")
-	opts.SaveTo = flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
-	opts.Console = flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
+	cmdLineOpts := CommandLineOptions{}
+	cmdLineOpts.Commands = flag.String("sql", "", "SQL Command(s) to run on the data")
+	cmdLineOpts.SourceFile = flag.String("source", "stdin", "Source file to load, or defaults to stdin")
+	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=opts.0x## to specify a character code in hex")
+	cmdLineOpts.Header = flag.Bool("header", false, "Treat file as having the first row as a header row")
+	cmdLineOpts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
+	cmdLineOpts.OutputDelimiter = flag.String("output-dlm", ",", "Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex")
+	cmdLineOpts.OutputFile = flag.String("output-file", "stdout", "Filename to write output to, if empty no output is written")
+	cmdLineOpts.TableName = flag.String("table-name", "", "Override the default table name (input file name or stdin)")
+	cmdLineOpts.SaveTo = flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
+	cmdLineOpts.Console = flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
 	flag.Parse()
 
-	return &opts
+	return &cmdLineOpts
 }
 
 func (this *CommandLineOptions) GetCommands() string {
@@ -85,10 +85,10 @@ func (this *CommandLineOptions) GetConsole() bool {
 }
 
 func main() {
-	cmdopts := NewCommandLineOptions()
+	cmdLineOpts := NewCommandLineOptions()
 
-	if cmdopts.GetConsole() {
-		if cmdopts.GetSourceFile() == "stdin" {
+	if cmdLineOpts.GetConsole() {
+		if cmdLineOpts.GetSourceFile() == "stdin" {
 			log.Fatalln("Can not open console with pipe input, read a file instead")
 		}
 		_, sqlite3ConsolePathErr := exec.LookPath("sqlite3")
@@ -97,54 +97,54 @@ func main() {
 		}
 	}
 
-	fp := util.OpenFileOrStdDev(cmdopts.GetSourceFile())
+	fp := util.OpenFileOrStdDev(cmdLineOpts.GetSourceFile())
 
-	opts := &inputs.CSVInputOptions{
-		HasHeader: cmdopts.GetHeader(),
-		Seperator: util.DetermineSeparator(cmdopts.GetDelimiter()),
+	inputOpts := &inputs.CSVInputOptions{
+		HasHeader: cmdLineOpts.GetHeader(),
+		Seperator: util.DetermineSeparator(cmdLineOpts.GetDelimiter()),
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input := inputs.NewCSVInput(inputOpts)
 
-	storage_opts := &storage.SQLite3Options{}
+	storageOpts := &storage.SQLite3Options{}
 
-	storage := storage.NewSQLite3Storage(storage_opts)
+	storage := storage.NewSQLite3Storage(storageOpts)
 
-	if (cmdopts.GetTableName()) != "" {
-		input.SetName(cmdopts.GetTableName())
+	if (cmdLineOpts.GetTableName()) != "" {
+		input.SetName(cmdLineOpts.GetTableName())
 	}
 
 	storage.LoadInput(input)
 
-	queryResults := storage.ExecuteSQLStrings(strings.Split(cmdopts.GetCommands(), ";"))
+	queryResults := storage.ExecuteSQLStrings(strings.Split(cmdLineOpts.GetCommands(), ";"))
 
-	if cmdopts.GetOutputFile() != "" {
+	if cmdLineOpts.GetOutputFile() != "" {
 		displayOpts := &outputs.CSVOutputOptions{
-			WriteHeader: cmdopts.GetOutputHeader(),
-			Seperator:   util.DetermineSeparator(cmdopts.GetOutputDelimiter()),
-			WriteTo:     util.OpenFileOrStdDev(cmdopts.GetOutputFile()),
+			WriteHeader: cmdLineOpts.GetOutputHeader(),
+			Seperator:   util.DetermineSeparator(cmdLineOpts.GetOutputDelimiter()),
+			WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile()),
 		}
 
 		outputer := outputs.NewCSVOutput(displayOpts)
 		outputer.Show(queryResults)
 	}
 
-	if cmdopts.GetSaveTo() != "" {
-		storage.SaveTo(util.CleanPath(cmdopts.GetSaveTo()))
+	if cmdLineOpts.GetSaveTo() != "" {
+		storage.SaveTo(util.CleanPath(cmdLineOpts.GetSaveTo()))
 	}
 
-	if cmdopts.GetConsole() {
+	if cmdLineOpts.GetConsole() {
 		var args []string
 
-		if cmdopts.GetOutputHeader() {
+		if cmdLineOpts.GetOutputHeader() {
 			args = []string{"-header"}
 		} else {
 			args = []string{}
 		}
 
-		if cmdopts.GetSaveTo() != "" {
-			args = append(args, util.CleanPath(cmdopts.GetSaveTo()))
+		if cmdLineOpts.GetSaveTo() != "" {
+			args = append(args, util.CleanPath(cmdLineOpts.GetSaveTo()))
 		} else {
 			tempFile, err := ioutil.TempFile(os.TempDir(), "textql")
 			if err != nil {
@@ -161,14 +161,14 @@ func main() {
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		cmd_err := cmd.Run()
+		cmdErr := cmd.Run()
 
 		if cmd.Process != nil {
 			cmd.Process.Release()
 		}
 
-		if cmd_err != nil {
-			log.Fatalln(cmd_err)
+		if cmdErr != nil {
+			log.Fatalln(cmdErr)
 		}
 	} else {
 		storage.Close()

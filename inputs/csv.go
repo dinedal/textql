@@ -37,8 +37,8 @@ func NewCSVInput(opts *CSVInputOptions) *csvInput {
 
 	this.readHeader()
 
-	if as_file, ok := this.options.ReadFrom.(*os.File); ok {
-		this.name = path.Base(as_file.Name())
+	if asFile, ok := this.options.ReadFrom.(*os.File); ok {
+		this.name = path.Base(asFile.Name())
 	} else {
 		this.name = "pipe"
 	}
@@ -56,7 +56,7 @@ func (this *csvInput) SetName(name string) {
 
 func (this *csvInput) ReadRecord() []string {
 	var row []string
-	var file_err error
+	var fileErr error
 
 	if this.firstRow != nil {
 		row = this.firstRow
@@ -64,11 +64,11 @@ func (this *csvInput) ReadRecord() []string {
 		return row
 	}
 
-	row, file_err = this.reader.Read()
-	if file_err == io.EOF {
+	row, fileErr = this.reader.Read()
+	if fileErr == io.EOF {
 		return nil
-	} else if parse_err, ok := file_err.(*csv.ParseError); ok {
-		log.Println(parse_err)
+	} else if parseErr, ok := fileErr.(*csv.ParseError); ok {
+		log.Println(parseErr)
 	}
 	emptysToAppend := this.minOutputLength - len(row)
 
@@ -82,12 +82,12 @@ func (this *csvInput) ReadRecord() []string {
 }
 
 func (this *csvInput) readHeader() {
-	var read_err error
+	var readErr error
 
-	this.firstRow, read_err = this.reader.Read()
+	this.firstRow, readErr = this.reader.Read()
 
-	if read_err != nil {
-		log.Fatalln(read_err)
+	if readErr != nil {
+		log.Fatalln(readErr)
 	}
 
 	this.minOutputLength = len(this.firstRow)

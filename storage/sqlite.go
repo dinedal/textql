@@ -65,10 +65,10 @@ func (this *sqlite3Storage) LoadInput(input inputs.Input) {
 	tableName := strings.Replace(input.Name(), path.Ext(input.Name()), "", -1)
 	this.createTable(tableName, input.Header(), false)
 
-	tx, tx_err := this.db.Begin()
+	tx, txErr := this.db.Begin()
 
-	if tx_err != nil {
-		log.Fatalln(tx_err)
+	if txErr != nil {
+		log.Fatalln(txErr)
 	}
 
 	stmt := this.createLoadStmt(tableName, len(input.Header()), tx)
@@ -186,37 +186,37 @@ func (this *sqlite3Storage) ExecuteSQLStrings(sqlStrings []string) []*sql.Rows {
 }
 
 func (this *sqlite3Storage) SaveTo(path string) {
-	backup_db, open_err := sql.Open("sqlite3_textql", path)
+	backupDb, openErr := sql.Open("sqlite3_textql", path)
 
-	if open_err != nil {
-		log.Fatalln(open_err)
+	if openErr != nil {
+		log.Fatalln(openErr)
 	}
 
-	backup_db.Ping()
+	backupDb.Ping()
 	backupConnId := len(sqlite3conn) - 1
 
-	backup, backup_start_err := sqlite3conn[backupConnId].Backup("main", sqlite3conn[this.connId], "main")
+	backup, backupStartErr := sqlite3conn[backupConnId].Backup("main", sqlite3conn[this.connId], "main")
 
-	if backup_start_err != nil {
-		log.Fatalln(backup_start_err)
+	if backupStartErr != nil {
+		log.Fatalln(backupStartErr)
 	}
 
-	_, backup_perform_error := backup.Step(-1)
+	_, backupPerformError := backup.Step(-1)
 
-	if backup_perform_error != nil {
-		log.Fatalln(backup_perform_error)
+	if backupPerformError != nil {
+		log.Fatalln(backupPerformError)
 	}
 
-	backup_finish_error := backup.Finish()
+	backupFinishError := backup.Finish()
 
-	if backup_finish_error != nil {
-		log.Fatalln(backup_finish_error)
+	if backupFinishError != nil {
+		log.Fatalln(backupFinishError)
 	}
 
-	backup_close_error := backup_db.Close()
+	backupCloseError := backupDb.Close()
 
-	if backup_close_error != nil {
-		log.Fatalln(backup_close_error)
+	if backupCloseError != nil {
+		log.Fatalln(backupCloseError)
 	}
 }
 
