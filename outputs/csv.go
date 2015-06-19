@@ -32,43 +32,42 @@ func NewCSVOutput(opts *CSVOutputOptions) *csvOutput {
 	return this
 }
 
-func (this *csvOutput) Show(queryResults []*sql.Rows) {
-	for _, rows := range queryResults {
-		cols, colsErr := rows.Columns()
+func (this *csvOutput) Show(rows *sql.Rows) {
+	cols, colsErr := rows.Columns()
 
-		if colsErr != nil {
+	if colsErr != nil {
+		log.Fatalln(colsErr)
+	}
+
+	if this.options.WriteHeader {
+		if err := this.writer.Write(cols); err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	rawResult := make([][]byte, len(cols))
+	result := make([]string, len(cols))
+
+	dest := make([]interface{}, len(cols))
+
+	for i, _ := range cols {
+		dest[i] = &rawResult[i]
+	}
+
+	for rows.Next() {
+		rows.Scan(dest...)
+
+		for i, raw := range rawResult {
+			result[i] = string(raw)
+		}
+
+		writeErr := this.writer.Write(result)
+
+		if writeErr != nil {
 			log.Fatalln(colsErr)
-		}
-
-		if this.options.WriteHeader {
-			if err := this.writer.Write(cols); err != nil {
-				log.Fatalln(err)
-			}
-		}
-
-		rawResult := make([][]byte, len(cols))
-		result := make([]string, len(cols))
-
-		dest := make([]interface{}, len(cols))
-
-		for i, _ := range cols {
-			dest[i] = &rawResult[i]
-		}
-
-		for rows.Next() {
-			rows.Scan(dest...)
-
-			for i, raw := range rawResult {
-				result[i] = string(raw)
-			}
-
-			writeErr := this.writer.Write(result)
-
-			if writeErr != nil {
-				log.Fatalln(colsErr)
-			}
 		}
 	}
 
 	this.writer.Flush()
+	rows.Close()
 }

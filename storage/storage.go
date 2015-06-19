@@ -9,6 +9,6 @@ import (
 type Storage interface {
 	LoadInput(*inputs.Input)
 	SaveTo(string)
-	ExecuteSQLStrings([]string) []*sql.Rows
+	ExecuteSQLString(string) *sql.Rows
 	Close()
 }

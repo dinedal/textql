@@ -85,7 +85,7 @@ func TestSQLiteStorageSaveTo(t *testing.T) {
 	}
 }
 
-func TestSQLiteStorageExecuteSQLStrings(t *testing.T) {
+func TestSQLiteStorageExecuteSQLString(t *testing.T) {
 	storage := NewSQLite3Storage(storageOpts)
 	input, fp := NewTestCSVInput()
 	defer fp.Close()
@@ -94,17 +94,26 @@ func TestSQLiteStorageExecuteSQLStrings(t *testing.T) {
 
 	storage.LoadInput(input)
 
-	sqlStrings := []string{
-		"select count(*)",
+	sqlString := "select count(*)"
+
+	rows := storage.ExecuteSQLString(sqlString)
+
+	cols, colsErr := rows.Columns()
+
+	if colsErr != nil {
+		t.Fatalf(colsErr.Error())
 	}
 
-	result := storage.ExecuteSQLStrings(sqlStrings)
-
-	if len(result) != len(sqlStrings) {
-		t.Fatalf("Failed to execute all sql statements, expected (%v) got (%v)", len(sqlStrings), len(result))
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
 	}
-}
 
-func TestSQLiteStorageClose(t *testing.T) {
+	var dest int
 
+	for rows.Next() {
+		rows.Scan(&dest)
+		if dest != 2 {
+			t.Fatalf("Expected 2 rows counted, got (%v)", dest)
+		}
+	}
 }

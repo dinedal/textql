@@ -86,6 +86,7 @@ func (this *CommandLineOptions) GetConsole() bool {
 
 func main() {
 	cmdLineOpts := NewCommandLineOptions()
+	var outputer outputs.Output
 
 	if cmdLineOpts.GetConsole() {
 		if cmdLineOpts.GetSourceFile() == "stdin" {
@@ -117,7 +118,7 @@ func main() {
 
 	storage.LoadInput(input)
 
-	queryResults := storage.ExecuteSQLStrings(strings.Split(cmdLineOpts.GetCommands(), ";"))
+	sqlStrings := strings.Split(cmdLineOpts.GetCommands(), ";")
 
 	if cmdLineOpts.GetOutputFile() != "" {
 		displayOpts := &outputs.CSVOutputOptions{
@@ -126,8 +127,15 @@ func main() {
 			WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile()),
 		}
 
-		outputer := outputs.NewCSVOutput(displayOpts)
-		outputer.Show(queryResults)
+		outputer = outputs.NewCSVOutput(displayOpts)
+	}
+
+	for _, sqlQuery := range sqlStrings {
+		queryResults := storage.ExecuteSQLString(sqlQuery)
+
+		if queryResults != nil && cmdLineOpts.GetOutputFile() != "" {
+			outputer.Show(queryResults)
+		}
 	}
 
 	if cmdLineOpts.GetSaveTo() != "" {

@@ -12,6 +12,7 @@ import (
 	"regexp"
 
 	"github.com/dinedal/textql/inputs"
+	"github.com/dinedal/textql/sqlparser"
 	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
@@ -178,20 +179,19 @@ func (this *sqlite3Storage) loadRow(tableName string, colCount int, values []str
 	return err
 }
 
-func (this *sqlite3Storage) ExecuteSQLStrings(sqlStrings []string) []*sql.Rows {
-	var results []*sql.Rows
+func (this *sqlite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
+	var result *sql.Rows
+	var err error
 
-	for _, sqlQuery := range sqlStrings {
-		if strings.Trim(sqlQuery, " ") != "" {
-			//implictFromSql := sqlparser.AddImplictFrom(sqlQuery, this.firstTableName)
-			result, err := this.db.Query(sqlQuery)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			results = append(results, result)
+	if strings.Trim(sqlQuery, " ") != "" {
+		implictFromSql := sqlparser.AddImplictFrom(sqlQuery, this.firstTableName)
+		result, err = this.db.Query(implictFromSql)
+		if err != nil {
+			log.Fatalln(err)
 		}
 	}
-	return results
+
+	return result
 }
 
 func (this *sqlite3Storage) SaveTo(path string) {
