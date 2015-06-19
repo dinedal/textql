@@ -95,7 +95,7 @@ func TestSQLiteStorageExecuteSQLStrings(t *testing.T) {
 	storage.LoadInput(input)
 
 	sqlStrings := []string{
-		"select count(*) from tbl",
+		"select count(*)",
 	}
 
 	result := storage.ExecuteSQLStrings(sqlStrings)

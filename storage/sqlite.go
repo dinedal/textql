@@ -16,9 +16,10 @@ import (
 )
 
 type sqlite3Storage struct {
-	options *SQLite3Options
-	db      *sql.DB
-	connId  int
+	options        *SQLite3Options
+	db             *sql.DB
+	connId         int
+	firstTableName string
 }
 
 type SQLite3Options struct{}
@@ -39,7 +40,8 @@ func init() {
 
 func NewSQLite3Storage(opts *SQLite3Options) *sqlite3Storage {
 	this := &sqlite3Storage{
-		options: opts,
+		options:        opts,
+		firstTableName: "",
 	}
 
 	this.open()
@@ -85,6 +87,10 @@ func (this *sqlite3Storage) LoadInput(input inputs.Input) {
 	}
 	stmt.Close()
 	tx.Commit()
+
+	if this.firstTableName == "" {
+		this.firstTableName = tableName
+	}
 }
 
 func (this *sqlite3Storage) createTable(tableName string, columnNames []string, verbose bool) error {
@@ -177,6 +183,7 @@ func (this *sqlite3Storage) ExecuteSQLStrings(sqlStrings []string) []*sql.Rows {
 
 	for _, sqlQuery := range sqlStrings {
 		if strings.Trim(sqlQuery, " ") != "" {
+			//implictFromSql := sqlparser.AddImplictFrom(sqlQuery, this.firstTableName)
 			result, err := this.db.Query(sqlQuery)
 			if err != nil {
 				log.Fatalln(err)
