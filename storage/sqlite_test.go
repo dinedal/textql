@@ -85,7 +85,73 @@ func TestSQLiteStorageSaveTo(t *testing.T) {
 	}
 }
 
-func TestSQLiteStorageExecuteSQLString(t *testing.T) {
+func TestSQLiteStorageExecuteSQLStringNormalSQL(t *testing.T) {
+	storage := NewSQLite3Storage(storageOpts)
+	input, fp := NewTestCSVInput()
+	defer fp.Close()
+	defer os.Remove(fp.Name())
+	defer storage.Close()
+
+	storage.LoadInput(input)
+
+	sqlString := "select count(*) from " + storage.firstTableName
+
+	rows := storage.ExecuteSQLString(sqlString)
+
+	cols, colsErr := rows.Columns()
+
+	if colsErr != nil {
+		t.Fatalf(colsErr.Error())
+	}
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	var dest int
+
+	for rows.Next() {
+		rows.Scan(&dest)
+		if dest != 2 {
+			t.Fatalf("Expected 2 rows counted, got (%v)", dest)
+		}
+	}
+}
+
+func TestSQLiteStorageExecuteSQLStringMissingSelect(t *testing.T) {
+	storage := NewSQLite3Storage(storageOpts)
+	input, fp := NewTestCSVInput()
+	defer fp.Close()
+	defer os.Remove(fp.Name())
+	defer storage.Close()
+
+	storage.LoadInput(input)
+
+	sqlString := "count(*) from " + storage.firstTableName
+
+	rows := storage.ExecuteSQLString(sqlString)
+
+	cols, colsErr := rows.Columns()
+
+	if colsErr != nil {
+		t.Fatalf(colsErr.Error())
+	}
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	var dest int
+
+	for rows.Next() {
+		rows.Scan(&dest)
+		if dest != 2 {
+			t.Fatalf("Expected 2 rows counted, got (%v)", dest)
+		}
+	}
+}
+
+func TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery(t *testing.T) {
 	storage := NewSQLite3Storage(storageOpts)
 	input, fp := NewTestCSVInput()
 	defer fp.Close()
@@ -95,6 +161,39 @@ func TestSQLiteStorageExecuteSQLString(t *testing.T) {
 	storage.LoadInput(input)
 
 	sqlString := "count(*)"
+
+	rows := storage.ExecuteSQLString(sqlString)
+
+	cols, colsErr := rows.Columns()
+
+	if colsErr != nil {
+		t.Fatalf(colsErr.Error())
+	}
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	var dest int
+
+	for rows.Next() {
+		rows.Scan(&dest)
+		if dest != 2 {
+			t.Fatalf("Expected 2 rows counted, got (%v)", dest)
+		}
+	}
+}
+
+func TestSQLiteStorageExecuteSQLStringMissingFromSubQuery(t *testing.T) {
+	storage := NewSQLite3Storage(storageOpts)
+	input, fp := NewTestCSVInput()
+	defer fp.Close()
+	defer os.Remove(fp.Name())
+	defer storage.Close()
+
+	storage.LoadInput(input)
+
+	sqlString := "count(*) from (select *)"
 
 	rows := storage.ExecuteSQLString(sqlString)
 
