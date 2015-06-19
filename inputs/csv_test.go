@@ -1,12 +1,13 @@
 package inputs
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 
 	"reflect"
 	"testing"
+
+	"github.com/dinedal/textql/test_util"
 )
 
 var (
@@ -29,15 +30,8 @@ var (
 `
 )
 
-func csvOpened(contents string) *os.File {
-	f, _ := ioutil.TempFile("./", "csv")
-	f.WriteString(contents)
-	f.Seek(0, 0)
-	return f
-}
-
 func TestCSVInputFakesHeader(t *testing.T) {
-	fp := csvOpened(simple)
+	fp := test_util.OpenFileFromString(simple)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
@@ -56,7 +50,7 @@ func TestCSVInputFakesHeader(t *testing.T) {
 }
 
 func TestCSVInputReadsHeader(t *testing.T) {
-	fp := csvOpened(simple)
+	fp := test_util.OpenFileFromString(simple)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
@@ -75,7 +69,7 @@ func TestCSVInputReadsHeader(t *testing.T) {
 }
 
 func TestCSVInputReadsSimple(t *testing.T) {
-	fp := csvOpened(simple)
+	fp := test_util.OpenFileFromString(simple)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
@@ -99,7 +93,7 @@ func TestCSVInputReadsSimple(t *testing.T) {
 }
 
 func TestCSVInputReadsBad(t *testing.T) {
-	fp := csvOpened(bad)
+	fp := test_util.OpenFileFromString(bad)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 
@@ -129,7 +123,7 @@ func TestCSVInputReadsBad(t *testing.T) {
 }
 
 func TestCSVInputHasAName(t *testing.T) {
-	fp := csvOpened(simple)
+	fp := test_util.OpenFileFromString(simple)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 

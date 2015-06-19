@@ -27,11 +27,7 @@ var (
 	sqlite3conn []*sqlite3.SQLiteConn = []*sqlite3.SQLiteConn{}
 )
 
-func NewSQLite3Storage(opts *SQLite3Options) *sqlite3Storage {
-	this := &sqlite3Storage{
-		options: opts,
-	}
-
+func init() {
 	sql.Register("sqlite3_textql",
 		&sqlite3.SQLiteDriver{
 			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
@@ -39,6 +35,12 @@ func NewSQLite3Storage(opts *SQLite3Options) *sqlite3Storage {
 				return nil
 			},
 		})
+}
+
+func NewSQLite3Storage(opts *SQLite3Options) *sqlite3Storage {
+	this := &sqlite3Storage{
+		options: opts,
+	}
 
 	this.open()
 	return this

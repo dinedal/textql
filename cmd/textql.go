@@ -77,7 +77,7 @@ func (this *CommandLineOptions) GetTableName() string {
 }
 
 func (this *CommandLineOptions) GetSaveTo() string {
-	return *this.SaveTo
+	return util.CleanPath(*this.SaveTo)
 }
 
 func (this *CommandLineOptions) GetConsole() bool {
@@ -131,7 +131,7 @@ func main() {
 	}
 
 	if cmdLineOpts.GetSaveTo() != "" {
-		storage.SaveTo(util.CleanPath(cmdLineOpts.GetSaveTo()))
+		storage.SaveTo(cmdLineOpts.GetSaveTo())
 	}
 
 	if cmdLineOpts.GetConsole() {
@@ -144,7 +144,7 @@ func main() {
 		}
 
 		if cmdLineOpts.GetSaveTo() != "" {
-			args = append(args, util.CleanPath(cmdLineOpts.GetSaveTo()))
+			args = append(args, cmdLineOpts.GetSaveTo())
 		} else {
 			tempFile, err := ioutil.TempFile(os.TempDir(), "textql")
 			if err != nil {

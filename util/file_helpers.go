@@ -30,7 +30,12 @@ func OpenFileOrStdDev(path string) *os.File {
 }
 
 func CleanPath(path string) string {
-	var result string
+	result := ""
+
+	if path == "" {
+		return ""
+	}
+
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatalln(err)
