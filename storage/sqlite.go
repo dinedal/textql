@@ -184,7 +184,7 @@ func (this *sqlite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
 	var err error
 
 	if strings.Trim(sqlQuery, " ") != "" {
-		implictFromSql := sqlparser.AddImplictFrom(sqlQuery, this.firstTableName)
+		implictFromSql := sqlparser.Magicify(sqlQuery, this.firstTableName)
 		result, err = this.db.Query(implictFromSql)
 		if err != nil {
 			log.Fatalln(err)

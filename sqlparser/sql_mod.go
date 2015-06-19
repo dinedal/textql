@@ -1,6 +1,10 @@
 package sqlparser
 
-func AddImplictFrom(sql string, tableName string) string {
+// Magicify runs the SQL passed in, and a table name, throught a customized
+// TextQL SQL Parser. This provides the following functionality:
+//  - Queries that do not start with SELECT are implictly mapped to SELECT statements
+//  - Queries that are missing a FROM, have the FROM inserted with tableName
+func Magicify(sql string, tableName string) string {
 	if tableName == "" {
 		return sql
 	}

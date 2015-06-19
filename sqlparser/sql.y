@@ -95,6 +95,7 @@ var (
 
 %type <statement> command
 %type <selStmt> select_statement
+%type <selStmt> missing_select_statement
 %type <statement> insert_statement update_statement delete_statement set_statement
 %type <statement> create_statement alter_statement rename_statement drop_statement
 %type <statement> analyze_statement other_statement
@@ -145,6 +146,7 @@ var (
 %type <bytes> sql_id
 %type <empty> force_eof
 
+
 %%
 
 any_command:
@@ -158,6 +160,10 @@ command:
   {
     $$ = $1
   }
+| missing_select_statement
+  {
+    $$ = $1
+  }
 | insert_statement
 | update_statement
 | delete_statement
@@ -168,6 +174,12 @@ command:
 | drop_statement
 | analyze_statement
 | other_statement
+
+missing_select_statement:
+  distinct_opt select_expression_list from_expression_list_opt where_expression_opt group_by_opt having_opt order_by_opt limit_opt lock_opt
+  {
+    $$ = &Select{Comments: nil, Distinct: $1, SelectExprs: $2, From: NewFrom(AST_FROM, $3), Where: NewWhere(AST_WHERE, $4), GroupBy: GroupBy($5), Having: NewWhere(AST_HAVING, $6), OrderBy: $7, Limit: $8, Lock: $9}
+  }
 
 select_statement:
   SELECT comment_opt distinct_opt select_expression_list from_expression_list_opt where_expression_opt group_by_opt having_opt order_by_opt limit_opt lock_opt
