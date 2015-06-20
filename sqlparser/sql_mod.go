@@ -17,15 +17,38 @@ func Magicify(sql string, tableName string) string {
 
 	switch statement := statement.(type) {
 	case *Select:
-		if statement.From == nil {
-			tableName := &TableName{[]byte(tableName), nil}
-			aliasedTableExpr := AliasedTableExpr{tableName, nil, nil}
-			tableExprs := TableExprs{&aliasedTableExpr}
-			statement.From = &From{Type: AST_FROM, Expr: tableExprs}
-		}
+		replaceFromInSelect(statement, tableName)
 		return generateQuery(statement)
 	default:
 		return sql
+	}
+}
+
+func replaceFromInSelect(statement *Select, tableName string) {
+	if statement.From == nil {
+		tableName := &TableName{[]byte(tableName), nil}
+		aliasedTableExpr := AliasedTableExpr{tableName, nil, nil}
+		tableExprs := TableExprs{&aliasedTableExpr}
+		statement.From = &From{Type: AST_FROM, Expr: tableExprs}
+	} else {
+		for _, expr := range statement.From.Expr {
+			switch expr := expr.(type) {
+			case *AliasedTableExpr:
+				switch subQuery := expr.Expr.(type) {
+				case *Subquery:
+					switch selectSubQuery := subQuery.Select.(type) {
+					case *Select:
+						replaceFromInSelect(selectSubQuery, tableName)
+					default:
+						return
+					}
+				default:
+					return
+				}
+			default:
+				return
+			}
+		}
 	}
 }
 
