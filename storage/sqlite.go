@@ -143,7 +143,7 @@ func (this *sqlite3Storage) createLoadStmt(tableName string, colCount int, db *s
 	buffer.WriteString("INSERT INTO [" + (tableName) + "] VALUES (")
 	// Don't write the comma for the last column
 	for i := 1; i <= colCount; i++ {
-		buffer.WriteString("?")
+		buffer.WriteString("nullif(?,'')")
 		if i != colCount {
 			buffer.WriteString(", ")
 		}
