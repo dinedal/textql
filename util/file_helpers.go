@@ -8,6 +8,24 @@ import (
 	"strings"
 )
 
+func IsPathDir(path string) bool {
+	fp, err := os.Open(CleanPath(path))
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer fp.Close()
+
+	stat, statErr := fp.Stat()
+
+	if statErr != nil {
+		log.Fatalln(err)
+	}
+
+	return stat.IsDir()
+}
+
 func OpenFileOrStdDev(path string) *os.File {
 	var fp *os.File
 	var err error
@@ -24,6 +42,16 @@ func OpenFileOrStdDev(path string) *os.File {
 
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	stat, statErr := fp.Stat()
+
+	if statErr != nil {
+		log.Fatalln(err)
+	}
+
+	if stat.IsDir() {
+		log.Fatalf("%s: is a directory\n", path)
 	}
 
 	return fp

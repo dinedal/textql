@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -22,7 +23,6 @@ type CommandLineOptions struct {
 	OutputHeader    *bool
 	OutputDelimiter *string
 	OutputFile      *string
-	TableName       *string
 	SaveTo          *string
 	Console         *bool
 }
@@ -36,9 +36,9 @@ func NewCommandLineOptions() *CommandLineOptions {
 	cmdLineOpts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
 	cmdLineOpts.OutputDelimiter = flag.String("output-dlm", ",", "Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	cmdLineOpts.OutputFile = flag.String("output-file", "stdout", "Filename to write output to, if empty no output is written")
-	cmdLineOpts.TableName = flag.String("table-name", "", "Override the default table name (input file name or stdin)")
 	cmdLineOpts.SaveTo = flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
 	cmdLineOpts.Console = flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
+	flag.Usage = cmdLineOpts.Usage
 	flag.Parse()
 
 	return &cmdLineOpts
@@ -72,16 +72,20 @@ func (this *CommandLineOptions) GetOutputFile() string {
 	return *this.OutputFile
 }
 
-func (this *CommandLineOptions) GetTableName() string {
-	return *this.TableName
-}
-
 func (this *CommandLineOptions) GetSaveTo() string {
 	return util.CleanPath(*this.SaveTo)
 }
 
 func (this *CommandLineOptions) GetConsole() bool {
 	return *this.Console
+}
+
+func (this *CommandLineOptions) Usage() {
+	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "\n")
+	fmt.Fprintf(os.Stderr, "  %s [-console] [-save-to path] [-output-file path] [-output-dlm] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [path ...] \n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "\n")
+	flag.PrintDefaults()
 }
 
 func main() {
@@ -111,10 +115,6 @@ func main() {
 	storageOpts := &storage.SQLite3Options{}
 
 	storage := storage.NewSQLite3Storage(storageOpts)
-
-	if (cmdLineOpts.GetTableName()) != "" {
-		input.SetName(cmdLineOpts.GetTableName())
-	}
 
 	storage.LoadInput(input)
 
