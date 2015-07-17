@@ -1,6 +1,7 @@
 package util
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -20,7 +21,7 @@ func IsPathDir(path string) bool {
 	stat, statErr := fp.Stat()
 
 	if statErr != nil {
-		log.Fatalln(err)
+		log.Fatalln(statErr)
 	}
 
 	return stat.IsDir()
@@ -92,4 +93,36 @@ func RewindFile(fileHandle *os.File) {
 	if rewindErr != nil {
 		log.Fatalln("Unable to rewind file")
 	}
+}
+
+func IsThereDataOnStdin() bool {
+	stat, statErr := os.Stdin.Stat()
+
+	if statErr != nil {
+		log.Fatalln(statErr)
+	}
+
+	if (stat.Mode() & os.ModeCharDevice) == 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func AllFilesInDirectory(path string) []string {
+	cleanPath := CleanPath(path)
+	directoryEntries, err := ioutil.ReadDir(cleanPath)
+	result := make([]string, 0)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for _, entry := range directoryEntries {
+		if !entry.IsDir() {
+			result = append(result, filepath.Join(cleanPath, entry.Name()))
+		}
+	}
+
+	return result
 }

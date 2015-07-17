@@ -52,6 +52,10 @@ func (this *CommandLineOptions) GetSourceFile() string {
 	return *this.SourceFile
 }
 
+func (this *CommandLineOptions) GetSourceFiles() []string {
+	return append(flag.Args(), *this.SourceFile)
+}
+
 func (this *CommandLineOptions) GetDelimiter() string {
 	return *this.Delimiter
 }
@@ -93,7 +97,7 @@ func main() {
 	var outputer outputs.Output
 
 	if cmdLineOpts.GetConsole() {
-		if cmdLineOpts.GetSourceFile() == "stdin" {
+		if cmdLineOpts.GetSourceFile() == "stdin" && util.IsThereDataOnStdin() {
 			log.Fatalln("Can not open console with pipe input, read a file instead")
 		}
 		_, sqlite3ConsolePathErr := exec.LookPath("sqlite3")
@@ -102,21 +106,39 @@ func main() {
 		}
 	}
 
-	fp := util.OpenFileOrStdDev(cmdLineOpts.GetSourceFile())
+	inputSources := make([]string, 0)
 
-	inputOpts := &inputs.CSVInputOptions{
-		HasHeader: cmdLineOpts.GetHeader(),
-		Seperator: util.DetermineSeparator(cmdLineOpts.GetDelimiter()),
-		ReadFrom:  fp,
+	for _, sourceFile := range cmdLineOpts.GetSourceFiles() {
+		if sourceFile == "stdin" && util.IsThereDataOnStdin() {
+			inputSources = append(inputSources, sourceFile)
+		} else if sourceFile != "stdin" {
+			if util.IsPathDir(sourceFile) {
+				for _, file := range util.AllFilesInDirectory(sourceFile) {
+					inputSources = append(inputSources, file)
+				}
+			} else {
+				inputSources = append(inputSources, sourceFile)
+			}
+		}
 	}
-
-	input := inputs.NewCSVInput(inputOpts)
 
 	storageOpts := &storage.SQLite3Options{}
 
 	storage := storage.NewSQLite3Storage(storageOpts)
 
-	storage.LoadInput(input)
+	for _, file := range inputSources {
+		fp := util.OpenFileOrStdDev(file)
+
+		inputOpts := &inputs.CSVInputOptions{
+			HasHeader: cmdLineOpts.GetHeader(),
+			Seperator: util.DetermineSeparator(cmdLineOpts.GetDelimiter()),
+			ReadFrom:  fp,
+		}
+
+		input := inputs.NewCSVInput(inputOpts)
+
+		storage.LoadInput(input)
+	}
 
 	sqlStrings := strings.Split(cmdLineOpts.GetCommands(), ";")
 
