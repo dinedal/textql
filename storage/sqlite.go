@@ -112,7 +112,7 @@ func (this *sqlite3Storage) createTable(tableName string, columnNames []string, 
 			log.Fatalln("Invalid table name", col)
 		}
 
-		buffer.WriteString("[" + col + "] TEXT")
+		buffer.WriteString("[" + col + "] NUMERIC")
 
 		if i != len(columnNames)-1 {
 			buffer.WriteString(", ")
