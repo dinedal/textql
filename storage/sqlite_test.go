@@ -16,6 +16,10 @@ var (
 	simpleCSV   = `a,b,c
 1,2,3
 4,5,6`
+	whitespaceValuesCSV = `a,b,c
+  , ,
+1,2,3
+4,5,6`
 )
 
 func NewTestCSVInput() (input inputs.Input, fp *os.File) {
@@ -151,16 +155,22 @@ func TestSQLiteStorageExecuteSQLStringMissingSelect(t *testing.T) {
 	}
 }
 
-func TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery(t *testing.T) {
+func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string) (map[int]map[string]interface{}, []string) {
 	storage := NewSQLite3Storage(storageOpts)
-	input, fp := NewTestCSVInput()
+	fp := test_util.OpenFileFromString(testData)
+
+	opts := &inputs.CSVInputOptions{
+		HasHeader: true,
+		Seperator: ',',
+		ReadFrom:  fp,
+	}
+
+	input := inputs.NewCSVInput(opts)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 	defer storage.Close()
 
 	storage.LoadInput(input)
-
-	sqlString := "count(*)"
 
 	rows := storage.ExecuteSQLString(sqlString)
 
@@ -170,49 +180,120 @@ func TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery(t *testing.T) {
 		t.Fatalf(colsErr.Error())
 	}
 
+	rowNumber := 0
+	result := make(map[int]map[string]interface{})
+	rawResult := make([]interface{}, len(cols))
+	dest := make([]interface{}, len(cols))
+
+	for i, _ := range cols {
+		dest[i] = &rawResult[i]
+	}
+
+	for rows.Next() {
+		scanErr := rows.Scan(dest...)
+
+		if scanErr != nil {
+			t.Fatalf(scanErr.Error())
+		}
+
+		result[rowNumber] = make(map[string]interface{})
+		for i, raw := range rawResult {
+			result[rowNumber][cols[i]] = raw
+		}
+		rowNumber++
+	}
+
+	return result, cols
+}
+
+func TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery(t *testing.T) {
+	data, cols := LoadTestDataAndExecuteQuery(t, simpleCSV, "count(*)")
+
 	if len(cols) != 1 {
 		t.Fatalf("Expected 1 column, got (%v)", len(cols))
 	}
 
-	var dest int
-
-	for rows.Next() {
-		rows.Scan(&dest)
-		if dest != 2 {
-			t.Fatalf("Expected 2 rows counted, got (%v)", dest)
-		}
+	intVal := data[0]["count(*)"].(int64)
+	if intVal != 2 {
+		t.Fatalf("Expected 2 rows counted, got (%v)", intVal)
 	}
 }
 
 func TestSQLiteStorageExecuteSQLStringMissingFromSubQuery(t *testing.T) {
-	storage := NewSQLite3Storage(storageOpts)
-	input, fp := NewTestCSVInput()
-	defer fp.Close()
-	defer os.Remove(fp.Name())
-	defer storage.Close()
-
-	storage.LoadInput(input)
-
-	sqlString := "count(*) from (select *)"
-
-	rows := storage.ExecuteSQLString(sqlString)
-
-	cols, colsErr := rows.Columns()
-
-	if colsErr != nil {
-		t.Fatalf(colsErr.Error())
-	}
+	data, cols := LoadTestDataAndExecuteQuery(t, simpleCSV, "count(*) from (select *)")
 
 	if len(cols) != 1 {
 		t.Fatalf("Expected 1 column, got (%v)", len(cols))
 	}
 
-	var dest int
+	intVal := data[0]["count(*)"].(int64)
+	if intVal != 2 {
+		t.Fatalf("Expected 2 rows counted, got (%v)", intVal)
+	}
+}
 
-	for rows.Next() {
-		rows.Scan(&dest)
-		if dest != 2 {
-			t.Fatalf("Expected 2 rows counted, got (%v)", dest)
-		}
+func TestWhitespaceLoadsAsNull(t *testing.T) {
+	data, cols := LoadTestDataAndExecuteQuery(t, whitespaceValuesCSV, "max(a)")
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	intVal := data[0]["max(a)"].(int64)
+	if intVal != 4 {
+		t.Fatalf("Expected 4 max value, got (%v)", intVal)
+	}
+
+	data, cols = LoadTestDataAndExecuteQuery(t, whitespaceValuesCSV, "typeof(a)")
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	uintVal := data[0]["typeof(a)"].([]uint8)
+	if string(uintVal[:]) != "null" {
+		t.Fatalf("Expected null value, got (%v)", uintVal)
+	}
+
+	uintVal = data[1]["typeof(a)"].([]uint8)
+	if string(uintVal[:]) != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	}
+
+	uintVal = data[2]["typeof(a)"].([]uint8)
+	if string(uintVal[:]) != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	}
+
+	data, cols = LoadTestDataAndExecuteQuery(t, whitespaceValuesCSV, "max(b)")
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	intVal = data[0]["max(b)"].(int64)
+	if intVal != 5 {
+		t.Fatalf("Expected 5 max value, got (%v)", intVal)
+	}
+
+	data, cols = LoadTestDataAndExecuteQuery(t, whitespaceValuesCSV, "typeof(b)")
+
+	if len(cols) != 1 {
+		t.Fatalf("Expected 1 column, got (%v)", len(cols))
+	}
+
+	uintVal = data[0]["typeof(b)"].([]uint8)
+	if string(uintVal[:]) != "null" {
+		t.Fatalf("Expected null value, got (%v)", uintVal)
+	}
+
+	uintVal = data[1]["typeof(b)"].([]uint8)
+	if string(uintVal[:]) != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	}
+
+	uintVal = data[2]["typeof(b)"].([]uint8)
+	if string(uintVal[:]) != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", uintVal)
 	}
 }

@@ -26,7 +26,9 @@ type sqlite3Storage struct {
 type SQLite3Options struct{}
 
 var (
-	sqlite3conn []*sqlite3.SQLiteConn = []*sqlite3.SQLiteConn{}
+	sqlite3conn         []*sqlite3.SQLiteConn = []*sqlite3.SQLiteConn{}
+	allWhiteSpace       *regexp.Regexp        = regexp.MustCompile("^\\s+$")
+	tableNameCheckRegEx *regexp.Regexp        = regexp.MustCompile(`.*\[.*\].*`)
 )
 
 func init() {
@@ -97,8 +99,6 @@ func (this *sqlite3Storage) LoadInput(input inputs.Input) {
 func (this *sqlite3Storage) createTable(tableName string, columnNames []string, verbose bool) error {
 	var buffer bytes.Buffer
 
-	tableNameCheckRegEx := regexp.MustCompile(`.*\[.*\].*`)
-
 	if tableNameCheckRegEx.FindString(tableName) != "" {
 		log.Fatalln("Invalid table name", tableName)
 	}
@@ -167,7 +167,11 @@ func (this *sqlite3Storage) loadRow(tableName string, colCount int, values []str
 	vals := make([]interface{}, 0)
 
 	for i := 0; i < colCount; i++ {
-		vals = append(vals, values[i])
+		if allWhiteSpace.MatchString(values[i]) {
+			vals = append(vals, "")
+		} else {
+			vals = append(vals, values[i])
+		}
 	}
 
 	_, err := stmt.Exec(vals...)
