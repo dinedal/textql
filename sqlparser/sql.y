@@ -1049,7 +1049,7 @@ using_opt:
 sql_id:
   ID
   {
-    $$ = bytes.ToLower($1)
+    $$ = $1
   }
 
 force_eof:

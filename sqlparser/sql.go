@@ -1801,7 +1801,7 @@ yydefault:
 	case 205:
 		//line sql.y:1051
 		{
-			yyVAL.bytes = bytes.ToLower(yyS[yypt-0].bytes)
+			yyVAL.bytes = yyS[yypt-0].bytes
 		}
 	case 206:
 		//line sql.y:1056
