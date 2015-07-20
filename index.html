@@ -28,10 +28,60 @@
         </ul>
       </header>
       <section>
-        <h3>
-<a id="textql" class="anchor" href="#textql" aria-hidden="true"><span class="octicon octicon-link"></span></a>TextQL</h3>
+        <h1>
+<a id="textql" class="anchor" href="#textql" aria-hidden="true"><span class="octicon octicon-link"></span></a>TextQL</h1>
 
-<p>Author: Paul Bergeron (<a href="https://github.com/dinedal" class="user-mention">@dinedal</a>)</p>
+<p>Allows you to easily execute SQL against structured text like CSV or TSV.</p>
+
+<p>Example session:
+<img src="https://raw.github.com/dinedal/textql/master/textql_usage.gif" alt="textql_usage_session"></p>
+
+<h2>
+<a id="key-differences-between-textql-and-sqlite-importing" class="anchor" href="#key-differences-between-textql-and-sqlite-importing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Key differences between textql and sqlite importing</h2>
+
+<ul>
+<li>sqlite import will not accept stdin, breaking unix pipes. textql will happily do so.</li>
+<li>textql supports quote escaped delimiters, sqlite does not.</li>
+</ul>
+
+<h2>
+<a id="is-it-any-good" class="anchor" href="#is-it-any-good" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is it any good?</h2>
+
+<p><a href="https://news.ycombinator.com/item?id=3067434">Yes</a></p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Go</li>
+</ul>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<p>You may need to <code>export CC=clang</code> on OS X.</p>
+
+<div class="highlight highlight-bash"><pre>go get -u github.com/dinedal/textql</pre></div>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-bash"><pre>  -console=<span class="pl-c1">false</span>: After all commands are run, open sqlite3 console with this data
+  -dlm=<span class="pl-s"><span class="pl-pds">"</span>,<span class="pl-pds">"</span></span>: Delimiter between fields -dlm=tab <span class="pl-k">for</span> <span class="pl-smi">tab</span>, -dlm=0x## to specify a character code <span class="pl-k">in</span> hex
+  -header=<span class="pl-c1">false</span>: Treat file as having the first row as a header row
+  -outputHeader=<span class="pl-c1">false</span>: Display column names <span class="pl-k">in</span> output
+  -save-to=<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>: If <span class="pl-c1">set</span>, sqlite3 db is left on disk at this path
+  -source=<span class="pl-s"><span class="pl-pds">"</span>stdin<span class="pl-pds">"</span></span>: Source file to load, or defaults to stdin
+  -sql=<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>: SQL Command(s) to run on the data
+  -table-name=<span class="pl-s"><span class="pl-pds">"</span>tbl<span class="pl-pds">"</span></span>: Override the default table name (tbl)
+  -verbose=<span class="pl-c1">false</span>: Enable verbose logging</pre></div>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>New MIT License - Copyright (c) 2014, Paul Bergeron (<a href="https://github.com/dinedal" class="user-mention">@dinedal</a>)</p>
+
+<p>See LICENSE for details</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/dinedal">dinedal</a></p>
