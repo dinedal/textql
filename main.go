@@ -193,7 +193,7 @@ func createTable(tableName *string, columnNames *[]string, db *sql.DB, verbose *
 			fmt.Fprintf(os.Stderr, "Column %x renamed to %s\n", col, col_name)
 		}
 
-		buffer.WriteString(col_name + " TEXT")
+		buffer.WriteString(col_name + " NUMERIC")
 
 		if i != len(*columnNames)-1 {
 			buffer.WriteString(", ")
