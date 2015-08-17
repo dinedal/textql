@@ -31,7 +31,7 @@ func NewCommandLineOptions() *CommandLineOptions {
 	cmdLineOpts := CommandLineOptions{}
 	cmdLineOpts.Commands = flag.String("sql", "", "SQL Command(s) to run on the data")
 	cmdLineOpts.SourceFile = flag.String("source", "stdin", "Source file or directory to load, or defaults to stdin")
-	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=opts.0x## to specify a character code in hex")
+	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	cmdLineOpts.Header = flag.Bool("header", false, "Treat file as having the first row as a header row")
 	cmdLineOpts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
 	cmdLineOpts.OutputDelimiter = flag.String("output-dlm", ",", "Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex")
