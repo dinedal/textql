@@ -25,7 +25,10 @@ type CommandLineOptions struct {
 	OutputFile      *string
 	SaveTo          *string
 	Console         *bool
+	Version         *bool
 }
+
+var VERSION string
 
 func NewCommandLineOptions() *CommandLineOptions {
 	cmdLineOpts := CommandLineOptions{}
@@ -38,6 +41,7 @@ func NewCommandLineOptions() *CommandLineOptions {
 	cmdLineOpts.OutputFile = flag.String("output-file", "stdout", "Filename to write output to, if empty no output is written")
 	cmdLineOpts.SaveTo = flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
 	cmdLineOpts.Console = flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
+	cmdLineOpts.Version = flag.Bool("version", false, "Print version and exit")
 	flag.Usage = cmdLineOpts.Usage
 	flag.Parse()
 
@@ -84,6 +88,10 @@ func (this *CommandLineOptions) GetConsole() bool {
 	return *this.Console
 }
 
+func (this *CommandLineOptions) GetVersion() bool {
+	return *this.Version
+}
+
 func (this *CommandLineOptions) Usage() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "\n")
@@ -95,6 +103,11 @@ func (this *CommandLineOptions) Usage() {
 func main() {
 	cmdLineOpts := NewCommandLineOptions()
 	var outputer outputs.Output
+
+	if cmdLineOpts.GetVersion() {
+		fmt.Println(VERSION)
+		os.Exit(0)
+	}
 
 	if cmdLineOpts.GetConsole() {
 		if cmdLineOpts.GetSourceFile() == "stdin" && util.IsThereDataOnStdin() {

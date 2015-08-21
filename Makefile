@@ -1,7 +1,10 @@
 all: textql
 
 textql: deps test
-	go build ./cmd/textql.go
+	go build -ldflags "-X main.VERSION=`cat VERSION`" ./cmd/textql.go
+
+fast:
+	go build -ldflags "-X main.VERSION=`cat VERSION`" ./cmd/textql.go
 
 deps: glide
 	./glide install
@@ -28,3 +31,7 @@ test:
 clean:
 	rm ./glide
 	rm ./textql
+
+release: textql
+	git tag -a `cat VERSION`
+	git push origin `cat VERSION`
