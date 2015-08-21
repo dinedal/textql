@@ -3,12 +3,10 @@ package storage
 import (
 	"bytes"
 	"database/sql"
-	"fmt"
 	"path"
 	"strings"
 
 	"log"
-	"os"
 	"regexp"
 
 	"github.com/dinedal/textql/inputs"
@@ -177,7 +175,7 @@ func (this *sqlite3Storage) loadRow(tableName string, colCount int, values []str
 	_, err := stmt.Exec(vals...)
 
 	if err != nil && verbose {
-		fmt.Fprintln(os.Stderr, "Bad row: ", err)
+		log.Printf("Bad row: %v\n", err)
 	}
 
 	return err

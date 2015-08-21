@@ -26,6 +26,7 @@ type CommandLineOptions struct {
 	SaveTo          *string
 	Console         *bool
 	Version         *bool
+	Quiet           *bool
 }
 
 var VERSION string
@@ -42,6 +43,7 @@ func NewCommandLineOptions() *CommandLineOptions {
 	cmdLineOpts.SaveTo = flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
 	cmdLineOpts.Console = flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
 	cmdLineOpts.Version = flag.Bool("version", false, "Print version and exit")
+	cmdLineOpts.Quiet = flag.Bool("quiet", false, "Surpress logging")
 	flag.Usage = cmdLineOpts.Usage
 	flag.Parse()
 
@@ -92,12 +94,18 @@ func (this *CommandLineOptions) GetVersion() bool {
 	return *this.Version
 }
 
+func (this *CommandLineOptions) GetQuiet() bool {
+	return *this.Quiet
+}
+
 func (this *CommandLineOptions) Usage() {
-	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "\n")
-	fmt.Fprintf(os.Stderr, "  %s [-console] [-save-to path] [-output-file path] [-output-dlm] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [path ...] \n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "\n")
-	flag.PrintDefaults()
+	if !this.GetQuiet() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "\n")
+		fmt.Fprintf(os.Stderr, "  %s [-console] [-save-to path path] [-output-file path] [-output-dlm delimter] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [-quiet] [path ...] \n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "\n")
+		flag.PrintDefaults()
+	}
 }
 
 func main() {
@@ -107,6 +115,14 @@ func main() {
 	if cmdLineOpts.GetVersion() {
 		fmt.Println(VERSION)
 		os.Exit(0)
+	}
+
+	if cmdLineOpts.GetSourceFile() == "stdin" && !util.IsThereDataOnStdin() {
+		cmdLineOpts.Usage()
+	}
+
+	if cmdLineOpts.GetQuiet() {
+		log.SetOutput(ioutil.Discard)
 	}
 
 	if cmdLineOpts.GetConsole() {
