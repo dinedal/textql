@@ -1,0 +1,12 @@
+package: github.com/dinedal/textql
+import:
+  - package: github.com/youtube/vitess
+    ref:     2dfda59b5ab964932dd267979b483ec790424df5
+    repo:    https://github.com/youtube/vitess
+    vcs:     git
+    subpackages:
+      - /go/sqltypes
+  - package: github.com/mattn/go-sqlite3
+    ref:     8897bf145272af4dd0305518cfb725a5b6d0541c
+    repo:    https://github.com/mattn/go-sqlite3
+    vcs:     git
