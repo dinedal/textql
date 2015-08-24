@@ -1,6 +1,9 @@
 # TextQL
 
-[![Build Status](https://travis-ci.org/dinedal/textql.svg)](https://travis-ci.org/dinedal/textql) Allows you to easily execute SQL against structured text like CSV or TSV.
+[![Build Status](https://travis-ci.org/dinedal/textql.svg)](https://travis-ci.org/dinedal/textql) [![Go Report Card](http://goreportcard.com/badge/dinedal/textql)](http://goreportcard.com/report/dinedal/textql)
+
+
+Allows you to easily execute SQL against structured text like CSV or TSV.
 
 Example session:
 ![textql_usage_session](https://raw.github.com/dinedal/textql/master/textql_usage.gif)
@@ -32,6 +35,7 @@ Changes:
 Removals:
 
 - Dropped the ability to override table names. This makes less sense after the automatic tablename generation based on filename, joins, and shorter SQL syntax changes.
+- Removed '-source', any files / paths at the end of the command are used, as well as piped in data.
 
 Bug fixes:
 

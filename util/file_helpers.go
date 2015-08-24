@@ -27,7 +27,7 @@ func IsPathDir(path string) bool {
 	return stat.IsDir()
 }
 
-func OpenFileOrStdDev(path string) *os.File {
+func OpenFileOrStdDev(path string, write bool) *os.File {
 	var fp *os.File
 	var err error
 
@@ -38,7 +38,11 @@ func OpenFileOrStdDev(path string) *os.File {
 		fp = os.Stdout
 		err = nil
 	} else {
-		fp, err = os.Open(CleanPath(path))
+		if write {
+			fp, err = os.Create(CleanPath(path))
+		} else {
+			fp, err = os.Open(CleanPath(path))
+		}
 	}
 
 	if err != nil {

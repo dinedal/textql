@@ -35,3 +35,6 @@ clean:
 release: textql
 	git tag -a `cat VERSION`
 	git push origin `cat VERSION`
+
+install: deps test
+	go install -ldflags "-X main.VERSION=`cat VERSION`" ./cmd/textql.go

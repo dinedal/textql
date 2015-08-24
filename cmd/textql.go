@@ -34,7 +34,6 @@ var VERSION string
 func NewCommandLineOptions() *CommandLineOptions {
 	cmdLineOpts := CommandLineOptions{}
 	cmdLineOpts.Commands = flag.String("sql", "", "SQL Command(s) to run on the data")
-	cmdLineOpts.SourceFile = flag.String("source", "stdin", "Source file or directory to load, or defaults to stdin")
 	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	cmdLineOpts.Header = flag.Bool("header", false, "Treat file as having the first row as a header row")
 	cmdLineOpts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
@@ -54,12 +53,8 @@ func (this *CommandLineOptions) GetCommands() string {
 	return *this.Commands
 }
 
-func (this *CommandLineOptions) GetSourceFile() string {
-	return *this.SourceFile
-}
-
 func (this *CommandLineOptions) GetSourceFiles() []string {
-	return append(flag.Args(), *this.SourceFile)
+	return flag.Args()
 }
 
 func (this *CommandLineOptions) GetDelimiter() string {
@@ -117,7 +112,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if cmdLineOpts.GetSourceFile() == "stdin" && !util.IsThereDataOnStdin() {
+	if len(cmdLineOpts.GetSourceFiles()) == 0 && !util.IsThereDataOnStdin() {
 		cmdLineOpts.Usage()
 	}
 
@@ -126,7 +121,7 @@ func main() {
 	}
 
 	if cmdLineOpts.GetConsole() {
-		if cmdLineOpts.GetSourceFile() == "stdin" && util.IsThereDataOnStdin() {
+		if util.IsThereDataOnStdin() {
 			log.Fatalln("Can not open console with pipe input, read a file instead")
 		}
 		_, sqlite3ConsolePathErr := exec.LookPath("sqlite3")
@@ -138,9 +133,9 @@ func main() {
 	inputSources := make([]string, 0)
 
 	for _, sourceFile := range cmdLineOpts.GetSourceFiles() {
-		if sourceFile == "stdin" && util.IsThereDataOnStdin() {
+		if util.IsThereDataOnStdin() {
 			inputSources = append(inputSources, sourceFile)
-		} else if sourceFile != "stdin" {
+		} else {
 			if util.IsPathDir(sourceFile) {
 				for _, file := range util.AllFilesInDirectory(sourceFile) {
 					inputSources = append(inputSources, file)
@@ -156,7 +151,7 @@ func main() {
 	storage := storage.NewSQLite3Storage(storageOpts)
 
 	for _, file := range inputSources {
-		fp := util.OpenFileOrStdDev(file)
+		fp := util.OpenFileOrStdDev(file, false)
 
 		inputOpts := &inputs.CSVInputOptions{
 			HasHeader: cmdLineOpts.GetHeader(),
@@ -175,7 +170,7 @@ func main() {
 		displayOpts := &outputs.CSVOutputOptions{
 			WriteHeader: cmdLineOpts.GetOutputHeader(),
 			Seperator:   util.DetermineSeparator(cmdLineOpts.GetOutputDelimiter()),
-			WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile()),
+			WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile(), true),
 		}
 
 		outputer = outputs.NewCSVOutput(displayOpts)
