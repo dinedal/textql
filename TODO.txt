@@ -1,0 +1,373 @@
+Install is really complex with vitess dep. Find a way to fix it?
+
+~ go get -u github.com/dinedal/textql/...
+# github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_int.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_custom.go:7
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_map.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_int.go:7
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_mixed.go:11: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_map.go:7
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_private.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_mixed.go:11
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_ptr.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_private.go:7
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_simple.go:9: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_ptr.go:7
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_slice.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_simple.go:9
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_tag.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_slice.go:7
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_int.go:29: (*MyType).UnmarshalBson redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_custom.go:42
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_map.go:18: (*MyType).MarshalBson redeclared in this block
+    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_custom.go:19
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_map.go:18: too many errors
+# pkg-config --cflags gomysql
+Package gomysql was not found in the pkg-config search path.
+Perhaps you should add the directory containing `gomysql.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'gomysql' found
+pkg-config: exit status 1
+# launchpad.net/gozk/zookeeper
+go/src/launchpad.net/gozk/zookeeper/zk.go:15:10: fatal error: 'zookeeper.h' file not found
+#include <zookeeper.h>
+         ^
+1 error generated.
+# github.com/youtube/vitess/go/stats/influxdbbackend
+go/src/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:40: undefined: client.ClientConfig
+go/src/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:60: undefined: client.Series
+go/src/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:62: undefined: client.Series
+go/src/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:73: backend.client.WriteSeries undefined (type *client.Client has no field or method WriteSeries)
+# github.com/youtube/vitess/go/terminal
+go/src/github.com/youtube/vitess/go/terminal/tty.go:16: undefined: syscall.TCGETS
+# pkg-config --cflags gomysql
+Package gomysql was not found in the pkg-config search path.
+Perhaps you should add the directory containing `gomysql.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'gomysql' found
+pkg-config: exit status 1
+# github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:40: undefined: client.ClientConfig
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:60: undefined: client.Series
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:62: undefined: client.Series
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:73: backend.client.WriteSeries undefined (type *client.Client has no field or method WriteSeries)
+# github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/terminal
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/terminal/tty.go:16: undefined: syscall.TCGETS
+# github.com/dinedal/textql/vendor/github.com/youtube/vitess/third_party/go/launchpad.net/gozk/zookeeper
+go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/third_party/go/launchpad.net/gozk/zookeeper/zk.go:15:10: fatal error: 'zookeeper.h' file not found
+#include <zookeeper.h>
+         ^
+1 error generated.
+
+
+
+Fix all the below:
+
+
+Gofmt formats Go programs. We run gofmt -s on your code, where -s is for the "simplify" command
+
+/github.com/dinedal/textql/outputs/csv.go
+/github.com/dinedal/textql/storage/sqlite_test.go
+
+Gocyclo calculates cyclomatic complexities of functions in Go source code. The cyclomatic complexity of a function is calculated according to the following rules: 1 is the base complexity of a function +1 for each 'if', 'for', 'case', '&&' or '||'
+
+/github.com/dinedal/textql/cmd/textql.go
+Line 106: 24 main main repos/src/github.com/dinedal/textql/cmd/textql.go:106:1
+/github.com/dinedal/textql/sqlparser/parsed_query.go
+Line 53: 18 sqlparser EncodeValue repos/src/github.com/dinedal/textql/sqlparser/parsed_query.go:53:1
+/github.com/dinedal/textql/sqlparser/sql.go
+/github.com/dinedal/textql/sqlparser/token.go
+Line 141: 31 sqlparser (*Tokenizer).Scan repos/src/github.com/dinedal/textql/sqlparser/token.go:141:1
+Line 297: 16 sqlparser (*Tokenizer).scanNumber repos/src/github.com/dinedal/textql/sqlparser/token.go:297:1
+/github.com/dinedal/textql/sqlparser/tracked_buffer.go
+Line 40: 18 sqlparser (*TrackedBuffer).Myprintf repos/src/github.com/dinedal/textql/sqlparser/tracked_buffer.go:40:1
+gofmt
+89%
+golint
+10%
+Golint is a linter for Go source code.
+
+/github.com/dinedal/textql/cmd/textql.go
+Line 18: exported type CommandLineOptions should have comment or be unexported
+Line 32: exported var VERSION should have comment or be unexported
+Line 34: exported function NewCommandLineOptions should have comment or be unexported
+Line 52: exported method CommandLineOptions.GetCommands should have comment or be unexported
+Line 52: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 56: exported method CommandLineOptions.GetSourceFiles should have comment or be unexported
+Line 56: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 60: exported method CommandLineOptions.GetDelimiter should have comment or be unexported
+Line 60: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 64: exported method CommandLineOptions.GetHeader should have comment or be unexported
+Line 64: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 68: exported method CommandLineOptions.GetOutputHeader should have comment or be unexported
+Line 68: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 72: exported method CommandLineOptions.GetOutputDelimiter should have comment or be unexported
+Line 72: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 76: exported method CommandLineOptions.GetOutputFile should have comment or be unexported
+Line 76: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 80: exported method CommandLineOptions.GetSaveTo should have comment or be unexported
+Line 80: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 84: exported method CommandLineOptions.GetConsole should have comment or be unexported
+Line 84: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 88: exported method CommandLineOptions.GetVersion should have comment or be unexported
+Line 88: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 92: exported method CommandLineOptions.GetQuiet should have comment or be unexported
+Line 92: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 96: exported method CommandLineOptions.Usage should have comment or be unexported
+Line 96: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 133: can probably use "var inputSources []string" instead
+/github.com/dinedal/textql/inputs/csv.go
+Line 21: exported type CSVInputOptions should have comment or be unexported
+Line 27: exported function NewCSVInput should have comment or be unexported
+Line 27: exported func NewCSVInput returns unexported type *inputs.csvInput, which can be annoying to use
+Line 49: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 53: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 57: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 84: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 106: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+/github.com/dinedal/textql/inputs/input.go
+Line 3: exported type Input should have comment or be unexported
+/github.com/dinedal/textql/outputs/csv.go
+Line 18: exported type CSVOutputOptions should have comment or be unexported
+Line 24: exported function NewCSVOutput should have comment or be unexported
+Line 24: exported func NewCSVOutput returns unexported type *outputs.csvOutput, which can be annoying to use
+Line 35: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 53: should omit 2nd value from range; this loop is equivalent to `for i := range ...`
+/github.com/dinedal/textql/outputs/output.go
+Line 5: exported type Output should have comment or be unexported
+/github.com/dinedal/textql/sqlparser/analyzer.go
+Line 50: comment on exported function HasINClause should be of the form "HasINClause ..."
+/github.com/dinedal/textql/sqlparser/ast.go
+Line 56: exported method Union.IStatement should have comment or be unexported
+Line 57: exported method Select.IStatement should have comment or be unexported
+Line 58: exported method Insert.IStatement should have comment or be unexported
+Line 59: exported method Update.IStatement should have comment or be unexported
+Line 60: exported method Delete.IStatement should have comment or be unexported
+Line 61: exported method Set.IStatement should have comment or be unexported
+Line 62: exported method DDL.IStatement should have comment or be unexported
+Line 63: exported method Other.IStatement should have comment or be unexported
+Line 73: exported method Select.ISelectStatement should have comment or be unexported
+Line 74: exported method Union.ISelectStatement should have comment or be unexported
+Line 92: don't use ALL_CAPS in Go names; use CamelCase
+Line 97: don't use ALL_CAPS in Go names; use CamelCase
+Line 98: don't use ALL_CAPS in Go names; use CamelCase
+Line 101: exported method Select.Format should have comment or be unexported
+Line 117: don't use ALL_CAPS in Go names; use CamelCase
+Line 118: don't use ALL_CAPS in Go names; use CamelCase
+Line 119: don't use ALL_CAPS in Go names; use CamelCase
+Line 120: don't use ALL_CAPS in Go names; use CamelCase
+Line 121: don't use ALL_CAPS in Go names; use CamelCase
+Line 124: exported method Union.Format should have comment or be unexported
+Line 137: exported method Insert.Format should have comment or be unexported
+Line 149: exported method Select.IInsertRows should have comment or be unexported
+Line 150: exported method Union.IInsertRows should have comment or be unexported
+Line 151: exported method Values.IInsertRows should have comment or be unexported
+Line 163: exported method Update.Format should have comment or be unexported
+Line 178: exported method Delete.Format should have comment or be unexported
+Line 190: exported method Set.Format should have comment or be unexported
+Line 204: don't use ALL_CAPS in Go names; use CamelCase
+Line 204: exported const AST_CREATE should have comment (or a comment on this block) or be unexported
+Line 205: don't use ALL_CAPS in Go names; use CamelCase
+Line 206: don't use ALL_CAPS in Go names; use CamelCase
+Line 207: don't use ALL_CAPS in Go names; use CamelCase
+Line 210: exported method DDL.Format should have comment or be unexported
+Line 226: exported method Other.Format should have comment or be unexported
+Line 233: exported method Comments.Format should have comment or be unexported
+Line 242: exported method SelectExprs.Format should have comment or be unexported
+Line 256: exported method StarExpr.ISelectExpr should have comment or be unexported
+Line 257: exported method NonStarExpr.ISelectExpr should have comment or be unexported
+Line 264: exported method StarExpr.Format should have comment or be unexported
+Line 277: exported method NonStarExpr.Format should have comment or be unexported
+Line 290: exported method Columns.Format should have comment or be unexported
+Line 300: exported method TableExprs.Format should have comment or be unexported
+Line 314: exported method AliasedTableExpr.ITableExpr should have comment or be unexported
+Line 315: exported method ParenTableExpr.ITableExpr should have comment or be unexported
+Line 316: exported method JoinTableExpr.ITableExpr should have comment or be unexported
+Line 326: exported method AliasedTableExpr.Format should have comment or be unexported
+Line 343: exported method TableName.ISimpleTableExpr should have comment or be unexported
+Line 344: exported method Subquery.ISimpleTableExpr should have comment or be unexported
+Line 351: exported method TableName.Format should have comment or be unexported
+Line 364: exported method ParenTableExpr.Format should have comment or be unexported
+Line 378: don't use ALL_CAPS in Go names; use CamelCase
+Line 379: don't use ALL_CAPS in Go names; use CamelCase
+Line 380: don't use ALL_CAPS in Go names; use CamelCase
+Line 381: don't use ALL_CAPS in Go names; use CamelCase
+Line 382: don't use ALL_CAPS in Go names; use CamelCase
+Line 383: don't use ALL_CAPS in Go names; use CamelCase
+Line 386: exported method JoinTableExpr.Format should have comment or be unexported
+Line 400: don't use ALL_CAPS in Go names; use CamelCase
+Line 400: exported const AST_USE should have comment (or a comment on this block) or be unexported
+Line 401: don't use ALL_CAPS in Go names; use CamelCase
+Line 402: don't use ALL_CAPS in Go names; use CamelCase
+Line 405: exported method IndexHints.Format should have comment or be unexported
+Line 423: don't use ALL_CAPS in Go names; use CamelCase
+Line 424: don't use ALL_CAPS in Go names; use CamelCase
+Line 436: exported method Where.Format should have comment or be unexported
+Line 451: don't use ALL_CAPS in Go names; use CamelCase
+Line 463: exported method From.Format should have comment or be unexported
+Line 476: exported method AndExpr.IExpr should have comment or be unexported
+Line 477: exported method OrExpr.IExpr should have comment or be unexported
+Line 478: exported method NotExpr.IExpr should have comment or be unexported
+Line 479: exported method ParenBoolExpr.IExpr should have comment or be unexported
+Line 480: exported method ComparisonExpr.IExpr should have comment or be unexported
+Line 481: exported method RangeCond.IExpr should have comment or be unexported
+Line 482: exported method NullCheck.IExpr should have comment or be unexported
+Line 483: exported method ExistsExpr.IExpr should have comment or be unexported
+Line 484: exported method KeyrangeExpr.IExpr should have comment or be unexported
+Line 485: exported method StrVal.IExpr should have comment or be unexported
+Line 486: exported method NumVal.IExpr should have comment or be unexported
+Line 487: exported method ValArg.IExpr should have comment or be unexported
+Line 488: exported method NullVal.IExpr should have comment or be unexported
+Line 489: exported method ColName.IExpr should have comment or be unexported
+Line 490: exported method ValTuple.IExpr should have comment or be unexported
+Line 491: exported method Subquery.IExpr should have comment or be unexported
+Line 492: exported method ListArg.IExpr should have comment or be unexported
+Line 493: exported method BinaryExpr.IExpr should have comment or be unexported
+Line 494: exported method UnaryExpr.IExpr should have comment or be unexported
+Line 495: exported method FuncExpr.IExpr should have comment or be unexported
+Line 496: exported method CaseExpr.IExpr should have comment or be unexported
+Line 504: exported method AndExpr.IBoolExpr should have comment or be unexported
+Line 505: exported method OrExpr.IBoolExpr should have comment or be unexported
+Line 506: exported method NotExpr.IBoolExpr should have comment or be unexported
+Line 507: exported method ParenBoolExpr.IBoolExpr should have comment or be unexported
+Line 508: exported method ComparisonExpr.IBoolExpr should have comment or be unexported
+Line 509: exported method RangeCond.IBoolExpr should have comment or be unexported
+Line 510: exported method NullCheck.IBoolExpr should have comment or be unexported
+Line 511: exported method ExistsExpr.IBoolExpr should have comment or be unexported
+Line 512: exported method KeyrangeExpr.IBoolExpr should have comment or be unexported
+Line 519: exported method AndExpr.Format should have comment or be unexported
+Line 528: exported method OrExpr.Format should have comment or be unexported
+Line 537: exported method NotExpr.Format should have comment or be unexported
+Line 546: exported method ParenBoolExpr.Format should have comment or be unexported
+Line 558: don't use ALL_CAPS in Go names; use CamelCase
+Line 559: don't use ALL_CAPS in Go names; use CamelCase
+Line 560: don't use ALL_CAPS in Go names; use CamelCase
+Line 561: don't use ALL_CAPS in Go names; use CamelCase
+Line 562: don't use ALL_CAPS in Go names; use CamelCase
+Line 563: don't use ALL_CAPS in Go names; use CamelCase
+Line 564: don't use ALL_CAPS in Go names; use CamelCase
+Line 565: don't use ALL_CAPS in Go names; use CamelCase
+Line 566: don't use ALL_CAPS in Go names; use CamelCase
+Line 567: don't use ALL_CAPS in Go names; use CamelCase
+Line 568: don't use ALL_CAPS in Go names; use CamelCase
+Line 571: exported method ComparisonExpr.Format should have comment or be unexported
+Line 584: don't use ALL_CAPS in Go names; use CamelCase
+Line 585: don't use ALL_CAPS in Go names; use CamelCase
+Line 588: exported method RangeCond.Format should have comment or be unexported
+Line 600: don't use ALL_CAPS in Go names; use CamelCase
+Line 601: don't use ALL_CAPS in Go names; use CamelCase
+Line 604: exported method NullCheck.Format should have comment or be unexported
+Line 613: exported method ExistsExpr.Format should have comment or be unexported
+Line 622: exported method KeyrangeExpr.Format should have comment or be unexported
+Line 632: exported method StrVal.IValExpr should have comment or be unexported
+Line 633: exported method NumVal.IValExpr should have comment or be unexported
+Line 634: exported method ValArg.IValExpr should have comment or be unexported
+Line 635: exported method NullVal.IValExpr should have comment or be unexported
+Line 636: exported method ColName.IValExpr should have comment or be unexported
+Line 637: exported method ValTuple.IValExpr should have comment or be unexported
+Line 638: exported method Subquery.IValExpr should have comment or be unexported
+Line 639: exported method ListArg.IValExpr should have comment or be unexported
+Line 640: exported method BinaryExpr.IValExpr should have comment or be unexported
+Line 641: exported method UnaryExpr.IValExpr should have comment or be unexported
+Line 642: exported method FuncExpr.IValExpr should have comment or be unexported
+Line 643: exported method CaseExpr.IValExpr should have comment or be unexported
+Line 648: exported method StrVal.Format should have comment or be unexported
+Line 656: exported method NumVal.Format should have comment or be unexported
+Line 663: exported method ValArg.Format should have comment or be unexported
+Line 670: exported method NullVal.Format should have comment or be unexported
+Line 679: exported method ColName.Format should have comment or be unexported
+Line 702: exported method ValTuple.IColTuple should have comment or be unexported
+Line 703: exported method Subquery.IColTuple should have comment or be unexported
+Line 704: exported method ListArg.IColTuple should have comment or be unexported
+Line 709: exported method ValTuple.Format should have comment or be unexported
+Line 717: exported method ValExprs.Format should have comment or be unexported
+Line 730: exported method Subquery.Format should have comment or be unexported
+Line 737: exported method ListArg.Format should have comment or be unexported
+Line 749: don't use ALL_CAPS in Go names; use CamelCase
+Line 750: don't use ALL_CAPS in Go names; use CamelCase
+Line 751: don't use ALL_CAPS in Go names; use CamelCase
+Line 752: don't use ALL_CAPS in Go names; use CamelCase
+Line 753: don't use ALL_CAPS in Go names; use CamelCase
+Line 754: don't use ALL_CAPS in Go names; use CamelCase
+Line 755: don't use ALL_CAPS in Go names; use CamelCase
+Line 756: don't use ALL_CAPS in Go names; use CamelCase
+Line 759: exported method BinaryExpr.Format should have comment or be unexported
+Line 771: don't use ALL_CAPS in Go names; use CamelCase
+Line 772: don't use ALL_CAPS in Go names; use CamelCase
+Line 773: don't use ALL_CAPS in Go names; use CamelCase
+Line 776: exported method UnaryExpr.Format should have comment or be unexported
+Line 787: exported method FuncExpr.Format should have comment or be unexported
+Line 815: exported method FuncExpr.IsAggregate should have comment or be unexported
+Line 826: exported method CaseExpr.Format should have comment or be unexported
+Line 846: exported method When.Format should have comment or be unexported
+Line 853: exported method GroupBy.Format should have comment or be unexported
+Line 864: exported method OrderBy.Format should have comment or be unexported
+Line 880: don't use ALL_CAPS in Go names; use CamelCase
+Line 881: don't use ALL_CAPS in Go names; use CamelCase
+Line 884: exported method Order.Format should have comment or be unexported
+Line 893: exported method Limit.Format should have comment or be unexported
+Line 950: exported method Values.Format should have comment or be unexported
+Line 964: exported method ValTuple.IRowTuple should have comment or be unexported
+Line 965: exported method Subquery.IRowTuple should have comment or be unexported
+Line 970: exported method UpdateExprs.Format should have comment or be unexported
+Line 984: exported method UpdateExpr.Format should have comment or be unexported
+Line 991: exported method OnDup.Format should have comment or be unexported
+/github.com/dinedal/textql/sqlparser/parsed_query.go
+Line 20: exported type ParsedQuery should have comment or be unexported
+Line 25: exported type EncoderFunc should have comment or be unexported
+Line 27: exported method ParsedQuery.GenerateQuery should have comment or be unexported
+Line 49: exported method ParsedQuery.MarshalJSON should have comment or be unexported
+Line 53: exported function EncodeValue should have comment or be unexported
+Line 102: exported type TupleEqualityList should have comment or be unexported
+Line 107: exported method TupleEqualityList.Encode should have comment or be unexported
+Line 156: exported function FetchBindVar should have comment or be unexported
+/github.com/dinedal/textql/sqlparser/sql.go
+/github.com/dinedal/textql/sqlparser/token.go
+Line 15: exported const EOFCHAR should have comment or be unexported
+Line 172: if block ends with a return statement, so drop this else and outdent its block
+Line 190: if block ends with a return statement, so drop this else and outdent its block
+Line 214: if block ends with a return statement, so drop this else and outdent its block
+Line 221: if block ends with a return statement, so drop this else and outdent its block
+Line 249: var keywordId should be keywordID
+Line 417: exported method Tokenizer.ConsumeNext should have comment or be unexported
+/github.com/dinedal/textql/sqlparser/tracked_buffer.go
+Line 25: exported function NewTrackedBuffer should have comment or be unexported
+Line 101: exported method TrackedBuffer.ParsedQuery should have comment or be unexported
+Line 105: exported method TrackedBuffer.HasBindVars should have comment or be unexported
+/github.com/dinedal/textql/storage/sqlite.go
+Line 20: struct field connId should be connID
+Line 24: exported type SQLite3Options should have comment or be unexported
+Line 27: should omit type []*sqlite3.SQLiteConn from declaration of var sqlite3conn; it will be inferred from the right-hand side
+Line 28: should omit type *regexp.Regexp from declaration of var allWhiteSpace; it will be inferred from the right-hand side
+Line 29: should omit type *regexp.Regexp from declaration of var tableNameCheckRegEx; it will be inferred from the right-hand side
+Line 42: exported function NewSQLite3Storage should have comment or be unexported
+Line 42: exported func NewSQLite3Storage returns unexported type *storage.sqlite3Storage, which can be annoying to use
+Line 52: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 69: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 97: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 135: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 160: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 165: can probably use "var vals []interface{}" instead
+Line 184: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 199: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+Line 207: var backupConnId should be backupConnID
+Line 234: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
+/github.com/dinedal/textql/storage/sqlite_test.go
+Line 188: should omit 2nd value from range; this loop is equivalent to `for i := range ...`
+/github.com/dinedal/textql/storage/storage.go
+Line 9: exported type Storage should have comment or be unexported
+/github.com/dinedal/textql/test_util/test_util.go
+Line 1: don't use an underscore in package name
+Line 8: exported function OpenFileFromString should have comment or be unexported
+/github.com/dinedal/textql/util/file_helpers.go
+Line 12: exported function IsPathDir should have comment or be unexported
+Line 30: exported function OpenFileOrStdDev should have comment or be unexported
+Line 65: exported function CleanPath should have comment or be unexported
+Line 94: exported function RewindFile should have comment or be unexported
+Line 102: exported function IsThereDataOnStdin should have comment or be unexported
+Line 111: if block ends with a return statement, so drop this else and outdent its block
+Line 116: exported function AllFilesInDirectory should have comment or be unexported
+Line 119: can probably use "var result []string" instead
+/github.com/dinedal/textql/util/seperator_helpers.go
+Line 10: exported function DetermineSeparator should have comment or be unexported
