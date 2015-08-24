@@ -57,8 +57,6 @@ Bug fixes:
 
 ## Install
 
-You may need to `export CC=clang` on OS X.
-
 ```bash
 go get -u github.com/dinedal/textql/...
 ```
@@ -66,17 +64,28 @@ go get -u github.com/dinedal/textql/...
 ## Usage
 
 ```bash
-  textql [-console] [-save-to path] [-output-file path] [-output-dlm] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [path ...]
+  textql [-console] [-save-to path path] [-output-file path] [-output-dlm delimter] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [-quiet] [path ...]
 
-  -console=false: After all commands are run, open sqlite3 console with this data
-  -dlm=",": Input delimiter between fields -dlm=tab for tab, -dlm=opts.0x## to specify a character code in hex
-  -header=false: Treat file as having the first row as a header row
-  -output-dlm=",": Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex
-  -output-file="stdout": Filename to write output to, if empty no output is written
-  -output-header=false: Display column names in output
-  -save-to="": If set, sqlite3 db is left on disk at this path
-  -source="stdin": Source file or directory to load, or defaults to stdin
-  -sql="": SQL Command(s) to run on the data
+  -console
+        After all commands are run, open sqlite3 console with this data
+  -dlm string
+        Input delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex (default ",")
+  -header
+        Treat file as having the first row as a header row
+  -output-dlm string
+        Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex (default ",")
+  -output-file string
+        Filename to write output to, if empty no output is written (default "stdout")
+  -output-header
+        Display column names in output
+  -quiet
+        Surpress logging
+  -save-to string
+        If set, sqlite3 db is left on disk at this path
+  -sql string
+        SQL Command(s) to run on the data
+  -version
+        Print version and exit
 ```
 
 
