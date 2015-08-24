@@ -4,7 +4,7 @@ textql: deps test
 	go build -ldflags "-X main.VERSION=`cat VERSION`" ./cmd/textql.go
 
 fast:
-	go build -i -ldflags "-X main.VERSION=`cat VERSION`" ./cmd/textql.go
+	go build -i -ldflags "-X main.VERSION=`cat VERSION`-dev" ./cmd/textql.go
 
 deps: glide
 	./glide install
