@@ -10,7 +10,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/youtube/vitess/go/sqltypes"
+	"github.com/dinedal/textql/sqlparser/sqltypes"
 )
 
 type bindLocation struct {
