@@ -15,7 +15,7 @@ import (
 	"github.com/dinedal/textql/util"
 )
 
-type CommandLineOptions struct {
+type commandLineOptions struct {
 	Commands        *string
 	SourceFile      *string
 	Delimiter       *string
@@ -29,10 +29,11 @@ type CommandLineOptions struct {
 	Quiet           *bool
 }
 
+// Must be set at build via -ldflags "-X main.VERSION=`cat VERSION`"
 var VERSION string
 
-func NewCommandLineOptions() *CommandLineOptions {
-	cmdLineOpts := CommandLineOptions{}
+func newCommandLineOptions() *commandLineOptions {
+	cmdLineOpts := commandLineOptions{}
 	cmdLineOpts.Commands = flag.String("sql", "", "SQL Command(s) to run on the data")
 	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	cmdLineOpts.Header = flag.Bool("header", false, "Treat file as having the first row as a header row")
@@ -49,52 +50,52 @@ func NewCommandLineOptions() *CommandLineOptions {
 	return &cmdLineOpts
 }
 
-func (this *CommandLineOptions) GetCommands() string {
-	return *this.Commands
+func (clo *commandLineOptions) GetCommands() string {
+	return *clo.Commands
 }
 
-func (this *CommandLineOptions) GetSourceFiles() []string {
+func (clo *commandLineOptions) GetSourceFiles() []string {
 	return flag.Args()
 }
 
-func (this *CommandLineOptions) GetDelimiter() string {
-	return *this.Delimiter
+func (clo *commandLineOptions) GetDelimiter() string {
+	return *clo.Delimiter
 }
 
-func (this *CommandLineOptions) GetHeader() bool {
-	return *this.Header
+func (clo *commandLineOptions) GetHeader() bool {
+	return *clo.Header
 }
 
-func (this *CommandLineOptions) GetOutputHeader() bool {
-	return *this.OutputHeader
+func (clo *commandLineOptions) GetOutputHeader() bool {
+	return *clo.OutputHeader
 }
 
-func (this *CommandLineOptions) GetOutputDelimiter() string {
-	return *this.OutputDelimiter
+func (clo *commandLineOptions) GetOutputDelimiter() string {
+	return *clo.OutputDelimiter
 }
 
-func (this *CommandLineOptions) GetOutputFile() string {
-	return *this.OutputFile
+func (clo *commandLineOptions) GetOutputFile() string {
+	return *clo.OutputFile
 }
 
-func (this *CommandLineOptions) GetSaveTo() string {
-	return util.CleanPath(*this.SaveTo)
+func (clo *commandLineOptions) GetSaveTo() string {
+	return util.CleanPath(*clo.SaveTo)
 }
 
-func (this *CommandLineOptions) GetConsole() bool {
-	return *this.Console
+func (clo *commandLineOptions) GetConsole() bool {
+	return *clo.Console
 }
 
-func (this *CommandLineOptions) GetVersion() bool {
-	return *this.Version
+func (clo *commandLineOptions) GetVersion() bool {
+	return *clo.Version
 }
 
-func (this *CommandLineOptions) GetQuiet() bool {
-	return *this.Quiet
+func (clo *commandLineOptions) GetQuiet() bool {
+	return *clo.Quiet
 }
 
-func (this *CommandLineOptions) Usage() {
-	if !this.GetQuiet() {
+func (clo *commandLineOptions) Usage() {
+	if !clo.GetQuiet() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\n")
 		fmt.Fprintf(os.Stderr, "  %s [-console] [-save-to path path] [-output-file path] [-output-dlm delimter] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [-quiet] [path ...] \n", os.Args[0])
@@ -104,7 +105,7 @@ func (this *CommandLineOptions) Usage() {
 }
 
 func main() {
-	cmdLineOpts := NewCommandLineOptions()
+	cmdLineOpts := newCommandLineOptions()
 	var outputer outputs.Output
 
 	if cmdLineOpts.GetVersion() {
@@ -130,7 +131,7 @@ func main() {
 		}
 	}
 
-	inputSources := make([]string, 0)
+	var inputSources []string
 
 	for _, sourceFile := range cmdLineOpts.GetSourceFiles() {
 		if util.IsThereDataOnStdin() {
