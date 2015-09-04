@@ -21,12 +21,15 @@ type CSVInput struct {
 
 // CSVInputOptions options are passed to the underlying encoding/csv reader.
 type CSVInputOptions struct {
+	// HasHeader when true, will treat the first row as a header row.
 	HasHeader bool
+	// Seperator is the rune that fields are delimited by.
 	Seperator rune
-	ReadFrom  io.Reader
+	// ReadFrom is where the data will be read from.
+	ReadFrom io.Reader
 }
 
-// NewCSVInput sets up a new csvInput, the first row is read when this is run.
+// NewCSVInput sets up a new CSVInput, the first row is read when this is run.
 // If there is a problem with reading the first row, the error is returned.
 // Otherwise, the returned csvInput can be reliably consumed with ReadRecord()
 // until ReadRecord() returns nil.

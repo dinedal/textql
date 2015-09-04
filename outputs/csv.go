@@ -7,7 +7,9 @@ import (
 	"log"
 )
 
-type csvOutput struct {
+// CSVOutput represents a TextQL output that transforms sql.Rows into CSV formatted
+// string data using encoding/csv
+type CSVOutput struct {
 	options         *CSVOutputOptions
 	writer          *csv.Writer
 	firstRow        []string
@@ -15,32 +17,39 @@ type csvOutput struct {
 	minOutputLength int
 }
 
+// CSVOutputOptions define options that are passed to encoding/csv for formatting
+// the output in specific ways.
 type CSVOutputOptions struct {
+	// WriteHeader determines if a header row based on the column names should be written.
 	WriteHeader bool
-	Seperator   rune
-	WriteTo     io.Writer
+	// Seperator is the rune used to delimit fields.
+	Seperator rune
+	// WriteTo is where the formatted data will be written to.
+	WriteTo io.Writer
 }
 
-func NewCSVOutput(opts *CSVOutputOptions) *csvOutput {
-	this := &csvOutput{
+// NewCSVOutput returns a new CSVOutput configured per the options provided.
+func NewCSVOutput(opts *CSVOutputOptions) *CSVOutput {
+	csvOutput := &CSVOutput{
 		options: opts,
 		writer:  csv.NewWriter(opts.WriteTo),
 	}
 
-	this.writer.Comma = this.options.Seperator
+	csvOutput.writer.Comma = csvOutput.options.Seperator
 
-	return this
+	return csvOutput
 }
 
-func (this *csvOutput) Show(rows *sql.Rows) {
+// Show writes the sql.Rows given to the destination in CSV format.
+func (csvOutput *CSVOutput) Show(rows *sql.Rows) {
 	cols, colsErr := rows.Columns()
 
 	if colsErr != nil {
 		log.Fatalln(colsErr)
 	}
 
-	if this.options.WriteHeader {
-		if err := this.writer.Write(cols); err != nil {
+	if csvOutput.options.WriteHeader {
+		if err := csvOutput.writer.Write(cols); err != nil {
 			log.Fatalln(err)
 		}
 	}
@@ -50,7 +59,7 @@ func (this *csvOutput) Show(rows *sql.Rows) {
 
 	dest := make([]interface{}, len(cols))
 
-	for i, _ := range cols {
+	for i := range cols {
 		dest[i] = &rawResult[i]
 	}
 
@@ -61,13 +70,13 @@ func (this *csvOutput) Show(rows *sql.Rows) {
 			result[i] = string(raw)
 		}
 
-		writeErr := this.writer.Write(result)
+		writeErr := csvOutput.writer.Write(result)
 
 		if writeErr != nil {
 			log.Fatalln(colsErr)
 		}
 	}
 
-	this.writer.Flush()
+	csvOutput.writer.Flush()
 	rows.Close()
 }
