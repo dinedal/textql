@@ -9,7 +9,8 @@ import (
 	"strconv"
 )
 
-type csvInput struct {
+// CSVInput represents a record producing input from a CSV formatted file or pipe.
+type CSVInput struct {
 	options         *CSVInputOptions
 	reader          *csv.Reader
 	firstRow        []string
@@ -18,59 +19,82 @@ type csvInput struct {
 	name            string
 }
 
+// CSVInputOptions options are passed to the underlying encoding/csv reader.
 type CSVInputOptions struct {
 	HasHeader bool
 	Seperator rune
 	ReadFrom  io.Reader
 }
 
-func NewCSVInput(opts *CSVInputOptions) *csvInput {
-	this := &csvInput{
+// NewCSVInput sets up a new csvInput, the first row is read when this is run.
+// If there is a problem with reading the first row, the error is returned.
+// Otherwise, the returned csvInput can be reliably consumed with ReadRecord()
+// until ReadRecord() returns nil.
+func NewCSVInput(opts *CSVInputOptions) (*CSVInput, error) {
+	csvInput := &CSVInput{
 		options: opts,
 		reader:  csv.NewReader(opts.ReadFrom),
 	}
-	this.firstRow = nil
+	csvInput.firstRow = nil
 
-	this.reader.FieldsPerRecord = -1
-	this.reader.Comma = this.options.Seperator
-	this.reader.LazyQuotes = true
+	csvInput.reader.FieldsPerRecord = -1
+	csvInput.reader.Comma = csvInput.options.Seperator
+	csvInput.reader.LazyQuotes = true
 
-	this.readHeader()
+	headerErr := csvInput.readHeader()
 
-	if asFile, ok := this.options.ReadFrom.(*os.File); ok {
-		this.name = path.Base(asFile.Name())
-	} else {
-		this.name = "pipe"
+	if headerErr != nil {
+		return nil, headerErr
 	}
 
-	return this
+	if asFile, ok := csvInput.options.ReadFrom.(*os.File); ok {
+		csvInput.name = path.Base(asFile.Name())
+	} else {
+		csvInput.name = "pipe"
+	}
+
+	return csvInput, nil
 }
 
-func (this *csvInput) Name() string {
-	return this.name
+// Name returns the name of the CSV being read.
+// By default, either the base filename or 'pipe' if it is a unix pipe
+func (csvInput *CSVInput) Name() string {
+	return csvInput.name
 }
 
-func (this *csvInput) SetName(name string) {
-	this.name = name
+// SetName overrides the name of the CSV
+func (csvInput *CSVInput) SetName(name string) {
+	csvInput.name = name
 }
 
-func (this *csvInput) ReadRecord() []string {
+// ReadRecord reads a single record from the CSV. Always returns successfully.
+// If the record is empty, an empty []string is returned.
+// Record expand to match the current row size, adding blank fields as needed.
+// Records never return less then the number of fields in the first row.
+// Returns nil on EOF
+// In the event of a parse error due to an invalid record, it is logged, and
+// an empty []string is returned with the number of fields in the first row,
+// as if the record were empty.
+//
+// In general, this is a very tolerant of problems CSV reader.
+func (csvInput *CSVInput) ReadRecord() []string {
 	var row []string
 	var fileErr error
 
-	if this.firstRow != nil {
-		row = this.firstRow
-		this.firstRow = nil
+	if csvInput.firstRow != nil {
+		row = csvInput.firstRow
+		csvInput.firstRow = nil
 		return row
 	}
 
-	row, fileErr = this.reader.Read()
+	row, fileErr = csvInput.reader.Read()
+	emptysToAppend := csvInput.minOutputLength - len(row)
 	if fileErr == io.EOF {
 		return nil
 	} else if parseErr, ok := fileErr.(*csv.ParseError); ok {
 		log.Println(parseErr)
+		emptysToAppend = csvInput.minOutputLength
 	}
-	emptysToAppend := this.minOutputLength - len(row)
 
 	if emptysToAppend > 0 {
 		for counter := 0; counter < emptysToAppend; counter++ {
@@ -81,28 +105,33 @@ func (this *csvInput) ReadRecord() []string {
 	return row
 }
 
-func (this *csvInput) readHeader() {
+func (csvInput *CSVInput) readHeader() error {
 	var readErr error
 
-	this.firstRow, readErr = this.reader.Read()
+	csvInput.firstRow, readErr = csvInput.reader.Read()
 
 	if readErr != nil {
 		log.Fatalln(readErr)
+		return readErr
 	}
 
-	this.minOutputLength = len(this.firstRow)
+	csvInput.minOutputLength = len(csvInput.firstRow)
 
-	if this.options.HasHeader {
-		this.header = this.firstRow
-		this.firstRow = nil
+	if csvInput.options.HasHeader {
+		csvInput.header = csvInput.firstRow
+		csvInput.firstRow = nil
 	} else {
-		this.header = make([]string, this.minOutputLength)
-		for i := 0; i < len(this.firstRow); i++ {
-			this.header[i] = "c" + strconv.Itoa(i)
+		csvInput.header = make([]string, csvInput.minOutputLength)
+		for i := 0; i < len(csvInput.firstRow); i++ {
+			csvInput.header[i] = "c" + strconv.Itoa(i)
 		}
 	}
+
+	return nil
 }
 
-func (this *csvInput) Header() []string {
-	return this.header
+// Header returns the header of the csvInput. Either the first row if a header
+// set in the options, or c#, where # is the column number, starting with 0.
+func (csvInput *CSVInput) Header() []string {
+	return csvInput.header
 }

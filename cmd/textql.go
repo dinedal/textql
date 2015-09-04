@@ -160,7 +160,11 @@ func main() {
 			ReadFrom:  fp,
 		}
 
-		input := inputs.NewCSVInput(inputOpts)
+		input, inputErr := inputs.NewCSVInput(inputOpts)
+
+		if inputErr != nil {
+			log.Printf("Unable to load %v\n", file)
+		}
 
 		storage.LoadInput(input)
 	}

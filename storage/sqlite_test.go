@@ -31,7 +31,8 @@ func NewTestCSVInput() (input inputs.Input, fp *os.File) {
 		ReadFrom:  fp,
 	}
 
-	return inputs.NewCSVInput(opts), fp
+	newInput, _ := inputs.NewCSVInput(opts)
+	return newInput, fp
 }
 
 func TestSQLiteStorageLoadInput(t *testing.T) {
@@ -165,7 +166,7 @@ func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string
 		ReadFrom:  fp,
 	}
 
-	input := inputs.NewCSVInput(opts)
+	input, _ := inputs.NewCSVInput(opts)
 	defer fp.Close()
 	defer os.Remove(fp.Name())
 	defer storage.Close()
