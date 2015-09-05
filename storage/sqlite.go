@@ -19,7 +19,7 @@ import (
 type SQLite3Storage struct {
 	options        *SQLite3Options
 	db             *sql.DB
-	connId         int
+	connID         int
 	firstTableName string
 }
 
@@ -27,9 +27,9 @@ type SQLite3Storage struct {
 type SQLite3Options struct{}
 
 var (
-	sqlite3conn         []*sqlite3.SQLiteConn = []*sqlite3.SQLiteConn{}
-	allWhiteSpace       *regexp.Regexp        = regexp.MustCompile("^\\s+$")
-	tableNameCheckRegEx *regexp.Regexp        = regexp.MustCompile(`.*\[.*\].*`)
+	sqlite3conn         = []*sqlite3.SQLiteConn{}
+	allWhiteSpace       = regexp.MustCompile("^\\s+$")
+	tableNameCheckRegEx = regexp.MustCompile(`.*\[.*\].*`)
 )
 
 func init() {
@@ -71,7 +71,7 @@ func (sqlite3Storage *SQLite3Storage) open() {
 		log.Fatalln(err)
 	}
 
-	sqlite3Storage.connId = len(sqlite3conn) - 1
+	sqlite3Storage.connID = len(sqlite3conn) - 1
 	sqlite3Storage.db = db
 }
 
@@ -173,7 +173,7 @@ func (sqlite3Storage *SQLite3Storage) loadRow(tableName string, colCount int, va
 		return nil
 	}
 
-	vals := make([]interface{}, 0)
+	var vals []interface{}
 
 	for i := 0; i < colCount; i++ {
 		if allWhiteSpace.MatchString(values[i]) {
@@ -218,9 +218,9 @@ func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	}
 
 	backupDb.Ping()
-	backupConnId := len(sqlite3conn) - 1
+	backupConnID := len(sqlite3conn) - 1
 
-	backup, backupStartErr := sqlite3conn[backupConnId].Backup("main", sqlite3conn[sqlite3Storage.connId], "main")
+	backup, backupStartErr := sqlite3conn[backupConnID].Backup("main", sqlite3conn[sqlite3Storage.connID], "main")
 
 	if backupStartErr != nil {
 		return backupStartErr

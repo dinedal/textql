@@ -186,7 +186,7 @@ func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string
 	rawResult := make([]interface{}, len(cols))
 	dest := make([]interface{}, len(cols))
 
-	for i, _ := range cols {
+	for i := range cols {
 		dest[i] = &rawResult[i]
 	}
 
