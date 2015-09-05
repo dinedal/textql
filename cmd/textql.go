@@ -147,9 +147,7 @@ func main() {
 		}
 	}
 
-	storageOpts := &storage.SQLite3Options{}
-
-	storage := storage.NewSQLite3Storage(storageOpts)
+	storage := storage.NewSQLite3StorageWithDefaults()
 
 	for _, file := range inputSources {
 		fp := util.OpenFileOrStdDev(file, false)
@@ -211,7 +209,12 @@ func main() {
 			}
 			defer os.Remove(tempFile.Name())
 			tempFile.Close()
-			storage.SaveTo(tempFile.Name())
+			saveErr := storage.SaveTo(tempFile.Name())
+
+			if saveErr != nil {
+				log.Fatalln(saveErr)
+			}
+
 			args = append(args, tempFile.Name())
 		}
 

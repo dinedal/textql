@@ -11,16 +11,19 @@ import (
 
 	"github.com/dinedal/textql/inputs"
 	"github.com/dinedal/textql/sqlparser"
+
 	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
-type sqlite3Storage struct {
+// SQLite3Storage represents a TextQL compatible SQL backend based on in-memory SQLite3
+type SQLite3Storage struct {
 	options        *SQLite3Options
 	db             *sql.DB
 	connId         int
 	firstTableName string
 }
 
+// SQLite3Options are options passed into SQLite3 connection as needed.
 type SQLite3Options struct{}
 
 var (
@@ -39,17 +42,23 @@ func init() {
 		})
 }
 
-func NewSQLite3Storage(opts *SQLite3Options) *sqlite3Storage {
-	this := &sqlite3Storage{
+// NewSQLite3StorageWithDefaults returns a SQLite3Storage with the default options.
+func NewSQLite3StorageWithDefaults() *SQLite3Storage {
+	return NewSQLite3Storage(&SQLite3Options{})
+}
+
+// NewSQLite3Storage returns a SQLite3Storage with the SQLite3Options provided applied.
+func NewSQLite3Storage(opts *SQLite3Options) *SQLite3Storage {
+	sqlite3Storage := &SQLite3Storage{
 		options:        opts,
 		firstTableName: "",
 	}
 
-	this.open()
-	return this
+	sqlite3Storage.open()
+	return sqlite3Storage
 }
 
-func (this *sqlite3Storage) open() {
+func (sqlite3Storage *SQLite3Storage) open() {
 	db, err := sql.Open("sqlite3_textql", ":memory:")
 
 	if err != nil {
@@ -62,39 +71,41 @@ func (this *sqlite3Storage) open() {
 		log.Fatalln(err)
 	}
 
-	this.connId = len(sqlite3conn) - 1
-	this.db = db
+	sqlite3Storage.connId = len(sqlite3conn) - 1
+	sqlite3Storage.db = db
 }
 
-func (this *sqlite3Storage) LoadInput(input inputs.Input) {
+// LoadInput reads the entire Input provided into a table named after the Input name.
+// The name is cooreced into a valid SQLite3 table name prior to use.
+func (sqlite3Storage *SQLite3Storage) LoadInput(input inputs.Input) {
 	tableName := strings.Replace(input.Name(), path.Ext(input.Name()), "", -1)
-	this.createTable(tableName, input.Header(), false)
+	sqlite3Storage.createTable(tableName, input.Header(), false)
 
-	tx, txErr := this.db.Begin()
+	tx, txErr := sqlite3Storage.db.Begin()
 
 	if txErr != nil {
 		log.Fatalln(txErr)
 	}
 
-	stmt := this.createLoadStmt(tableName, len(input.Header()), tx)
+	stmt := sqlite3Storage.createLoadStmt(tableName, len(input.Header()), tx)
 
 	row := input.ReadRecord()
 	for {
 		if row == nil {
 			break
 		}
-		this.loadRow(tableName, len(input.Header()), row, tx, stmt, true)
+		sqlite3Storage.loadRow(tableName, len(input.Header()), row, tx, stmt, true)
 		row = input.ReadRecord()
 	}
 	stmt.Close()
 	tx.Commit()
 
-	if this.firstTableName == "" {
-		this.firstTableName = tableName
+	if sqlite3Storage.firstTableName == "" {
+		sqlite3Storage.firstTableName = tableName
 	}
 }
 
-func (this *sqlite3Storage) createTable(tableName string, columnNames []string, verbose bool) error {
+func (sqlite3Storage *SQLite3Storage) createTable(tableName string, columnNames []string, verbose bool) error {
 	var buffer bytes.Buffer
 
 	if tableNameCheckRegEx.FindString(tableName) != "" {
@@ -119,7 +130,7 @@ func (this *sqlite3Storage) createTable(tableName string, columnNames []string, 
 
 	buffer.WriteString(");")
 
-	_, err := this.db.Exec(buffer.String())
+	_, err := sqlite3Storage.db.Exec(buffer.String())
 
 	if err != nil {
 		log.Fatalln(err)
@@ -132,7 +143,7 @@ func (this *sqlite3Storage) createTable(tableName string, columnNames []string, 
 	return err
 }
 
-func (this *sqlite3Storage) createLoadStmt(tableName string, colCount int, db *sql.Tx) *sql.Stmt {
+func (sqlite3Storage *SQLite3Storage) createLoadStmt(tableName string, colCount int, db *sql.Tx) *sql.Stmt {
 	if colCount == 0 {
 		log.Fatalln("Nothing to build insert with!")
 	}
@@ -157,7 +168,7 @@ func (this *sqlite3Storage) createLoadStmt(tableName string, colCount int, db *s
 	return stmt
 }
 
-func (this *sqlite3Storage) loadRow(tableName string, colCount int, values []string, db *sql.Tx, stmt *sql.Stmt, verbose bool) error {
+func (sqlite3Storage *SQLite3Storage) loadRow(tableName string, colCount int, values []string, db *sql.Tx, stmt *sql.Stmt, verbose bool) error {
 	if len(values) == 0 || colCount == 0 {
 		return nil
 	}
@@ -181,13 +192,16 @@ func (this *sqlite3Storage) loadRow(tableName string, colCount int, values []str
 	return err
 }
 
-func (this *sqlite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
+// ExecuteSQLString maps the sqlQuery provided from short hand TextQL to SQL, then
+// applies the query to the sqlite3 in memory database, and lastly returns the sql.Rows
+// that resulted from the executing query.
+func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
 	var result *sql.Rows
 	var err error
 
 	if strings.Trim(sqlQuery, " ") != "" {
-		implictFromSql := sqlparser.Magicify(sqlQuery, this.firstTableName)
-		result, err = this.db.Query(implictFromSql)
+		implictFromSql := sqlparser.Magicify(sqlQuery, sqlite3Storage.firstTableName)
+		result, err = sqlite3Storage.db.Query(implictFromSql)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -196,41 +210,43 @@ func (this *sqlite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
 	return result
 }
 
-func (this *sqlite3Storage) SaveTo(path string) {
+func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	backupDb, openErr := sql.Open("sqlite3_textql", path)
 
 	if openErr != nil {
-		log.Fatalln(openErr)
+		return openErr
 	}
 
 	backupDb.Ping()
 	backupConnId := len(sqlite3conn) - 1
 
-	backup, backupStartErr := sqlite3conn[backupConnId].Backup("main", sqlite3conn[this.connId], "main")
+	backup, backupStartErr := sqlite3conn[backupConnId].Backup("main", sqlite3conn[sqlite3Storage.connId], "main")
 
 	if backupStartErr != nil {
-		log.Fatalln(backupStartErr)
+		return backupStartErr
 	}
 
 	_, backupPerformError := backup.Step(-1)
 
 	if backupPerformError != nil {
-		log.Fatalln(backupPerformError)
+		return backupPerformError
 	}
 
 	backupFinishError := backup.Finish()
 
 	if backupFinishError != nil {
-		log.Fatalln(backupFinishError)
+		return backupFinishError
 	}
 
 	backupCloseError := backupDb.Close()
 
 	if backupCloseError != nil {
-		log.Fatalln(backupCloseError)
+		return backupCloseError
 	}
+
+	return nil
 }
 
-func (this *sqlite3Storage) Close() {
-	this.db.Close()
+func (sqlite3Storage *SQLite3Storage) Close() {
+	sqlite3Storage.db.Close()
 }
