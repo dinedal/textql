@@ -200,8 +200,8 @@ func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Row
 	var err error
 
 	if strings.Trim(sqlQuery, " ") != "" {
-		implictFromSql := sqlparser.Magicify(sqlQuery, sqlite3Storage.firstTableName)
-		result, err = sqlite3Storage.db.Query(implictFromSql)
+		implictFromSQL := sqlparser.Magicify(sqlQuery, sqlite3Storage.firstTableName)
+		result, err = sqlite3Storage.db.Query(implictFromSQL)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -210,6 +210,7 @@ func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Row
 	return result
 }
 
+// SaveTo saves the current in memory database to the path provided as a string.
 func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	backupDb, openErr := sql.Open("sqlite3_textql", path)
 
@@ -247,6 +248,7 @@ func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	return nil
 }
 
+// Close will close the current database
 func (sqlite3Storage *SQLite3Storage) Close() {
 	sqlite3Storage.db.Close()
 }
