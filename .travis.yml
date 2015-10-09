@@ -1,0 +1,10 @@
+language: go
+sudo: false
+
+go:
+  - 1.5
+
+install: make deps
+
+env:
+  - GO15VENDOREXPERIMENT=1
