@@ -133,17 +133,17 @@ func main() {
 
 	var inputSources []string
 
+	if util.IsThereDataOnStdin() {
+		inputSources = append(inputSources, "stdin")
+	}
+
 	for _, sourceFile := range cmdLineOpts.GetSourceFiles() {
-		if util.IsThereDataOnStdin() {
-			inputSources = append(inputSources, sourceFile)
-		} else {
-			if util.IsPathDir(sourceFile) {
-				for _, file := range util.AllFilesInDirectory(sourceFile) {
-					inputSources = append(inputSources, file)
-				}
-			} else {
-				inputSources = append(inputSources, sourceFile)
+		if util.IsPathDir(sourceFile) {
+			for _, file := range util.AllFilesInDirectory(sourceFile) {
+				inputSources = append(inputSources, file)
 			}
+		} else {
+			inputSources = append(inputSources, sourceFile)
 		}
 	}
 
