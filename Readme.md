@@ -6,6 +6,7 @@
 Allows you to easily execute SQL against structured text like CSV or TSV.
 
 Example session:
+
 ![textql_usage_session](https://raw.github.com/dinedal/textql/master/textql_usage.gif)
 
 ## Major changes!
