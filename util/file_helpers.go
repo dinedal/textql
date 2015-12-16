@@ -74,7 +74,7 @@ func CleanPath(path string) string {
 		log.Fatalln(err)
 	}
 
-	if path[:2] == "~/" {
+	if len(path) > 1 && path[:2] == "~/" {
 		dir := usr.HomeDir + "/"
 		result = strings.Replace(path, "~/", dir, 1)
 	} else {
