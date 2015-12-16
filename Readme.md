@@ -58,6 +58,14 @@ Bug fixes:
 
 ## Install
 
+Latest release on Homebrew (OS X)
+
+```bash
+brew install textql
+```
+
+Build from source
+
 ```bash
 go get -u github.com/dinedal/textql/...
 ```
