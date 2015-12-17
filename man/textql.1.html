@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>textql(1) - execute queries on structured text</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#FILES">FILES</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#COPYRIGHT">COPYRIGHT</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>textql(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>textql(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>textql</code> - <span class="man-whatis">execute queries on structured text</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><code>textql</code> [<var>-save-to path</var>] [<var>-output-file path</var>] [<var>-output-dlm delimter</var>] [<var>-output-header</var>] [<var>-header</var>] [<var>-dlm delimter</var>] [<var>-source path</var>] [<var>-sql sql_statements</var>] [<var>-quiet</var>] [<var>path</var>...]<br />
+<code>textql</code> <var>-console</var> <var>path</var>...<br /></p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p><strong>textql</strong> executes given statements in SQL on structured texts and returns the result.
+SQL statements accepted by <code>textql</code> are ANSI SQL compatible, and are executed against
+the data in the order provided. No transformations are applied to the text files
+but are instead applied to a temporary view of the data. Statements that insert data
+or modify the existing data will only have their effects visible in the output.</p>
+
+<p>The argument list of the end is expected to be a list of paths which may or may not
+be specific files. Each path is traversed for files that are then loaded as part of
+the database that <code>textql</code> creates internally, and files are loaded without traversal.
+Paths provided are not recursed.</p>
+
+<p>Each statement is then executed against <code>textql</code>'s internal database and the result, if
+any, is printed. <strong>INSERT</strong>, <strong>UPDATE</strong>, <strong>DELETE</strong> or other side effecting statements
+do not effect the text files given as input, but instead modify the database
+internal to <code>textql</code>. Their result may be viewed via the output, presisting the
+database as is with <code>-save-to</code> or in a SQLite REPL with <code>--console</code></p>
+
+<p>With no arguements, <code>textql</code> will print a brief overview of it's usage.</p>
+
+<h2 id="FILES">FILES</h2>
+
+<p>Structured text accepted by textql is any text file in a tabular format
+where each row of the table is on a single line, and each column is a section of the
+line delimited by a single character which is consistent throughout the file. A
+common structured text format is CSV (RFC4180).</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<dl>
+<dt><code>-console</code></dt><dd>After all statements are run, open SQLite3 REPL with this data</dd>
+<dt><code>-dlm string</code></dt><dd>Input delimiter character between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex (default ",")</dd>
+<dt class="flush"><code>-header</code></dt><dd>Treat input files as having the first row as a header row</dd>
+<dt><code>-output-dlm string</code></dt><dd>Output delimiter character between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex (default ",")</dd>
+<dt><code>-output-file file</code></dt><dd>Filename to write output to, if empty no output is written (default "stdout")</dd>
+<dt><code>-output-header</code></dt><dd>Display column names in output</dd>
+<dt class="flush"><code>-quiet</code></dt><dd>Surpress logging</dd>
+<dt><code>-save-to file</code></dt><dd>SQLite3 db is left on disk at this file</dd>
+<dt><code>-sql string</code></dt><dd>SQL Statement(s) to run on the data</dd>
+<dt><code>-version</code></dt><dd>Print version and exit</dd>
+</dl>
+
+
+<h2 id="COPYRIGHT">COPYRIGHT</h2>
+
+<p>textql is Copyright (C) 2015, 2016 Paul Bergeron
+<a href="http://pauldbergeron.com/" data-bare-link="true">http://pauldbergeron.com/</a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>December 2015</li>
+    <li class='tr'>textql(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

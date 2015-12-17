@@ -16,7 +16,7 @@ import (
 )
 
 type commandLineOptions struct {
-	Commands        *string
+	Statements      *string
 	SourceFile      *string
 	Delimiter       *string
 	Header          *bool
@@ -34,14 +34,14 @@ var VERSION string
 
 func newCommandLineOptions() *commandLineOptions {
 	cmdLineOpts := commandLineOptions{}
-	cmdLineOpts.Commands = flag.String("sql", "", "SQL Command(s) to run on the data")
-	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
-	cmdLineOpts.Header = flag.Bool("header", false, "Treat file as having the first row as a header row")
+	cmdLineOpts.Statements = flag.String("sql", "", "SQL Statement(s) to run on the data")
+	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter character between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
+	cmdLineOpts.Header = flag.Bool("header", false, "Treat input files as having the first row as a header row")
 	cmdLineOpts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
-	cmdLineOpts.OutputDelimiter = flag.String("output-dlm", ",", "Output delimiter between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex")
+	cmdLineOpts.OutputDelimiter = flag.String("output-dlm", ",", "Output delimiter character between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	cmdLineOpts.OutputFile = flag.String("output-file", "stdout", "Filename to write output to, if empty no output is written")
-	cmdLineOpts.SaveTo = flag.String("save-to", "", "If set, sqlite3 db is left on disk at this path")
-	cmdLineOpts.Console = flag.Bool("console", false, "After all commands are run, open sqlite3 console with this data")
+	cmdLineOpts.SaveTo = flag.String("save-to", "", "SQLite3 db is left on disk at this file")
+	cmdLineOpts.Console = flag.Bool("console", false, "After all statements are run, open SQLite3 REPL with this data")
 	cmdLineOpts.Version = flag.Bool("version", false, "Print version and exit")
 	cmdLineOpts.Quiet = flag.Bool("quiet", false, "Surpress logging")
 	flag.Usage = cmdLineOpts.Usage
@@ -50,8 +50,8 @@ func newCommandLineOptions() *commandLineOptions {
 	return &cmdLineOpts
 }
 
-func (clo *commandLineOptions) GetCommands() string {
-	return *clo.Commands
+func (clo *commandLineOptions) GetStatements() string {
+	return *clo.Statements
 }
 
 func (clo *commandLineOptions) GetSourceFiles() []string {
@@ -167,7 +167,7 @@ func main() {
 		storage.LoadInput(input)
 	}
 
-	sqlStrings := strings.Split(cmdLineOpts.GetCommands(), ";")
+	sqlStrings := strings.Split(cmdLineOpts.GetStatements(), ";")
 
 	if cmdLineOpts.GetOutputFile() != "" {
 		displayOpts := &outputs.CSVOutputOptions{

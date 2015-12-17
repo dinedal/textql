@@ -1,3 +1,5 @@
+.PHONY: all test clean man glide fast release install
+
 all: textql
 
 textql: deps test
@@ -38,3 +40,6 @@ release: textql
 
 install: deps test
 	go install -ldflags "-X main.VERSION=`cat VERSION`" ./textql/textql.go
+
+man:
+	ronn man/textql.1.ronn

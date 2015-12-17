@@ -1,0 +1,64 @@
+textql(1) -- execute queries on structured text
+===============================================
+
+## SYNOPSIS
+
+`textql` [<-save-to path>] [<-output-file path>] [<-output-dlm delimter>] [<-output-header>] [<-header>] [<-dlm delimter>] [<-source path>] [<-sql sql_statements>] [<-quiet>] [<path>...]<br>
+`textql` <-console> <path>...<br>
+
+## DESCRIPTION
+
+**textql** executes given statements in SQL on structured texts and returns the result.
+SQL statements accepted by `textql` are ANSI SQL compatible, and are executed against
+the data in the order provided. No transformations are applied to the text files
+but are instead applied to a temporary view of the data. Statements that insert data
+or modify the existing data will only have their effects visible in the output.
+
+The argument list of the end is expected to be a list of paths which may or may not
+be specific files. Each path is traversed for files that are then loaded as part of
+the database that `textql` creates internally, and files are loaded without traversal.
+Paths provided are not recursed.
+
+Each statement is then executed against `textql`'s internal database and the result, if
+any, is printed. **INSERT**, **UPDATE**, **DELETE** or other side effecting statements
+do not effect the text files given as input, but instead modify the database
+internal to `textql`. Their result may be viewed via the output, presisting the
+database as is with `-save-to` or in a SQLite REPL with `--console`
+
+With no arguements, `textql` will print a brief overview of it's usage.
+
+## FILES
+
+Structured text accepted by textql is any text file in a tabular format
+where each row of the table is on a single line, and each column is a section of the
+line delimited by a single character which is consistent throughout the file. A
+common structured text format is CSV (RFC4180).
+
+## OPTIONS
+
+  * `-console`:
+    After all statements are run, open SQLite3 REPL with this data
+  * `-dlm string`:
+    Input delimiter character between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex (default ",")
+  * `-header`:
+    Treat input files as having the first row as a header row
+  * `-output-dlm string`:
+    Output delimiter character between fields -output-dlm=tab for tab, -dlm=0x## to specify a character code in hex (default ",")
+  * `-output-file file`:
+    Filename to write output to, if empty no output is written (default "stdout")
+  * `-output-header`:
+    Display column names in output
+  * `-quiet`:
+    Surpress logging
+  * `-save-to file`:
+    SQLite3 db is left on disk at this file
+  * `-sql string`:
+    SQL Statement(s) to run on the data
+  * `-version`:
+    Print version and exit
+
+
+## COPYRIGHT
+
+textql is Copyright (C) 2015, 2016 Paul Bergeron
+<http://pauldbergeron.com/>
