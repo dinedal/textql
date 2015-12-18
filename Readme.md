@@ -73,7 +73,7 @@ go get -u github.com/dinedal/textql/...
 ## Usage
 
 ```bash
-  textql [-console] [-save-to path] [-output-file path] [-output-dlm delimter] [-output-header] [-header] [-dlm delimter] [-source path] [-sql sql_statements] [-quiet] [path ...]
+  textql [-console] [-save-to path path] [-output-file path] [-output-dlm delimter] [-output-header] [-pretty] [-quiet] [-header] [-dlm delimter] [-sql sql_statements] [path ...]
 
   -console
         After all statements are run, open SQLite3 REPL with this data
@@ -89,6 +89,8 @@ go get -u github.com/dinedal/textql/...
         Display column names in output
   -quiet
         Surpress logging
+  -pretty
+        Pretty print output
   -save-to file
         SQLite3 db is left on disk at this file
   -sql string
