@@ -4,3 +4,7 @@ import:
     ref:     8897bf145272af4dd0305518cfb725a5b6d0541c
     repo:    https://github.com/mattn/go-sqlite3
     vcs:     git
+  - package: github.com/olekukonko/tablewriter
+    ref:     333c0610de3426f738e7ec63801cfd1883b0aeb4
+    repo:    https://github.com/olekukonko/tablewriter
+    vcs:     git
