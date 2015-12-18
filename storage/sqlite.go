@@ -27,9 +27,10 @@ type SQLite3Storage struct {
 type SQLite3Options struct{}
 
 var (
-	sqlite3conn         = []*sqlite3.SQLiteConn{}
-	allWhiteSpace       = regexp.MustCompile("^\\s+$")
-	tableNameCheckRegEx = regexp.MustCompile(`.*\[.*\].*`)
+	sqlite3conn          = []*sqlite3.SQLiteConn{}
+	allWhiteSpace        = regexp.MustCompile("^\\s+$")
+	tableNameCheckRegEx  = regexp.MustCompile(`.*\[.*\].*`)
+	columnNameCheckRegEx = regexp.MustCompile(`.*\[.*\].*`)
 )
 
 func init() {
@@ -115,8 +116,6 @@ func (sqlite3Storage *SQLite3Storage) createTable(tableName string, columnNames 
 	buffer.WriteString("CREATE TABLE IF NOT EXISTS [" + (tableName) + "] (")
 
 	for i, col := range columnNames {
-		columnNameCheckRegEx := regexp.MustCompile(`.*\[.*\].*`)
-
 		if columnNameCheckRegEx.FindString(col) != "" {
 			log.Fatalln("Invalid table name", col)
 		}
