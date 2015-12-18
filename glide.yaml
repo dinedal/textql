@@ -8,3 +8,7 @@ import:
     ref:     333c0610de3426f738e7ec63801cfd1883b0aeb4
     repo:    https://github.com/olekukonko/tablewriter
     vcs:     git
+  - package: github.com/mattn/go-runewidth
+    ref:     d96d1bd051f2bd9e7e43d602782b37b93b1b5666
+    repo:    https://github.com/mattn/go-runewidth
+    vcs:     git
