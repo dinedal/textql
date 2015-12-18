@@ -50,6 +50,8 @@ common structured text format is CSV (RFC4180).
     Display column names in output
   * `-quiet`:
     Surpress logging
+  * `-pretty`:
+    Pretty print output
   * `-save-to file`:
     SQLite3 db is left on disk at this file
   * `-sql string`:

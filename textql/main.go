@@ -27,6 +27,7 @@ type commandLineOptions struct {
 	Console         *bool
 	Version         *bool
 	Quiet           *bool
+	Pretty          *bool
 }
 
 // Must be set at build via -ldflags "-X main.VERSION=`cat VERSION`"
@@ -44,6 +45,7 @@ func newCommandLineOptions() *commandLineOptions {
 	cmdLineOpts.Console = flag.Bool("console", false, "After all statements are run, open SQLite3 REPL with this data")
 	cmdLineOpts.Version = flag.Bool("version", false, "Print version and exit")
 	cmdLineOpts.Quiet = flag.Bool("quiet", false, "Surpress logging")
+	cmdLineOpts.Pretty = flag.Bool("pretty", false, "Output pretty formatting")
 	flag.Usage = cmdLineOpts.Usage
 	flag.Parse()
 
@@ -94,11 +96,15 @@ func (clo *commandLineOptions) GetQuiet() bool {
 	return *clo.Quiet
 }
 
+func (clo *commandLineOptions) GetPretty() bool {
+	return *clo.Pretty
+}
+
 func (clo *commandLineOptions) Usage() {
 	if !clo.GetQuiet() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\n")
-		fmt.Fprintf(os.Stderr, "  %s [-console] [-save-to path path] [-output-file path] [-output-dlm delimter] [-output-header] [-header] [-dlm delimter] [-sql sql_statements] [-quiet] [path ...] \n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s [-console] [-save-to path path] [-output-file path] [-output-dlm delimter] [-output-header] [-pretty] [-quiet] [-header] [-dlm delimter] [-sql sql_statements] [path ...] \n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\n")
 		flag.PrintDefaults()
 	}
@@ -170,13 +176,22 @@ func main() {
 	sqlStrings := strings.Split(cmdLineOpts.GetStatements(), ";")
 
 	if cmdLineOpts.GetOutputFile() != "" {
-		displayOpts := &outputs.CSVOutputOptions{
-			WriteHeader: cmdLineOpts.GetOutputHeader(),
-			Seperator:   util.DetermineSeparator(cmdLineOpts.GetOutputDelimiter()),
-			WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile(), true),
-		}
+		if cmdLineOpts.GetPretty() {
+			displayOpts := &outputs.PrettyCSVOutputOptions{
+				WriteHeader: cmdLineOpts.GetOutputHeader(),
+				WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile(), true),
+			}
 
-		outputer = outputs.NewCSVOutput(displayOpts)
+			outputer = outputs.NewPrettyCSVOutput(displayOpts)
+		} else {
+			displayOpts := &outputs.CSVOutputOptions{
+				WriteHeader: cmdLineOpts.GetOutputHeader(),
+				Seperator:   util.DetermineSeparator(cmdLineOpts.GetOutputDelimiter()),
+				WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile(), true),
+			}
+
+			outputer = outputs.NewCSVOutput(displayOpts)
+		}
 	}
 
 	for _, sqlQuery := range sqlStrings {

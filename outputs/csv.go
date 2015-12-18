@@ -73,7 +73,7 @@ func (csvOutput *CSVOutput) Show(rows *sql.Rows) {
 		writeErr := csvOutput.writer.Write(result)
 
 		if writeErr != nil {
-			log.Fatalln(colsErr)
+			log.Fatalln(writeErr)
 		}
 	}
 
