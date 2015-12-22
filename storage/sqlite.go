@@ -212,34 +212,32 @@ func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Row
 // SaveTo saves the current in memory database to the path provided as a string.
 func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	backupDb, openErr := sql.Open("sqlite3_textql", path)
-
 	if openErr != nil {
 		return openErr
 	}
 
-	backupDb.Ping()
+	backupPingErr := backupDb.Ping()
+	if backupPingErr != nil {
+		return backupPingErr
+	}
 	backupConnID := len(sqlite3conn) - 1
 
 	backup, backupStartErr := sqlite3conn[backupConnID].Backup("main", sqlite3conn[sqlite3Storage.connID], "main")
-
 	if backupStartErr != nil {
 		return backupStartErr
 	}
 
 	_, backupPerformError := backup.Step(-1)
-
 	if backupPerformError != nil {
 		return backupPerformError
 	}
 
 	backupFinishError := backup.Finish()
-
 	if backupFinishError != nil {
 		return backupFinishError
 	}
 
 	backupCloseError := backupDb.Close()
-
 	if backupCloseError != nil {
 		return backupCloseError
 	}
