@@ -54,7 +54,7 @@ Bug fixes:
 
 ## Requirements
 
-- Go
+- Go 1.4 or later
 
 ## Install
 
