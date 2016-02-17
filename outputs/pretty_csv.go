@@ -64,11 +64,7 @@ func (prettyCsvOutput *PrettyCSVOutput) Show(rows *sql.Rows) {
 			result[i] = string(raw)
 		}
 
-		writeErr := prettyCsvOutput.writer.Append(result)
-
-		if writeErr != nil {
-			log.Fatalln(writeErr)
-		}
+		prettyCsvOutput.writer.Append(result)
 	}
 
 	prettyCsvOutput.writer.Render()

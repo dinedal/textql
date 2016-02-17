@@ -1,5 +1,7 @@
 .PHONY: all test clean man glide fast release install
 
+GO15VENDOREXPERIMENT=1
+
 all: textql
 
 textql: deps test
