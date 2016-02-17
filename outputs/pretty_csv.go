@@ -46,6 +46,7 @@ func (prettyCsvOutput *PrettyCSVOutput) Show(rows *sql.Rows) {
 
 	if prettyCsvOutput.options.WriteHeader {
 		prettyCsvOutput.writer.SetHeader(cols)
+		prettyCsvOutput.writer.SetHeaderLine(true)
 	}
 
 	rawResult := make([][]byte, len(cols))
