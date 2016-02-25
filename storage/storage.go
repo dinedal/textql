@@ -20,7 +20,7 @@ type Storage interface {
 	// ExecuteSQLString should first convert from TextQL shorthand SQL to normal SQL,
 	// apply the query or transformation given to the SQL backend and return either nil
 	// or the sql.Rows that were returned from the query.
-	ExecuteSQLString(string) *sql.Rows
+	ExecuteSQLString(string) (*sql.Rows, error)
 	// Close should cleanly close the database backend, cleaning up data on disk if required.
 	Close()
 }

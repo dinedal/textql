@@ -194,7 +194,7 @@ func (sqlite3Storage *SQLite3Storage) loadRow(tableName string, colCount int, va
 // ExecuteSQLString maps the sqlQuery provided from short hand TextQL to SQL, then
 // applies the query to the sqlite3 in memory database, and lastly returns the sql.Rows
 // that resulted from the executing query.
-func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
+func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) (*sql.Rows, error) {
 	var result *sql.Rows
 	var err error
 
@@ -202,11 +202,11 @@ func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Row
 		implictFromSQL := sqlparser.Magicify(sqlQuery, sqlite3Storage.firstTableName)
 		result, err = sqlite3Storage.db.Query(implictFromSQL)
 		if err != nil {
-			log.Fatalln(err)
+			return nil, err
 		}
 	}
 
-	return result
+	return result, nil
 }
 
 // SaveTo saves the current in memory database to the path provided as a string.

@@ -195,7 +195,11 @@ func main() {
 	}
 
 	for _, sqlQuery := range sqlStrings {
-		queryResults := storage.ExecuteSQLString(sqlQuery)
+		queryResults, queryErr := storage.ExecuteSQLString(sqlQuery)
+
+		if queryErr != nil {
+			log.Fatalln(queryErr)
+		}
 
 		if queryResults != nil && cmdLineOpts.GetOutputFile() != "" {
 			outputer.Show(queryResults)
