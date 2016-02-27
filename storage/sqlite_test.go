@@ -101,7 +101,11 @@ func TestSQLiteStorageExecuteSQLStringNormalSQL(t *testing.T) {
 
 	sqlString := "select count(*) from " + storage.firstTableName
 
-	rows := storage.ExecuteSQLString(sqlString)
+	rows, rowsErr := storage.ExecuteSQLString(sqlString)
+
+	if rowsErr != nil {
+		t.Fatalf(rowsErr.Error())
+	}
 
 	cols, colsErr := rows.Columns()
 
@@ -134,7 +138,11 @@ func TestSQLiteStorageExecuteSQLStringMissingSelect(t *testing.T) {
 
 	sqlString := "count(*) from " + storage.firstTableName
 
-	rows := storage.ExecuteSQLString(sqlString)
+	rows, rowsErr := storage.ExecuteSQLString(sqlString)
+
+	if rowsErr != nil {
+		t.Fatalf(rowsErr.Error())
+	}
 
 	cols, colsErr := rows.Columns()
 
@@ -173,7 +181,11 @@ func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string
 
 	storage.LoadInput(input)
 
-	rows := storage.ExecuteSQLString(sqlString)
+	rows, rowsErr := storage.ExecuteSQLString(sqlString)
+
+	if rowsErr != nil {
+		t.Fatalf(rowsErr.Error())
+	}
 
 	cols, colsErr := rows.Columns()
 

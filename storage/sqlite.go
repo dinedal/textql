@@ -194,7 +194,7 @@ func (sqlite3Storage *SQLite3Storage) loadRow(tableName string, colCount int, va
 // ExecuteSQLString maps the sqlQuery provided from short hand TextQL to SQL, then
 // applies the query to the sqlite3 in memory database, and lastly returns the sql.Rows
 // that resulted from the executing query.
-func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Rows {
+func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) (*sql.Rows, error) {
 	var result *sql.Rows
 	var err error
 
@@ -202,44 +202,42 @@ func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) *sql.Row
 		implictFromSQL := sqlparser.Magicify(sqlQuery, sqlite3Storage.firstTableName)
 		result, err = sqlite3Storage.db.Query(implictFromSQL)
 		if err != nil {
-			log.Fatalln(err)
+			return nil, err
 		}
 	}
 
-	return result
+	return result, nil
 }
 
 // SaveTo saves the current in memory database to the path provided as a string.
 func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	backupDb, openErr := sql.Open("sqlite3_textql", path)
-
 	if openErr != nil {
 		return openErr
 	}
 
-	backupDb.Ping()
+	backupPingErr := backupDb.Ping()
+	if backupPingErr != nil {
+		return backupPingErr
+	}
 	backupConnID := len(sqlite3conn) - 1
 
 	backup, backupStartErr := sqlite3conn[backupConnID].Backup("main", sqlite3conn[sqlite3Storage.connID], "main")
-
 	if backupStartErr != nil {
 		return backupStartErr
 	}
 
 	_, backupPerformError := backup.Step(-1)
-
 	if backupPerformError != nil {
 		return backupPerformError
 	}
 
 	backupFinishError := backup.Finish()
-
 	if backupFinishError != nil {
 		return backupFinishError
 	}
 
 	backupCloseError := backupDb.Close()
-
 	if backupCloseError != nil {
 		return backupCloseError
 	}
