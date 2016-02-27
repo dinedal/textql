@@ -1,7 +1,7 @@
 package: github.com/dinedal/textql
 import:
   - package: github.com/mattn/go-sqlite3
-    ref:     8897bf145272af4dd0305518cfb725a5b6d0541c
+    ref:     09d5c451710ef887470709463f4f04ff83e1e039
     repo:    https://github.com/mattn/go-sqlite3
     vcs:     git
   - package: github.com/olekukonko/tablewriter
@@ -11,4 +11,7 @@ import:
   - package: github.com/mattn/go-runewidth
     ref:     d037b52ae5c0338c2bb18da01fb7ddf0e8be9aa1
     repo:    https://github.com/mattn/go-runewidth
+    vcs:     git
+  - package: github.com/dinedal/golang-ring
+    repo:    https://github.com/dinedal/golang-ring
     vcs:     git

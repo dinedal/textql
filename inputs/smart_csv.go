@@ -7,6 +7,8 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	ring "github.com/dinedal/golang-ring"
 )
 
 // SmartCSVInput represents a record producing input from a CSV formatted file or pipe.
@@ -14,9 +16,7 @@ import (
 type SmartCSVInput struct {
 	options         *SmartCSVInputOptions
 	reader          *csv.Reader
-	rowBuffer       [][]string
-	bufferLen       int
-	bufferStart     int
+	rowBuffer       *ring.Ring
 	dataRemaining   bool
 	headerTolerance int
 	header          []string
@@ -40,11 +40,11 @@ func NewSmartCSVInput(opts *SmartCSVInputOptions) (*SmartCSVInput, error) {
 		reader:  csv.NewReader(opts.ReadFrom),
 	}
 
+	smartCSVInput.rowBuffer = &ring.Ring{}
+	smartCSVInput.rowBuffer.SetCapacity(smartCSVInput.options.MaxBufferLen)
 	smartCSVInput.reader.FieldsPerRecord = -1
 	smartCSVInput.reader.Comma = smartCSVInput.options.Seperator
 	smartCSVInput.reader.LazyQuotes = true
-	smartCSVInput.bufferStart = 0
-	smartCSVInput.bufferLen = 0
 	smartCSVInput.dataRemaining = true
 	smartCSVInput.headerTolerance = 1
 
@@ -69,7 +69,7 @@ func (smartCSVInput *SmartCSVInput) fillBuffer() error {
 	var row []string
 	var fileErr error
 
-	for smartCSVInput.bufferLen = 0; smartCSVInput.bufferLen <= smartCSVInput.options.MaxBufferLen; smartCSVInput.bufferLen++ {
+	for i := 0; i < smartCSVInput.rowBuffer.Capacity(); i++ {
 		row, fileErr = smartCSVInput.reader.Read()
 		if fileErr == io.EOF {
 			smartCSVInput.dataRemaining = false
@@ -78,15 +78,14 @@ func (smartCSVInput *SmartCSVInput) fillBuffer() error {
 			log.Println(parseErr)
 		}
 
-		smartCSVInput.rowBuffer = append(smartCSVInput.rowBuffer, row)
+		smartCSVInput.rowBuffer.Enqueue(row)
 	}
-
 	return nil
 }
 
 func (smartCSVInput *SmartCSVInput) columnModalCount() int {
 	counts := make(map[int]int)
-	for _, row := range smartCSVInput.rowBuffer {
+	for _, row := range smartCSVInput.rowBuffer.Values() {
 		length := 0
 		for _, col := range row {
 			if strings.TrimSpace(col) != "" {
@@ -112,7 +111,7 @@ func (smartCSVInput *SmartCSVInput) columnModalCount() int {
 
 func (smartCSVInput *SmartCSVInput) headerGuess() []string {
 	modalCount := smartCSVInput.columnModalCount()
-	for i, row := range smartCSVInput.rowBuffer {
+	for i, row := range smartCSVInput.rowBuffer.Values() {
 		length := 0
 		for _, col := range row {
 			if strings.TrimSpace(col) != "" {
@@ -122,13 +121,16 @@ func (smartCSVInput *SmartCSVInput) headerGuess() []string {
 		if length >= modalCount-smartCSVInput.headerTolerance {
 			// TODO: type check for all strings in resultant row
 			// also we move the buffer start past the non-header rows
-			smartCSVInput.bufferStart = i
+			for j := i; j >= 0; j-- {
+				smartCSVInput.rowBuffer.Dequeue()
+			}
 			smartCSVInput.minOutputLength = len(row)
 			return row
 		}
 	}
-	smartCSVInput.minOutputLength = len(smartCSVInput.rowBuffer[0])
-	return smartCSVInput.rowBuffer[0]
+	firstRow := smartCSVInput.rowBuffer.Dequeue()
+	smartCSVInput.minOutputLength = len(firstRow)
+	return firstRow
 }
 
 // ReadRecord reads a single record from the CSV. Always returns successfully.
@@ -143,22 +145,36 @@ func (smartCSVInput *SmartCSVInput) ReadRecord() []string {
 	var row []string
 	var fileErr error
 
-	row, fileErr = smartCSVInput.reader.Read()
-	emptysToAppend := smartCSVInput.minOutputLength - len(row)
-	if fileErr == io.EOF {
-		return nil
-	} else if parseErr, ok := fileErr.(*csv.ParseError); ok {
-		log.Println(parseErr)
-		emptysToAppend = smartCSVInput.minOutputLength
-	}
-
-	if emptysToAppend > 0 {
-		for counter := 0; counter < emptysToAppend; counter++ {
-			row = append(row, "")
+	if smartCSVInput.dataRemaining == false {
+		// Drain the buffer
+		if smartCSVInput.rowBuffer.ContentSize() > 0 {
+			return smartCSVInput.rowBuffer.Dequeue()
+		} else {
+			return nil
 		}
 	}
 
-	return row
+	currentRow := smartCSVInput.rowBuffer.Dequeue()
+
+	row, fileErr = smartCSVInput.reader.Read()
+	emptysToAppend := smartCSVInput.minOutputLength - len(row)
+	if fileErr == io.EOF {
+		smartCSVInput.dataRemaining = false
+	} else {
+		if parseErr, ok := fileErr.(*csv.ParseError); ok {
+			log.Println(parseErr)
+			emptysToAppend = smartCSVInput.minOutputLength
+		}
+
+		if emptysToAppend > 0 {
+			for counter := 0; counter < emptysToAppend; counter++ {
+				row = append(row, "")
+			}
+		}
+		smartCSVInput.rowBuffer.Enqueue(row)
+	}
+
+	return currentRow
 }
 
 // Header returns the contents of what SmartCSVInput considers to be the header row.
