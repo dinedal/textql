@@ -90,7 +90,7 @@ func TestSQLiteStorageSaveTo(t *testing.T) {
 	}
 }
 
-func TestSQLiteStorageExecuteSQLStringNormalSQL(t *testing.T) {
+func TestSQLiteStorageQueryNormalSQL(t *testing.T) {
 	storage := NewSQLite3Storage(storageOpts)
 	input, fp := NewTestCSVInput()
 	defer fp.Close()
@@ -101,7 +101,7 @@ func TestSQLiteStorageExecuteSQLStringNormalSQL(t *testing.T) {
 
 	sqlString := "select count(*) from " + storage.firstTableName
 
-	rows, rowsErr := storage.ExecuteSQLString(sqlString)
+	rows, rowsErr := storage.Query(sqlString)
 
 	if rowsErr != nil {
 		t.Fatalf(rowsErr.Error())
@@ -127,7 +127,35 @@ func TestSQLiteStorageExecuteSQLStringNormalSQL(t *testing.T) {
 	}
 }
 
-func TestSQLiteStorageExecuteSQLStringMissingSelect(t *testing.T) {
+func TestSQLiteStorageExecNormalSQL(t *testing.T) {
+	storage := NewSQLite3Storage(storageOpts)
+	input, fp := NewTestCSVInput()
+	defer fp.Close()
+	defer os.Remove(fp.Name())
+	defer storage.Close()
+
+	storage.LoadInput(input)
+
+	sqlString := "delete from " + storage.firstTableName + " where a = 1"
+
+	result, resultErr := storage.Exec(sqlString)
+
+	if resultErr != nil {
+		t.Fatalf(resultErr.Error())
+	}
+
+	rows, rowsErr := result.RowsAffected()
+
+	if rowsErr != nil {
+		t.Fatalf(rowsErr.Error())
+	}
+
+	if rows != 1 {
+		t.Fatalf("Expected 1 row to be affected, got (%v)", rows)
+	}
+}
+
+func TestSQLiteStorageQueryMissingSelect(t *testing.T) {
 	storage := NewSQLite3Storage(storageOpts)
 	input, fp := NewTestCSVInput()
 	defer fp.Close()
@@ -138,7 +166,7 @@ func TestSQLiteStorageExecuteSQLStringMissingSelect(t *testing.T) {
 
 	sqlString := "count(*) from " + storage.firstTableName
 
-	rows, rowsErr := storage.ExecuteSQLString(sqlString)
+	rows, rowsErr := storage.Query(sqlString)
 
 	if rowsErr != nil {
 		t.Fatalf(rowsErr.Error())
@@ -181,7 +209,7 @@ func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string
 
 	storage.LoadInput(input)
 
-	rows, rowsErr := storage.ExecuteSQLString(sqlString)
+	rows, rowsErr := storage.Query(sqlString)
 
 	if rowsErr != nil {
 		t.Fatalf(rowsErr.Error())
@@ -219,7 +247,7 @@ func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string
 	return result, cols
 }
 
-func TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery(t *testing.T) {
+func TestSQLiteStorageQueryMissingFromOuterQuery(t *testing.T) {
 	data, cols := LoadTestDataAndExecuteQuery(t, simpleCSV, "count(*)")
 
 	if len(cols) != 1 {
@@ -232,7 +260,7 @@ func TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery(t *testing.T) {
 	}
 }
 
-func TestSQLiteStorageExecuteSQLStringMissingFromSubQuery(t *testing.T) {
+func TestSQLiteStorageQueryMissingFromSubQuery(t *testing.T) {
 	data, cols := LoadTestDataAndExecuteQuery(t, simpleCSV, "count(*) from (select *)")
 
 	if len(cols) != 1 {

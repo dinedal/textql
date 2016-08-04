@@ -195,7 +195,7 @@ func main() {
 	}
 
 	for _, sqlQuery := range sqlStrings {
-		queryResults, queryErr := storage.ExecuteSQLString(sqlQuery)
+		queryResults, queryErr := storage.Query(sqlQuery)
 
 		if queryErr != nil {
 			log.Fatalln(queryErr)

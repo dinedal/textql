@@ -17,10 +17,14 @@ type Storage interface {
 	// SaveTo should write the entire database of the SQL backend to the path given as a string.
 	// Failure in any way should return an error, and nil if the operation was successful.
 	SaveTo(string) error
-	// ExecuteSQLString should first convert from TextQL shorthand SQL to normal SQL,
+	// Query should first convert from TextQL shorthand SQL to normal SQL,
 	// apply the query or transformation given to the SQL backend and return either nil
 	// or the sql.Rows that were returned from the query.
-	ExecuteSQLString(string) (*sql.Rows, error)
+	Query(string) (*sql.Rows, error)
+	// Exec should first convert from TextQL shorthand SQL to normal SQL,
+	// apply the transformation given to the SQL backend and return either nil
+	// or the sql.Result that were returned from the query.
+	Exec(string) (sql.Result, error)
 	// Close should cleanly close the database backend, cleaning up data on disk if required.
 	Close()
 }
