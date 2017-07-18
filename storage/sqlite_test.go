@@ -27,7 +27,7 @@ func NewTestCSVInput() (input inputs.Input, fp *os.File) {
 
 	opts := &inputs.CSVInputOptions{
 		HasHeader: true,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 
@@ -170,7 +170,7 @@ func LoadTestDataAndExecuteQuery(t *testing.T, testData string, sqlString string
 
 	opts := &inputs.CSVInputOptions{
 		HasHeader: true,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 
