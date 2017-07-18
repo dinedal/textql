@@ -22,8 +22,8 @@ type CSVOutput struct {
 type CSVOutputOptions struct {
 	// WriteHeader determines if a header row based on the column names should be written.
 	WriteHeader bool
-	// Seperator is the rune used to delimit fields.
-	Seperator rune
+	// Separator is the rune used to delimit fields.
+	Separator rune
 	// WriteTo is where the formatted data will be written to.
 	WriteTo io.Writer
 }
@@ -35,7 +35,7 @@ func NewCSVOutput(opts *CSVOutputOptions) *CSVOutput {
 		writer:  csv.NewWriter(opts.WriteTo),
 	}
 
-	csvOutput.writer.Comma = csvOutput.options.Seperator
+	csvOutput.writer.Comma = csvOutput.options.Separator
 
 	return csvOutput
 }

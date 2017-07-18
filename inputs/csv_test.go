@@ -37,7 +37,7 @@ func TestCSVInputFakesHeader(t *testing.T) {
 
 	opts := &CSVInputOptions{
 		HasHeader: false,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 
@@ -56,7 +56,7 @@ func TestCSVInputReadsHeader(t *testing.T) {
 
 	opts := &CSVInputOptions{
 		HasHeader: true,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 
@@ -75,7 +75,7 @@ func TestCSVInputReadsSimple(t *testing.T) {
 
 	opts := &CSVInputOptions{
 		HasHeader: true,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 
@@ -99,7 +99,7 @@ func TestCSVInputReadsBad(t *testing.T) {
 
 	opts := &CSVInputOptions{
 		HasHeader: true,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 
@@ -129,7 +129,7 @@ func TestCSVInputHasAName(t *testing.T) {
 
 	opts := &CSVInputOptions{
 		HasHeader: true,
-		Seperator: ',',
+		Separator: ',',
 		ReadFrom:  fp,
 	}
 

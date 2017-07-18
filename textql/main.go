@@ -160,7 +160,7 @@ func main() {
 
 		inputOpts := &inputs.CSVInputOptions{
 			HasHeader: cmdLineOpts.GetHeader(),
-			Seperator: util.DetermineSeparator(cmdLineOpts.GetDelimiter()),
+			Separator: util.DetermineSeparator(cmdLineOpts.GetDelimiter()),
 			ReadFrom:  fp,
 		}
 
@@ -186,7 +186,7 @@ func main() {
 		} else {
 			displayOpts := &outputs.CSVOutputOptions{
 				WriteHeader: cmdLineOpts.GetOutputHeader(),
-				Seperator:   util.DetermineSeparator(cmdLineOpts.GetOutputDelimiter()),
+				Separator:   util.DetermineSeparator(cmdLineOpts.GetOutputDelimiter()),
 				WriteTo:     util.OpenFileOrStdDev(cmdLineOpts.GetOutputFile(), true),
 			}
 

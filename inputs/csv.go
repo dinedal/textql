@@ -23,8 +23,8 @@ type CSVInput struct {
 type CSVInputOptions struct {
 	// HasHeader when true, will treat the first row as a header row.
 	HasHeader bool
-	// Seperator is the rune that fields are delimited by.
-	Seperator rune
+	// Separator is the rune that fields are delimited by.
+	Separator rune
 	// ReadFrom is where the data will be read from.
 	ReadFrom io.Reader
 }
@@ -41,7 +41,7 @@ func NewCSVInput(opts *CSVInputOptions) (*CSVInput, error) {
 	csvInput.firstRow = nil
 
 	csvInput.reader.FieldsPerRecord = -1
-	csvInput.reader.Comma = csvInput.options.Seperator
+	csvInput.reader.Comma = csvInput.options.Separator
 	csvInput.reader.LazyQuotes = true
 
 	headerErr := csvInput.readHeader()
