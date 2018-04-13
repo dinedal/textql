@@ -26,7 +26,7 @@ func Magicify(sql string, tableName string) string {
 
 func replaceFromInSelect(statement *Select, tableName string) {
 	if statement.From == nil {
-		tableName := &TableName{[]byte(tableName), nil}
+		tableName := &TableName{[]byte("[" + tableName + "]"), nil}
 		aliasedTableExpr := AliasedTableExpr{tableName, nil, nil}
 		tableExprs := TableExprs{&aliasedTableExpr}
 		statement.From = &From{Type: AST_FROM, Expr: tableExprs}
