@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"strconv"
 )
 
@@ -51,7 +51,7 @@ func NewCSVInput(opts *CSVInputOptions) (*CSVInput, error) {
 	}
 
 	if asFile, ok := csvInput.options.ReadFrom.(*os.File); ok {
-		csvInput.name = path.Base(asFile.Name())
+		csvInput.name = filepath.Base(asFile.Name())
 	} else {
 		csvInput.name = "pipe"
 	}
