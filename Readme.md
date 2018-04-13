@@ -58,17 +58,33 @@ Bug fixes:
 
 ## Install
 
-Latest release on Homebrew (OS X)
+**Latest release on Homebrew (OS X)**
 
 ```bash
 brew install textql
 ```
 
-Build from source
+**Build from source**
 
 ```bash
 go get -u github.com/dinedal/textql/...
 ```
+
+## Docker
+First build the image.
+```bash
+docker build -t textql .
+```
+Now use that image mounting your current directory into the container.
+```bash
+docker run --rm -it $(pwd):/tmp textql [rest_of_command]
+```
+### Alias
+You can add the following alias to your system to provide quick access to TextQL:
+```bash
+alias textql='docker run --rm -it -v $(pwd):/tmp textql '
+```
+
 
 ## Usage
 
