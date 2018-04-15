@@ -69,6 +69,8 @@ func (prettyCsvOutput *PrettyCSVOutput) Show(rows *sql.Rows) {
 		prettyCsvOutput.writer.Append(result)
 	}
 
-	prettyCsvOutput.writer.Render()
+	if len(cols) > 0 {
+		prettyCsvOutput.writer.Render()
+	}
 	rows.Close()
 }
