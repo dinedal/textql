@@ -48,7 +48,7 @@ func (csvOutput *CSVOutput) Show(rows *sql.Rows) {
 		log.Fatalln(colsErr)
 	}
 
-	if csvOutput.options.WriteHeader {
+	if csvOutput.options.WriteHeader && len(cols) > 0 {
 		if err := csvOutput.writer.Write(cols); err != nil {
 			log.Fatalln(err)
 		}
