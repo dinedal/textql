@@ -77,7 +77,7 @@ docker build -t textql .
 ```
 Now use that image mounting your current directory into the container.
 ```bash
-docker run --rm -it $(pwd):/tmp textql [rest_of_command]
+docker run --rm -it -v $(pwd):/tmp textql [rest_of_command]
 ```
 ### Alias
 You can add the following alias to your system to provide quick access to TextQL:
