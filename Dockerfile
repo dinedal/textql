@@ -1,5 +1,8 @@
 FROM golang:1.10
 
+# install sqlite3 for option "-console"
+RUN apt-get update && apt-get install -y sqlite3
+
 WORKDIR /go/src/app
 COPY . .
 
