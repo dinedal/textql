@@ -209,6 +209,24 @@ func (sqlite3Storage *SQLite3Storage) ExecuteSQLString(sqlQuery string) (*sql.Ro
 	return result, nil
 }
 
+// Exec maps the sqlQuery provided from short hand TextQL to SQL, then
+// applies the query to the sqlite3 in memory database, and lastly returns the sql.Result
+// that resulted from the executing query.
+func (sqlite3Storage *SQLite3Storage) Exec(sqlQuery string) (sql.Result, error) {
+	var result sql.Result
+	var err error
+
+	if strings.Trim(sqlQuery, " ") != "" {
+		implictFromSQL := sqlparser.Magicify(sqlQuery, sqlite3Storage.firstTableName)
+		result, err = sqlite3Storage.db.Exec(implictFromSQL)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
+}
+
 // SaveTo saves the current in memory database to the path provided as a string.
 func (sqlite3Storage *SQLite3Storage) SaveTo(path string) error {
 	backupDb, openErr := sql.Open("sqlite3_textql", path)

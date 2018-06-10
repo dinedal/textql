@@ -310,3 +310,31 @@ func TestWhitespaceLoadsAsNull(t *testing.T) {
 		t.Fatalf("Expected integer value, got (%v)", uintVal)
 	}
 }
+
+func TestSQLiteStorageExec(t *testing.T) {
+	storage := NewSQLite3Storage(storageOpts)
+	input, fp := NewTestCSVInput()
+	defer fp.Close()
+	defer os.Remove(fp.Name())
+	defer storage.Close()
+
+	storage.LoadInput(input)
+
+	sqlString := "insert into " + storage.firstTableName + " values (7,8,9)"
+
+	result, resultErr := storage.Exec(sqlString)
+
+	if resultErr != nil {
+		t.Fatalf(resultErr.Error())
+	}
+
+	rowsAffected, rowsErr := result.RowsAffected()
+
+	if rowsErr != nil {
+		t.Fatalf(rowsErr.Error())
+	}
+
+	if rowsAffected != 1 {
+		t.Fatalf("Expected 1 row affected, got (%v)", rowsAffected)
+	}
+}
