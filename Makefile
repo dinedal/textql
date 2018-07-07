@@ -31,7 +31,7 @@ release: textql
 	git push origin `cat VERSION`
 
 install: deps test
-	go install -ldflags "-X main.VERSION=`cat VERSION` -s" ./textql/textql.go
+	go install -ldflags "-X main.VERSION=`cat VERSION` -s" ./textql/main.go
 
 man:
 	ronn man/textql.1.ronn
