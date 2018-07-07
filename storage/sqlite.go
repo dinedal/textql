@@ -38,7 +38,7 @@ func init() {
 		&sqlite3.SQLiteDriver{
 			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
 				sqlite3conn = append(sqlite3conn, conn)
-				return nil
+				return conn.RegisterFunc("regexp", regExp, true)
 			},
 		})
 }

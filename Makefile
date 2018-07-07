@@ -6,10 +6,10 @@ GODEP := $(shell command -v dep 2> /dev/null)
 all: textql
 
 textql: deps test
-	go build -ldflags "-X main.VERSION=`cat VERSION`" -o ./build/textql ./textql/main.go
+	go build -ldflags "-X main.VERSION=`cat VERSION` -s" -o ./build/textql ./textql/main.go
 
 fast:
-	go build -i -ldflags "-X main.VERSION=`cat VERSION`-dev" -o ./build/textql ./textql/main.go
+	go build -i -ldflags "-X main.VERSION=`cat VERSION`-dev -s" -o ./build/textql ./textql/main.go
 
 deps: godep
 	dep ensure
@@ -31,7 +31,7 @@ release: textql
 	git push origin `cat VERSION`
 
 install: deps test
-	go install -ldflags "-X main.VERSION=`cat VERSION`" ./textql/textql.go
+	go install -ldflags "-X main.VERSION=`cat VERSION` -s" ./textql/textql.go
 
 man:
 	ronn man/textql.1.ronn
