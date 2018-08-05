@@ -11,7 +11,7 @@ Example session:
 
 ## Major changes!
 
-Since there has been some time since the initial release of textql, I've made some improvements as well as made the project much more modular. There's also been a additional performance tweaks and added functionality, but this comes at the cost of breaking the original command line flags and changing the install command.
+In the time since the initial release of textql, I've made some improvements as well as made the project much more modular. There've also been additional performance tweaks and added functionality, but this comes at the cost of breaking the original command-line flags and changing the install command.
 
 ### Changes since v1
 
@@ -36,7 +36,7 @@ Changes:
 Removals:
 
 - Dropped the ability to override table names. This makes less sense after the automatic tablename generation based on filename, joins, and shorter SQL syntax changes.
-- Removed '-source', any files / paths at the end of the command are used, as well as piped in data.
+- Removed '-source', any files / paths at the end of the command are used, as well as piped-in data.
 
 Bug fixes:
 
@@ -45,8 +45,8 @@ Bug fixes:
 ## Key differences between textql and sqlite importing
 
 - sqlite import will not accept stdin, breaking unix pipes. textql will happily do so.
-- textql supports quote escaped delimiters, sqlite does not.
-- textql leverages the sqlite in memory database feature as much as possible and only touches disk if asked.
+- textql supports quote-escaped delimiters, sqlite does not.
+- textql leverages the sqlite in-memory database feature as much as possible and only touches disk if asked.
 
 ## Is it any good?
 
