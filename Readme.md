@@ -85,6 +85,21 @@ You can add the following alias to your system to provide quick access to TextQL
 alias textql='docker run --rm -it -v $(pwd):/tmp textql '
 ```
 
+## AUR
+
+**Using an AUR-Helper**
+
+```bash
+yaourt textql-git
+```
+
+**Building from PKGBUILD**
+First clone the repository.
+```bash
+makepkg -cs
+```
+Then install the package using pacman or your favorite Package Manager
+
 
 ## Usage
 
