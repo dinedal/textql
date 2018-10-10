@@ -104,7 +104,7 @@ alias textql='docker run --rm -it -v $(pwd):/tmp textql '
   -output-header
         Display column names in output
   -quiet
-        Surpress logging
+        Suppress logging
   -pretty
         Pretty print output
   -save-to file
