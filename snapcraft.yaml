@@ -1,0 +1,20 @@
+name: textql
+version: '1.0'
+summary: Execute SQL against structured text like CSV or TSV 
+description: |
+  Execute SQL against structured text like CSV or TSV.
+grade: stable
+confinement: strict
+base: core18
+parts:
+  textql:
+    plugin: go
+    source: https://github.com/dinedal/textql.git
+    go-importpath: github.com/dinedal/textql
+    build-packages:
+      - build-essential
+apps:
+  textql:
+    command: bin/textql
+    plugs:
+      - home
