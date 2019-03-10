@@ -1,28 +1,28 @@
 Install is really complex with vitess dep. Find a way to fix it?
 
-~ go get -u github.com/dinedal/textql/...
-# github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_int.go:7: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_custom.go:7
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_map.go:7: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_int.go:7
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_mixed.go:11: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_map.go:7
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_private.go:7: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_mixed.go:11
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_ptr.go:7: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_private.go:7
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_simple.go:9: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_ptr.go:7
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_slice.go:7: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_simple.go:9
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_tag.go:7: MyType redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_slice.go:7
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_int.go:29: (*MyType).UnmarshalBson redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_custom.go:42
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_map.go:18: (*MyType).MarshalBson redeclared in this block
-    previous declaration at go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_custom.go:19
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_map.go:18: too many errors
+~ go get -u github.com/OneCloudInc/textql/...
+# github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_int.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_custom.go:7
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_map.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_int.go:7
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_mixed.go:11: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_map.go:7
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_private.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_mixed.go:11
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_ptr.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_private.go:7
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_simple.go:9: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_ptr.go:7
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_slice.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_simple.go:9
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_tag.go:7: MyType redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/input_slice.go:7
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_int.go:29: (*MyType).UnmarshalBson redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_custom.go:42
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_map.go:18: (*MyType).MarshalBson redeclared in this block
+    previous declaration at go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_custom.go:19
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/data/test/bson_test/output_map.go:18: too many errors
 # pkg-config --cflags gomysql
 Package gomysql was not found in the pkg-config search path.
 Perhaps you should add the directory containing `gomysql.pc'
@@ -47,15 +47,15 @@ Perhaps you should add the directory containing `gomysql.pc'
 to the PKG_CONFIG_PATH environment variable
 No package 'gomysql' found
 pkg-config: exit status 1
-# github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:40: undefined: client.ClientConfig
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:60: undefined: client.Series
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:62: undefined: client.Series
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:73: backend.client.WriteSeries undefined (type *client.Client has no field or method WriteSeries)
-# github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/terminal
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/go/terminal/tty.go:16: undefined: syscall.TCGETS
-# github.com/dinedal/textql/vendor/github.com/youtube/vitess/third_party/go/launchpad.net/gozk/zookeeper
-go/src/github.com/dinedal/textql/vendor/github.com/youtube/vitess/third_party/go/launchpad.net/gozk/zookeeper/zk.go:15:10: fatal error: 'zookeeper.h' file not found
+# github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:40: undefined: client.ClientConfig
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:60: undefined: client.Series
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:62: undefined: client.Series
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/stats/influxdbbackend/influxdb_backend.go:73: backend.client.WriteSeries undefined (type *client.Client has no field or method WriteSeries)
+# github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/terminal
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/go/terminal/tty.go:16: undefined: syscall.TCGETS
+# github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/third_party/go/launchpad.net/gozk/zookeeper
+go/src/github.com/OneCloudInc/textql/vendor/github.com/youtube/vitess/third_party/go/launchpad.net/gozk/zookeeper/zk.go:15:10: fatal error: 'zookeeper.h' file not found
 #include <zookeeper.h>
          ^
 1 error generated.
@@ -67,28 +67,28 @@ Fix all the below:
 
 Gofmt formats Go programs. We run gofmt -s on your code, where -s is for the "simplify" command
 
-/github.com/dinedal/textql/outputs/csv.go
-/github.com/dinedal/textql/storage/sqlite_test.go
+/github.com/OneCloudInc/textql/outputs/csv.go
+/github.com/OneCloudInc/textql/storage/sqlite_test.go
 
 Gocyclo calculates cyclomatic complexities of functions in Go source code. The cyclomatic complexity of a function is calculated according to the following rules: 1 is the base complexity of a function +1 for each 'if', 'for', 'case', '&&' or '||'
 
-/github.com/dinedal/textql/cmd/textql.go
-Line 106: 24 main main repos/src/github.com/dinedal/textql/cmd/textql.go:106:1
-/github.com/dinedal/textql/sqlparser/parsed_query.go
-Line 53: 18 sqlparser EncodeValue repos/src/github.com/dinedal/textql/sqlparser/parsed_query.go:53:1
-/github.com/dinedal/textql/sqlparser/sql.go
-/github.com/dinedal/textql/sqlparser/token.go
-Line 141: 31 sqlparser (*Tokenizer).Scan repos/src/github.com/dinedal/textql/sqlparser/token.go:141:1
-Line 297: 16 sqlparser (*Tokenizer).scanNumber repos/src/github.com/dinedal/textql/sqlparser/token.go:297:1
-/github.com/dinedal/textql/sqlparser/tracked_buffer.go
-Line 40: 18 sqlparser (*TrackedBuffer).Myprintf repos/src/github.com/dinedal/textql/sqlparser/tracked_buffer.go:40:1
+/github.com/OneCloudInc/textql/cmd/textql.go
+Line 106: 24 main main repos/src/github.com/OneCloudInc/textql/cmd/textql.go:106:1
+/github.com/OneCloudInc/textql/sqlparser/parsed_query.go
+Line 53: 18 sqlparser EncodeValue repos/src/github.com/OneCloudInc/textql/sqlparser/parsed_query.go:53:1
+/github.com/OneCloudInc/textql/sqlparser/sql.go
+/github.com/OneCloudInc/textql/sqlparser/token.go
+Line 141: 31 sqlparser (*Tokenizer).Scan repos/src/github.com/OneCloudInc/textql/sqlparser/token.go:141:1
+Line 297: 16 sqlparser (*Tokenizer).scanNumber repos/src/github.com/OneCloudInc/textql/sqlparser/token.go:297:1
+/github.com/OneCloudInc/textql/sqlparser/tracked_buffer.go
+Line 40: 18 sqlparser (*TrackedBuffer).Myprintf repos/src/github.com/OneCloudInc/textql/sqlparser/tracked_buffer.go:40:1
 gofmt
 89%
 golint
 10%
 Golint is a linter for Go source code.
 
-/github.com/dinedal/textql/cmd/textql.go
+/github.com/OneCloudInc/textql/cmd/textql.go
 Line 18: exported type CommandLineOptions should have comment or be unexported
 Line 32: exported var VERSION should have comment or be unexported
 Line 34: exported function NewCommandLineOptions should have comment or be unexported
@@ -117,7 +117,7 @@ Line 92: receiver name should be a reflection of its identity; don't use generic
 Line 96: exported method CommandLineOptions.Usage should have comment or be unexported
 Line 96: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
 Line 133: can probably use "var inputSources []string" instead
-/github.com/dinedal/textql/inputs/csv.go
+/github.com/OneCloudInc/textql/inputs/csv.go
 Line 21: exported type CSVInputOptions should have comment or be unexported
 Line 27: exported function NewCSVInput should have comment or be unexported
 Line 27: exported func NewCSVInput returns unexported type *inputs.csvInput, which can be annoying to use
@@ -126,19 +126,19 @@ Line 53: receiver name should be a reflection of its identity; don't use generic
 Line 57: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
 Line 84: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
 Line 106: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
-/github.com/dinedal/textql/inputs/input.go
+/github.com/OneCloudInc/textql/inputs/input.go
 Line 3: exported type Input should have comment or be unexported
-/github.com/dinedal/textql/outputs/csv.go
+/github.com/OneCloudInc/textql/outputs/csv.go
 Line 18: exported type CSVOutputOptions should have comment or be unexported
 Line 24: exported function NewCSVOutput should have comment or be unexported
 Line 24: exported func NewCSVOutput returns unexported type *outputs.csvOutput, which can be annoying to use
 Line 35: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
 Line 53: should omit 2nd value from range; this loop is equivalent to `for i := range ...`
-/github.com/dinedal/textql/outputs/output.go
+/github.com/OneCloudInc/textql/outputs/output.go
 Line 5: exported type Output should have comment or be unexported
-/github.com/dinedal/textql/sqlparser/analyzer.go
+/github.com/OneCloudInc/textql/sqlparser/analyzer.go
 Line 50: comment on exported function HasINClause should be of the form "HasINClause ..."
-/github.com/dinedal/textql/sqlparser/ast.go
+/github.com/OneCloudInc/textql/sqlparser/ast.go
 Line 56: exported method Union.IStatement should have comment or be unexported
 Line 57: exported method Select.IStatement should have comment or be unexported
 Line 58: exported method Insert.IStatement should have comment or be unexported
@@ -313,7 +313,7 @@ Line 965: exported method Subquery.IRowTuple should have comment or be unexporte
 Line 970: exported method UpdateExprs.Format should have comment or be unexported
 Line 984: exported method UpdateExpr.Format should have comment or be unexported
 Line 991: exported method OnDup.Format should have comment or be unexported
-/github.com/dinedal/textql/sqlparser/parsed_query.go
+/github.com/OneCloudInc/textql/sqlparser/parsed_query.go
 Line 20: exported type ParsedQuery should have comment or be unexported
 Line 25: exported type EncoderFunc should have comment or be unexported
 Line 27: exported method ParsedQuery.GenerateQuery should have comment or be unexported
@@ -322,8 +322,8 @@ Line 53: exported function EncodeValue should have comment or be unexported
 Line 102: exported type TupleEqualityList should have comment or be unexported
 Line 107: exported method TupleEqualityList.Encode should have comment or be unexported
 Line 156: exported function FetchBindVar should have comment or be unexported
-/github.com/dinedal/textql/sqlparser/sql.go
-/github.com/dinedal/textql/sqlparser/token.go
+/github.com/OneCloudInc/textql/sqlparser/sql.go
+/github.com/OneCloudInc/textql/sqlparser/token.go
 Line 15: exported const EOFCHAR should have comment or be unexported
 Line 172: if block ends with a return statement, so drop this else and outdent its block
 Line 190: if block ends with a return statement, so drop this else and outdent its block
@@ -331,11 +331,11 @@ Line 214: if block ends with a return statement, so drop this else and outdent i
 Line 221: if block ends with a return statement, so drop this else and outdent its block
 Line 249: var keywordId should be keywordID
 Line 417: exported method Tokenizer.ConsumeNext should have comment or be unexported
-/github.com/dinedal/textql/sqlparser/tracked_buffer.go
+/github.com/OneCloudInc/textql/sqlparser/tracked_buffer.go
 Line 25: exported function NewTrackedBuffer should have comment or be unexported
 Line 101: exported method TrackedBuffer.ParsedQuery should have comment or be unexported
 Line 105: exported method TrackedBuffer.HasBindVars should have comment or be unexported
-/github.com/dinedal/textql/storage/sqlite.go
+/github.com/OneCloudInc/textql/storage/sqlite.go
 Line 20: struct field connId should be connID
 Line 24: exported type SQLite3Options should have comment or be unexported
 Line 27: should omit type []*sqlite3.SQLiteConn from declaration of var sqlite3conn; it will be inferred from the right-hand side
@@ -353,14 +353,14 @@ Line 184: receiver name should be a reflection of its identity; don't use generi
 Line 199: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
 Line 207: var backupConnId should be backupConnID
 Line 234: receiver name should be a reflection of its identity; don't use generic names such as "me", "this", or "self"
-/github.com/dinedal/textql/storage/sqlite_test.go
+/github.com/OneCloudInc/textql/storage/sqlite_test.go
 Line 188: should omit 2nd value from range; this loop is equivalent to `for i := range ...`
-/github.com/dinedal/textql/storage/storage.go
+/github.com/OneCloudInc/textql/storage/storage.go
 Line 9: exported type Storage should have comment or be unexported
-/github.com/dinedal/textql/test_util/test_util.go
+/github.com/OneCloudInc/textql/test_util/test_util.go
 Line 1: don't use an underscore in package name
 Line 8: exported function OpenFileFromString should have comment or be unexported
-/github.com/dinedal/textql/util/file_helpers.go
+/github.com/OneCloudInc/textql/util/file_helpers.go
 Line 12: exported function IsPathDir should have comment or be unexported
 Line 30: exported function OpenFileOrStdDev should have comment or be unexported
 Line 65: exported function CleanPath should have comment or be unexported
@@ -369,5 +369,5 @@ Line 102: exported function IsThereDataOnStdin should have comment or be unexpor
 Line 111: if block ends with a return statement, so drop this else and outdent its block
 Line 116: exported function AllFilesInDirectory should have comment or be unexported
 Line 119: can probably use "var result []string" instead
-/github.com/dinedal/textql/util/seperator_helpers.go
+/github.com/OneCloudInc/textql/util/seperator_helpers.go
 Line 10: exported function DetermineSeparator should have comment or be unexported

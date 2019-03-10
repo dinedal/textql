@@ -1,3 +1,7 @@
 vendor/
 glide
 build/
+
+.idea/
+*.db*
+*.csv
