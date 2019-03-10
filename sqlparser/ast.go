@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/dinedal/textql/sqlparser/sqltypes"
+	"github.com/OneCloudInc/textql/sqlparser/sqltypes"
 )
 
 // Instructions for creating new types: If a type
