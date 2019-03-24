@@ -143,19 +143,27 @@ func main() {
 		inputSources = append(inputSources, "stdin")
 	}
 
-	for _, sourceFile := range cmdLineOpts.GetSourceFiles() {
+	for _, taggedName := range cmdLineOpts.GetSourceFiles() {
+		// support <tablename>:<filename> syntax
+		var names = strings.SplitN(taggedName, ":", 2)
+		var sourceFile = names[len(names) - 1]
+
 		if util.IsPathDir(sourceFile) {
 			for _, file := range util.AllFilesInDirectory(sourceFile) {
 				inputSources = append(inputSources, file)
 			}
 		} else {
-			inputSources = append(inputSources, sourceFile)
+			inputSources = append(inputSources, taggedName)
 		}
 	}
 
 	storage := storage.NewSQLite3StorageWithDefaults()
 
-	for _, file := range inputSources {
+	for _, taggedName := range inputSources {
+		// support <tablename>:<filename> syntax
+		var names = strings.SplitN(taggedName, ":", 2)
+		var file = names[len(names) - 1]
+
 		fp := util.OpenFileOrStdDev(file, false)
 
 		inputOpts := &inputs.CSVInputOptions{
@@ -170,6 +178,9 @@ func main() {
 			log.Printf("Unable to load %v\n", file)
 		}
 
+		if len(names) > 1 {
+			input.SetName(names[0])
+		}
 		storage.LoadInput(input)
 	}
 
