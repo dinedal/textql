@@ -28,6 +28,7 @@ type commandLineOptions struct {
 	Version         *bool
 	Quiet           *bool
 	Pretty          *bool
+	PrimaryKey      *string
 }
 
 // Must be set at build via -ldflags "-X main.VERSION=`cat VERSION`"
@@ -46,6 +47,7 @@ func newCommandLineOptions() *commandLineOptions {
 	cmdLineOpts.Version = flag.Bool("version", false, "Print version and exit")
 	cmdLineOpts.Quiet = flag.Bool("quiet", false, "Surpress logging")
 	cmdLineOpts.Pretty = flag.Bool("pretty", false, "Output pretty formatting")
+	cmdLineOpts.PrimaryKey = flag.String("pkey", "", "Specify primary key for a table")
 	flag.Usage = cmdLineOpts.Usage
 	flag.Parse()
 
@@ -100,6 +102,10 @@ func (clo *commandLineOptions) GetPretty() bool {
 	return *clo.Pretty
 }
 
+func (clo *commandLineOptions) GetPrimaryKey() []string {
+	return strings.Split(*clo.PrimaryKey, ",")
+}
+
 func (clo *commandLineOptions) Usage() {
 	if !clo.GetQuiet() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -146,7 +152,7 @@ func main() {
 	for _, taggedName := range cmdLineOpts.GetSourceFiles() {
 		// support <tablename>:<filename> syntax
 		var names = strings.SplitN(taggedName, ":", 2)
-		var sourceFile = names[len(names) - 1]
+		var sourceFile = names[len(names)-1]
 
 		if util.IsPathDir(sourceFile) {
 			for _, file := range util.AllFilesInDirectory(sourceFile) {
@@ -162,7 +168,7 @@ func main() {
 	for _, taggedName := range inputSources {
 		// support <tablename>:<filename> syntax
 		var names = strings.SplitN(taggedName, ":", 2)
-		var file = names[len(names) - 1]
+		var file = names[len(names)-1]
 
 		fp := util.OpenFileOrStdDev(file, false)
 
@@ -181,7 +187,7 @@ func main() {
 		if len(names) > 1 {
 			input.SetName(names[0])
 		}
-		storage.LoadInput(input)
+		storage.LoadInput(input, cmdLineOpts.GetPrimaryKey())
 	}
 
 	sqlStrings := strings.Split(cmdLineOpts.GetStatements(), ";")

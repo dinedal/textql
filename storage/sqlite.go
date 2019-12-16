@@ -78,9 +78,9 @@ func (sqlite3Storage *SQLite3Storage) open() {
 
 // LoadInput reads the entire Input provided into a table named after the Input name.
 // The name is cooreced into a valid SQLite3 table name prior to use.
-func (sqlite3Storage *SQLite3Storage) LoadInput(input inputs.Input) {
+func (sqlite3Storage *SQLite3Storage) LoadInput(input inputs.Input, pkey []string) {
 	tableName := strings.Replace(input.Name(), path.Ext(input.Name()), "", -1)
-	sqlite3Storage.createTable(tableName, input.Header(), false)
+	sqlite3Storage.createTable(tableName, input.Header(), pkey, false)
 
 	tx, txErr := sqlite3Storage.db.Begin()
 
@@ -106,7 +106,7 @@ func (sqlite3Storage *SQLite3Storage) LoadInput(input inputs.Input) {
 	}
 }
 
-func (sqlite3Storage *SQLite3Storage) createTable(tableName string, columnNames []string, verbose bool) error {
+func (sqlite3Storage *SQLite3Storage) createTable(tableName string, columnNames []string, pkeys []string, verbose bool) error {
 	var buffer bytes.Buffer
 
 	if tableNameCheckRegEx.FindString(tableName) != "" {
@@ -125,6 +125,17 @@ func (sqlite3Storage *SQLite3Storage) createTable(tableName string, columnNames 
 		if i != len(columnNames)-1 {
 			buffer.WriteString(", ")
 		}
+	}
+
+	if len(pkeys) > 0 {
+		buffer.WriteString(", PRIMARY KEY (")
+		for i, k := range pkeys {
+			if i > 0 {
+				buffer.WriteString(",")
+			}
+			buffer.WriteString("[" + k + "]")
+		}
+		buffer.WriteString(")")
 	}
 
 	buffer.WriteString(");")
