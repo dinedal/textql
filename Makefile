@@ -1,23 +1,14 @@
 .PHONY: all test clean man godep fast release install
 
 GO15VENDOREXPERIMENT=1
-GODEP := $(shell command -v dep 2> /dev/null)
 
 all: textql
 
-textql: deps test
+textql: test
 	go build -ldflags "-X main.VERSION=`cat VERSION` -s" -o ./build/textql ./textql/main.go
 
 fast:
 	go build -i -ldflags "-X main.VERSION=`cat VERSION`-dev -s" -o ./build/textql ./textql/main.go
-
-deps: godep
-	dep ensure
-
-godep:
-ifndef GODEP
-	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-endif
 
 test:
 	go test ./inputs/
