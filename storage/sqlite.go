@@ -41,6 +41,7 @@ type entrypoint struct {
 var libNames = []entrypoint{
 	{"libgo-sqlite3-extension-functions.so", "sqlite3_extension_init"},
 	{"libgo-sqlite3-extension-functions.dylib", "sqlite3_extension_init"},
+	{"libgo-sqlite3-extension-functions.dll", "sqlite3_extension_init"},
 }
 
 func init() {
