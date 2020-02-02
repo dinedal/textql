@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/dinedal/textql.svg)](https://travis-ci.org/dinedal/textql) [![Go Report Card](http://goreportcard.com/badge/dinedal/textql)](http://goreportcard.com/report/dinedal/textql)
 
-
 Allows you to easily execute SQL against structured text like CSV or TSV.
 
 Example session:
@@ -71,20 +70,26 @@ go get -u github.com/dinedal/textql/...
 ```
 
 ## Docker
+
 First build the image.
+
 ```bash
 docker build -t textql .
 ```
+
 Now use that image mounting your current directory into the container.
+
 ```bash
 docker run --rm -it -v $(pwd):/tmp textql [rest_of_command]
 ```
+
 ### Alias
+
 You can add the following alias to your system to provide quick access to TextQL:
+
 ```bash
 alias textql='docker run --rm -it -v $(pwd):/tmp textql '
 ```
-
 
 ## Usage
 
@@ -115,6 +120,15 @@ alias textql='docker run --rm -it -v $(pwd):/tmp textql '
         Print version and exit
 ```
 
+## I want stdev, average, other functions
+
+Just follow the install directions at [go-sqlite3-extension-functions](https://github.com/dinedal/go-sqlite3-extension-functions) and textql will automatically load this library.
+
+Full function list:
+
+- Math: acos, asin, atan, atn2, atan2, acosh, asinh, atanh, difference, degrees, radians, cos, sin, tan, cot, cosh, sinh, tanh, coth, exp, log, log10, power, sign, sqrt, square, ceil, floor, pi.
+- String: replicate, charindex, leftstr, rightstr, ltrim, rtrim, trim, replace, reverse, proper, padl, padr, padc, strfilter.
+- Aggregate: stdev, variance, mode, median, lower_quartile, upper_quartile
 
 ## License
 
