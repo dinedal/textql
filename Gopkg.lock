@@ -2,26 +2,49 @@
 
 
 [[projects]]
+  digest = "1:fe6dc28135d1c569a8c07f1cf20e7831772e6982dc861e923c4558c320811207"
+  name = "github.com/dinedal/textql"
+  packages = [
+    "inputs",
+    "sqlparser",
+    "sqlparser/sqltypes",
+  ]
+  pruneopts = "UT"
+  revision = "1785cd353c68aa34f97627143b9c2908dfd4ea04"
+  version = "2.0.3"
+
+[[projects]]
+  digest = "1:e2d1d410fb367567c2b53ed9e2d719d3c1f0891397bb2fa49afd747cfbf1e8e4"
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
+  pruneopts = "UT"
   revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
   version = "v0.0.2"
 
 [[projects]]
+  digest = "1:3cafc6a5a1b8269605d9df4c6956d43d8011fc57f266ca6b9d04da6c09dee548"
   name = "github.com/mattn/go-sqlite3"
   packages = ["."]
+  pruneopts = "UT"
   revision = "25ecb14adfc7543176f7d85291ec7dba82c6f7e4"
   version = "v1.9.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:4daa045e1e1f3e23f4b07db6880cdf9f259dab65312dfe244a878e6070faaf77"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
+  pruneopts = "UT"
   revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "20f05f57f2c66278bb9b90f46365579948d798ec1bf7cdb0722a9a54d7bb29eb"
+  input-imports = [
+    "github.com/dinedal/textql/inputs",
+    "github.com/dinedal/textql/sqlparser",
+    "github.com/mattn/go-sqlite3",
+    "github.com/olekukonko/tablewriter",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
