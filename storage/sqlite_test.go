@@ -263,19 +263,19 @@ func TestWhitespaceLoadsAsNull(t *testing.T) {
 		t.Fatalf("Expected 1 column, got (%v)", len(cols))
 	}
 
-	uintVal := data[0]["typeof(a)"].([]uint8)
-	if string(uintVal[:]) != "null" {
-		t.Fatalf("Expected null value, got (%v)", uintVal)
+	strval := data[0]["typeof(a)"].(string)
+	if strval != "null" {
+		t.Fatalf("Expected null value, got (%v)", strval)
 	}
 
-	uintVal = data[1]["typeof(a)"].([]uint8)
-	if string(uintVal[:]) != "integer" {
-		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	strval = data[1]["typeof(a)"].(string)
+	if strval != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", strval)
 	}
 
-	uintVal = data[2]["typeof(a)"].([]uint8)
-	if string(uintVal[:]) != "integer" {
-		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	strval = data[2]["typeof(a)"].(string)
+	if strval != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", strval)
 	}
 
 	data, cols = LoadTestDataAndExecuteQuery(t, whitespaceValuesCSV, "max(b)")
@@ -295,19 +295,19 @@ func TestWhitespaceLoadsAsNull(t *testing.T) {
 		t.Fatalf("Expected 1 column, got (%v)", len(cols))
 	}
 
-	uintVal = data[0]["typeof(b)"].([]uint8)
-	if string(uintVal[:]) != "null" {
-		t.Fatalf("Expected null value, got (%v)", uintVal)
+	strval = data[0]["typeof(b)"].(string)
+	if strval != "null" {
+		t.Fatalf("Expected null value, got (%v)", strval)
 	}
 
-	uintVal = data[1]["typeof(b)"].([]uint8)
-	if string(uintVal[:]) != "integer" {
-		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	strval = data[1]["typeof(b)"].(string)
+	if strval != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", strval)
 	}
 
-	uintVal = data[2]["typeof(b)"].([]uint8)
-	if string(uintVal[:]) != "integer" {
-		t.Fatalf("Expected integer value, got (%v)", uintVal)
+	strval = data[2]["typeof(b)"].(string)
+	if strval != "integer" {
+		t.Fatalf("Expected integer value, got (%v)", strval)
 	}
 }
 
