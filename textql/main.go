@@ -110,6 +110,30 @@ func (clo *commandLineOptions) Usage() {
 	}
 }
 
+func handleSemiColon(sqlStrings *[]string) []string {
+	var stack []string
+	var current string
+	index := 0
+	current = (*sqlStrings)[index]
+	for {
+		if current == "" {
+			current = (*sqlStrings)[index]
+		}
+		count := strings.Count(current, "'")
+		if count%2 == 1 {
+			current = current + ";" + (*sqlStrings)[index+1]
+		} else {
+			stack = append(stack, current)
+			current = ""
+		}
+		index++
+		if index == len((*sqlStrings)) {
+			break
+		}
+	}
+	return stack
+}
+
 func main() {
 	cmdLineOpts := newCommandLineOptions()
 	var outputer outputs.Output
@@ -146,7 +170,7 @@ func main() {
 	for _, taggedName := range cmdLineOpts.GetSourceFiles() {
 		// support <tablename>:<filename> syntax
 		var names = strings.SplitN(taggedName, ":", 2)
-		var sourceFile = names[len(names) - 1]
+		var sourceFile = names[len(names)-1]
 
 		if util.IsPathDir(sourceFile) {
 			for _, file := range util.AllFilesInDirectory(sourceFile) {
@@ -162,7 +186,7 @@ func main() {
 	for _, taggedName := range inputSources {
 		// support <tablename>:<filename> syntax
 		var names = strings.SplitN(taggedName, ":", 2)
-		var file = names[len(names) - 1]
+		var file = names[len(names)-1]
 
 		fp := util.OpenFileOrStdDev(file, false)
 
@@ -184,7 +208,13 @@ func main() {
 		storage.LoadInput(input)
 	}
 
+	if (strings.Count(cmdLineOpts.GetStatements(), "'") % 2) == 1 {
+		log.Fatalln("String contains odd number of \"'(Single Quotes)\"")
+	}
+
 	sqlStrings := strings.Split(cmdLineOpts.GetStatements(), ";")
+
+	sqlStrings = handleSemiColon(&sqlStrings)
 
 	if cmdLineOpts.GetOutputFile() != "" {
 		if cmdLineOpts.GetPretty() {
