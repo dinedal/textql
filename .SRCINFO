@@ -1,0 +1,15 @@
+pkgbase = textql-git
+	pkgdesc = Execute SQL against structured text like CSV or TSV
+	pkgver = 2.0.3
+	pkgrel = 1
+	url = https://github.com/dinedal/textql
+	arch = x86_64
+	arch = i686
+	license = MIT
+	makedepends = git
+	depends = go
+	options = !strip
+	options = !emptydirs
+
+pkgname = textql-git
+
