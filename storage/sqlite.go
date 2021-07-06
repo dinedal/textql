@@ -33,10 +33,24 @@ var (
 	columnNameCheckRegEx = regexp.MustCompile(`.*\[.*\].*`)
 )
 
+type entrypoint struct {
+	lib  string
+	proc string
+}
+
+var libNames = []entrypoint{
+	{"libgo-sqlite3-extension-functions.so", "sqlite3_extension_init"},
+	{"libgo-sqlite3-extension-functions.dylib", "sqlite3_extension_init"},
+	{"libgo-sqlite3-extension-functions.dll", "sqlite3_extension_init"},
+}
+
 func init() {
 	sql.Register("sqlite3_textql",
 		&sqlite3.SQLiteDriver{
 			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
+				for _, v := range libNames {
+					conn.LoadExtension(v.lib, v.proc)
+				}
 				sqlite3conn = append(sqlite3conn, conn)
 				return conn.RegisterFunc("regexp", regExp, true)
 			},

@@ -2,9 +2,6 @@ language: go
 sudo: false
 
 go:
-  - "1.10"
+  - '1.13.x'
 
-install: make deps
-
-env:
-  - GO15VENDOREXPERIMENT=1
+install: make
