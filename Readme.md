@@ -43,7 +43,6 @@ Bug fixes:
 
 ## Key differences between textql and sqlite importing
 
-- sqlite import will not accept stdin, breaking unix pipes. textql will happily do so.
 - textql supports quote-escaped delimiters, sqlite does not.
 - textql leverages the sqlite in-memory database feature as much as possible and only touches disk if asked.
 
