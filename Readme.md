@@ -1,4 +1,4 @@
-# TextQL
+# TextQL practicing PRS
 
 [![Build Status](https://travis-ci.org/OneCloudInc/textql.svg)](https://travis-ci.org/OneCloudInc/textql) [![Go Report Card](http://goreportcard.com/badge/OneCloudInc/textql)](http://goreportcard.com/report/OneCloudInc/textql)
 
