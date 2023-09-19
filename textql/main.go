@@ -17,6 +17,7 @@ import (
 
 type commandLineOptions struct {
 	Statements      *string
+	StatementsFile  *string
 	SourceFile      *string
 	Delimiter       *string
 	Header          *bool
@@ -36,6 +37,7 @@ var VERSION string
 func newCommandLineOptions() *commandLineOptions {
 	cmdLineOpts := commandLineOptions{}
 	cmdLineOpts.Statements = flag.String("sql", "", "SQL Statement(s) to run on the data")
+	cmdLineOpts.StatementsFile = flag.String("sqlfile", "", "SQL filepath to run on the data")
 	cmdLineOpts.Delimiter = flag.String("dlm", ",", "Input delimiter character between fields -dlm=tab for tab, -dlm=0x## to specify a character code in hex")
 	cmdLineOpts.Header = flag.Bool("header", false, "Treat input files as having the first row as a header row")
 	cmdLineOpts.OutputHeader = flag.Bool("output-header", false, "Display column names in output")
@@ -52,8 +54,20 @@ func newCommandLineOptions() *commandLineOptions {
 	return &cmdLineOpts
 }
 
-func (clo *commandLineOptions) GetStatements() string {
-	return *clo.Statements
+func (clo *commandLineOptions) GetStatements() (string, *error) {
+	if clo.Statements == nil && clo.StatementsFile == nil {
+		err := fmt.Errorf("No SQL statements provided")
+		return "", &err
+	}
+	if clo.Statements != nil {
+		return *clo.Statements, nil
+	}
+	filepath := *clo.StatementsFile
+	dat, err := os.ReadFile(filepath)
+	if err != nil {
+		return "", &err
+	}
+	return string(dat), nil
 }
 
 func (clo *commandLineOptions) GetSourceFiles() []string {
@@ -208,11 +222,15 @@ func main() {
 		storage.LoadInput(input)
 	}
 
-	if (strings.Count(cmdLineOpts.GetStatements(), "'") % 2) == 1 {
+	stat, err := cmdLineOpts.GetStatements()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	if (strings.Count(stat, "'") % 2) == 1 {
 		log.Fatalln("String contains odd number of \"'(Single Quotes)\"")
 	}
 
-	sqlStrings := strings.Split(cmdLineOpts.GetStatements(), ";")
+	sqlStrings := strings.Split(stat, ";")
 
 	sqlStrings = handleSemiColon(&sqlStrings)
 
