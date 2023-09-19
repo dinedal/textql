@@ -59,7 +59,7 @@ func (clo *commandLineOptions) GetStatements() (string, *error) {
 		err := fmt.Errorf("No SQL statements provided")
 		return "", &err
 	}
-	if clo.Statements != nil {
+	if clo.Statements != nil && *clo.Statements != "" {
 		return *clo.Statements, nil
 	}
 	filepath := *clo.StatementsFile
