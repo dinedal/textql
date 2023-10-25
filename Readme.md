@@ -1,12 +1,12 @@
-# TextQL
+# TextQL practicing PRS
 
-[![Build Status](https://travis-ci.org/dinedal/textql.svg)](https://travis-ci.org/dinedal/textql) [![Go Report Card](http://goreportcard.com/badge/dinedal/textql)](http://goreportcard.com/report/dinedal/textql)
+[![Build Status](https://travis-ci.org/OneCloudInc/textql.svg)](https://travis-ci.org/OneCloudInc/textql) [![Go Report Card](http://goreportcard.com/badge/OneCloudInc/textql)](http://goreportcard.com/report/OneCloudInc/textql)
 
 Allows you to easily execute SQL against structured text like CSV or TSV.
 
 Example session:
 
-![textql_usage_session](https://raw.github.com/dinedal/textql/master/textql_usage.gif)
+![textql_usage_session](https://raw.github.com/OneCloudInc/textql/master/textql_usage.gif)
 
 ## Major changes!
 
@@ -66,7 +66,7 @@ brew install textql
 **Build from source**
 
 ```bash
-go get -u github.com/dinedal/textql/...
+go get -u github.com/OneCloudInc/textql/...
 ```
 
 ## Docker

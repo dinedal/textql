@@ -24,7 +24,9 @@ type SQLite3Storage struct {
 }
 
 // SQLite3Options are options passed into SQLite3 connection as needed.
-type SQLite3Options struct{}
+type SQLite3Options struct{
+	DataSource string
+}
 
 var (
 	sqlite3conn          = []*sqlite3.SQLiteConn{}
@@ -59,7 +61,9 @@ func init() {
 
 // NewSQLite3StorageWithDefaults returns a SQLite3Storage with the default options.
 func NewSQLite3StorageWithDefaults() *SQLite3Storage {
-	return NewSQLite3Storage(&SQLite3Options{})
+	return NewSQLite3Storage(&SQLite3Options{
+		DataSource: "localdb.db",
+	})
 }
 
 // NewSQLite3Storage returns a SQLite3Storage with the SQLite3Options provided applied.
@@ -74,7 +78,7 @@ func NewSQLite3Storage(opts *SQLite3Options) *SQLite3Storage {
 }
 
 func (sqlite3Storage *SQLite3Storage) open() {
-	db, err := sql.Open("sqlite3_textql", ":memory:")
+	db, err := sql.Open("sqlite3_textql", sqlite3Storage.options.DataSource)
 
 	if err != nil {
 		log.Fatalln(err)

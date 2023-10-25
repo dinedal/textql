@@ -9,10 +9,10 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/dinedal/textql/inputs"
-	"github.com/dinedal/textql/outputs"
-	"github.com/dinedal/textql/storage"
-	"github.com/dinedal/textql/util"
+	"github.com/OneCloudInc/textql/inputs"
+	"github.com/OneCloudInc/textql/outputs"
+	"github.com/OneCloudInc/textql/storage"
+	"github.com/OneCloudInc/textql/util"
 )
 
 type commandLineOptions struct {
