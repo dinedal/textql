@@ -1,4 +1,4 @@
-module github.com/dinedal/textql
+module github.com/Workiva/textql
 
 go 1.13
 

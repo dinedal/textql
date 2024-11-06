@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/OneCloudInc/textql/test_util"
+	"github.com/Workiva/textql/test_util"
 )
 
 var (
@@ -136,7 +136,7 @@ func TestCSVInputHasAName(t *testing.T) {
 	input, _ := NewCSVInput(opts)
 	expected := fp.Name()
 
-	if !reflect.DeepEqual(input.Name(), expected) {
+	if !reflect.DeepEqual("./"+input.Name(), expected) {
 		t.Errorf("Name() = %v, want %v", input.Name(), expected)
 	}
 }

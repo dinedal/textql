@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    labels:
+      - "dependencies"
+      - "semver: Patch"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+      timezone: "America/Chicago"
+    groups:
+      gha-dependencies:
+        patterns:
+          - "workiva/gha-*"
+  - package-ecosystem: gomod
+    directory: "/"
+    labels:
+      - "dependencies"
+      - "semver: Patch"
+    groups:
+      golang:
+        patterns:
+          - "golang.org/*"
+      aws:
+        patterns:
+          - "github.com/aws/*"
+      otel:
+        patterns:
+          - "go.opentelemetry.io/*"
+    schedule:
+      interval: weekly
+      time: "10:00"
+    open-pull-requests-limit: 10

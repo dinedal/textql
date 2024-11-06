@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/OneCloudInc/textql/sqlparser/sqltypes"
+	"github.com/Workiva/textql/sqlparser/sqltypes"
 )
 
 const EOFCHAR = 0x100

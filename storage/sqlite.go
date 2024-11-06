@@ -2,15 +2,20 @@ package storage
 
 import (
 	"bytes"
+	"crypto/rand"
 	"database/sql"
+	"fmt"
+	"math/big"
+	mrand "math/rand/v2"
+	"os"
 	"path"
 	"strings"
 
 	"log"
 	"regexp"
 
-	"github.com/dinedal/textql/inputs"
-	"github.com/dinedal/textql/sqlparser"
+	"github.com/Workiva/textql/inputs"
+	"github.com/Workiva/textql/sqlparser"
 
 	sqlite3 "github.com/mattn/go-sqlite3"
 )
@@ -24,7 +29,7 @@ type SQLite3Storage struct {
 }
 
 // SQLite3Options are options passed into SQLite3 connection as needed.
-type SQLite3Options struct{
+type SQLite3Options struct {
 	DataSource string
 }
 
@@ -61,8 +66,16 @@ func init() {
 
 // NewSQLite3StorageWithDefaults returns a SQLite3Storage with the default options.
 func NewSQLite3StorageWithDefaults() *SQLite3Storage {
+	upper := big.NewInt(2_000_000_000_000)
+	r, err := rand.Int(rand.Reader, upper)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "unable to generate random number: %s", err)
+		fmt.Fprintln(os.Stdout, "falling back to pseudo-random number generator")
+		r = big.NewInt(mrand.Int64N(2_000_000_000_000))
+	}
+
 	return NewSQLite3Storage(&SQLite3Options{
-		DataSource: "localdb.db",
+		DataSource: fmt.Sprintf("file:localdb_%d.db", r.Int64()),
 	})
 }
 
@@ -79,6 +92,7 @@ func NewSQLite3Storage(opts *SQLite3Options) *SQLite3Storage {
 
 func (sqlite3Storage *SQLite3Storage) open() {
 	db, err := sql.Open("sqlite3_textql", sqlite3Storage.options.DataSource)
+	db.SetMaxOpenConns(1)
 
 	if err != nil {
 		log.Fatalln(err)

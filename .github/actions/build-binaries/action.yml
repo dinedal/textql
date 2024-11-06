@@ -1,0 +1,50 @@
+name: Build Binaries
+
+inputs:
+  deployment:
+    description: "Deployment"
+    required: true
+  version:
+    description: "Version"
+    required: true
+  build-time:
+    description: "Build Timestamp"
+    required: true
+  extension:
+    description: "File Extension to Use"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build GroundRunner
+      shell: bash
+      run: >-
+        go build -tags oem -ldflags="
+          -X github.com/Workiva/oc-droplet/config.runnerType=2
+          -X github.com/Workiva/oc-droplet/config.environment=${{ inputs.deployment }}
+          -X github.com/Workiva/oc-droplet/config.version=${{ inputs.version }}
+          -X github.com/Workiva/oc-droplet/config.releaseDate=${{ inputs.build-time }}" -o dist_oem/GroundRunner${{ inputs.extension }} "github.com/Workiva/oc-droplet"
+
+    - name: Set GroundRunner Permissions
+      shell: bash
+      run: chmod 555 dist_oem/GroundRunner${{ inputs.extension }}
+
+    - name: Build GroundRunnerMonitor
+      shell: bash
+      run: >-
+        go build -tags oem -ldflags="
+          -X github.com/Workiva/oc-droplet/monitor/config.version=${{ inputs.version }}" -o dist_oem/GroundRunnerMonitor${{ inputs.extension }} "github.com/Workiva/oc-droplet/monitor"
+
+    - name: Set GroundRunnerMonitor Permissions
+      shell: bash
+      run: chmod 555 dist_oem/GroundRunnerMonitor${{ inputs.extension }}
+
+    - name: Build Installer
+      shell: bash
+      run: go build -tags oem -o dist_oem/installer${{ inputs.extension }} "github.com/Workiva/oc-droplet/cli"
+
+    - name: Set Installer Permissions
+      shell: bash
+      run: chmod 555 dist_oem/installer${{ inputs.extension }}

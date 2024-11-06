@@ -10,7 +10,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/OneCloudInc/textql/sqlparser/sqltypes"
+	"github.com/Workiva/textql/sqlparser/sqltypes"
 )
 
 type bindLocation struct {

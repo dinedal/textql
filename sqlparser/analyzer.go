@@ -9,7 +9,7 @@ package sqlparser
 import (
 	"fmt"
 
-	"github.com/OneCloudInc/textql/sqlparser/sqltypes"
+	"github.com/Workiva/textql/sqlparser/sqltypes"
 )
 
 // GetTableName returns the table name from the SimpleTableExpr

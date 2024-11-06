@@ -3,7 +3,7 @@ package storage
 import (
 	"database/sql"
 
-	"github.com/OneCloudInc/textql/inputs"
+	"github.com/Workiva/textql/inputs"
 )
 
 // Storage implentors are expected to be SQL capable engines.

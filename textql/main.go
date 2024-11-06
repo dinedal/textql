@@ -9,10 +9,10 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/OneCloudInc/textql/inputs"
-	"github.com/OneCloudInc/textql/outputs"
-	"github.com/OneCloudInc/textql/storage"
-	"github.com/OneCloudInc/textql/util"
+	"github.com/Workiva/textql/inputs"
+	"github.com/Workiva/textql/outputs"
+	"github.com/Workiva/textql/storage"
+	"github.com/Workiva/textql/util"
 )
 
 type commandLineOptions struct {
@@ -146,7 +146,7 @@ func main() {
 	for _, taggedName := range cmdLineOpts.GetSourceFiles() {
 		// support <tablename>:<filename> syntax
 		var names = strings.SplitN(taggedName, ":", 2)
-		var sourceFile = names[len(names) - 1]
+		var sourceFile = names[len(names)-1]
 
 		if util.IsPathDir(sourceFile) {
 			for _, file := range util.AllFilesInDirectory(sourceFile) {
@@ -162,7 +162,7 @@ func main() {
 	for _, taggedName := range inputSources {
 		// support <tablename>:<filename> syntax
 		var names = strings.SplitN(taggedName, ":", 2)
-		var file = names[len(names) - 1]
+		var file = names[len(names)-1]
 
 		fp := util.OpenFileOrStdDev(file, false)
 

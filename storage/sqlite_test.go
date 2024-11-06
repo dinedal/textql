@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/OneCloudInc/textql/inputs"
-	"github.com/OneCloudInc/textql/test_util"
+	"github.com/Workiva/textql/inputs"
+	"github.com/Workiva/textql/test_util"
 )
 
 var (

@@ -1,0 +1,282 @@
+name: oc-droplet build
+on:
+  push:
+    branches: ["master"]
+    tags: ["*"]
+  pull_request:
+    branches: ["master"]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  # TODO:
+  # These secrets are configured directly in Github by RM which we cannot see and so have no way of knowing about
+  # If we instead set them up with Workiva/github-actions-secrets their config would be more apparent
+  # secrets.COMPANY_TOKEN is also configured this way (used in smoke-test.yml)
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_OUTPUT: yaml
+
+jobs:
+  unit-tests:
+    strategy:
+      matrix:
+        build: [
+            { os: ubuntu-20.04, goos: linux, goarch: amd64 },
+            { os: macos-latest, goos: darwin, goarch: amd64 },
+            { os: windows-2019, goos: windows, goarch: amd64 },
+        ]
+    env:
+      GOARCH: ${{ matrix.build.goarch }}
+    runs-on: ${{ matrix.build.os }}
+    steps:
+      - name: Configure Github credentials
+        run: git config --global url."https://${{ secrets.WK_GITHUB_PASS }}@github.com".insteadOf "https://github.com"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+      - name: Run Tests
+        run: make test
+      - name: Upload coverage to Codecov
+        if: ${{ contains(matrix.build.os, 'ubuntu') && !startsWith(github.ref, 'refs/tags/') && !contains(github.actor, 'dependabot') }}
+        uses: codecov/codecov-action@v4
+        with:
+          use_oidc: true
+          files: ./c.out
+
+  # build-groundrunners:
+  #   # needs: [configure-variables, generate-third-party-licenses]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       build: [
+  #           { os: ubuntu-20.04, goos: linux, goarch: amd64 },
+  #           { os: macos-latest, goos: darwin, goarch: amd64 },
+  #           { os: windows-2019, goos: windows, goarch: amd64 },
+  #       ]
+  #   env:
+  #     GOARCH: ${{ matrix.build.goarch }}
+  #     GOOS: ${{ matrix.build.goos }}
+  #     CGO_ENABLED: 0
+  #     FILE_EXTENSION: ${{ matrix.build.goos == 'windows' && '.exe' || '' }}
+  #   runs-on: ${{ matrix.build.os }}
+  #   steps:
+  #     - name: Configure Github credentials
+  #       run: git config --global url."https://${{ secrets.WK_GITHUB_PASS }}@github.com".insteadOf "https://github.com"
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-go@v5
+  #       with:
+  #         go-version-file: "go.mod"
+  #     - name: Check Golang version
+  #       run: go version
+  #     - uses: ./.github/actions/build-binaries
+  #       with:
+  #         deployment: ${{ needs.configure-variables.outputs.DEPLOYMENT }}
+  #         version: ${{ needs.configure-variables.outputs.VERSION }}
+  #         build-time: ${{ needs.configure-variables.outputs.TIMESTAMP }}
+  #         extension: ${{ env.FILE_EXTENSION }}
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: third_party_licenses
+  #         path: ./dist_oem
+
+  #     # Create GroundRunner ZIPs
+  #     - name: Create GroundRunner.zip (Linux / Darwin)
+  #       if: ${{ !contains(matrix.runner, 'windows') }}
+  #       shell: bash
+  #       run: >-
+  #         zip --junk-paths dist_oem/GroundRunner.zip ./dist_oem/GroundRunner${FILE_EXTENSION} ./dist_oem/GroundRunnerMonitor${FILE_EXTENSION} ./dist_oem/installer${FILE_EXTENSION} ./dist_oem/THIRD_PARTY_LICENSES.txt
+
+  #     - name: Create GroundRunner.zip (Windows)
+  #       if: ${{ contains(matrix.runner, 'windows') }}
+  #       shell: cmd
+  #       run: >-
+  #         7z a -tzip .\dist_oem\GroundRunner.zip .\dist_oem\GroundRunner${{ env.FILE_EXTENSION }} .\dist_oem\GroundRunnerMonitor${{ env.FILE_EXTENSION }} .\dist_oem\installer${{ env.FILE_EXTENSION }} .\dist_oem\THIRD_PARTY_LICENSES.txt
+
+  #     # Use Artifact Directory to help WK Build differentiate between Artifact types
+  #     - name: Copy GR to Artifact Dir
+  #       shell: bash
+  #       run: |
+  #         mkdir -p $GOOS/$GOARCH
+  #         cp dist_oem/GroundRunner.zip $GOOS/$GOARCH/GroundRunner.zip
+  #         cp dist_oem/GroundRunner${{ env.FILE_EXTENSION }} $GOOS/$GOARCH/ocrunner${{ env.FILE_EXTENSION }}
+
+  #     # Save Binaries as Artifacts for Smoke Tests
+  #     - name: Archive Binaries for Smoke Test
+  #       if: ${{ env.GOOS == 'linux' && env.GOARCH == 'amd64' }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: dist_oem
+  #         path: |
+  #           dist_oem
+  #           !dist_oem/*.zip
+  #         retention-days: 1
+
+  #     - name: Archive items needed for Windows Installer
+  #       if: ${{ env.GOOS == 'windows' && env.GOARCH == 'amd64' }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ matrix.goos}}_${{ matrix.goarch }}_gr_zip
+  #         path: ${{ matrix.goos }}/${{ matrix.goarch }}/GroundRunner.zip
+  #         retention-days: 1
+
+  #     - name: Upload Artifacts to WK Build
+  #       uses: Workiva/gha-store-artifacts@v2.0.9
+  #       with:
+  #         NON_DEPLOYABLE: |
+  #           ${{ matrix.goos }}_${{ matrix.goarch }}_GROUNDRUNNER: ${{ matrix.goos }}/${{ matrix.goarch }}/GroundRunner.zip
+  #         RETENTION_DAYS: ${{ needs.configure-variables.outputs.WK_RETENTION_DAYS }}
+
+  # build-docker-agent:
+  #   runs-on: [self-hosted, medium, al2023]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: docker/setup-buildx-action@v3
+  #     - uses: docker/build-push-action@v6
+  #       with:
+  #         file: ./docker/docker-agent/Dockerfile
+  #         tags: docker-agent
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=min
+  #         push: false
+  #         load: true
+
+  #     - uses: Workiva/gha-docker-push@v3.0.16
+  #       with:
+  #         local-tag: docker-agent
+  #         name-suffix: docker-agent
+
+  # build-cloudrunner:
+  #   needs: [configure-variables]
+  #   strategy:
+  #     matrix:
+  #       containerType: ["docker", "containerd"]
+  #   runs-on: [self-hosted, medium, al2023]
+  #   env:
+  #     GO_PRIVATE: "github.com/Workiva"
+  #     VERSION: ${{ needs.configure-variables.outputs.VERSION }}
+  #     DEPLOYMENT: ${{ needs.configure-variables.outputs.DEPLOYMENT }}
+  #     MOUNT_DIRECTORY: ${{ needs.configure-variables.outputs.MOUNT_DIRECTORY }}
+  #     CGO_ENABLED: 0
+
+  #   steps:
+  #     - uses: Workiva/gha-setup-credentials@v2.0.7
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-go@v5
+  #       with:
+  #         go-version-file: "go.mod"
+  #     - name: Build CloudRunner Binary
+  #       run: |
+  #         go build -ldflags=" \
+  #         -X github.com/Workiva/oc-droplet/config.runnerType=0 \
+  #         -X github.com/Workiva/oc-droplet/config.version=${VERSION} \
+  #         -X github.com/Workiva/oc-droplet/config.environment=${DEPLOYMENT} \
+  #         -X github.com/Workiva/oc-droplet/config.mountDirectory=${MOUNT_DIRECTORY} \
+  #         " -o ocrunner
+  #     - uses: docker/setup-buildx-action@v3
+  #     - name: Build CloudRunner Docker
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         file: ./docker/cloudrunner/Dockerfile_gha_${{ matrix.containerType }}
+  #         tags: cloudrunner_${{ matrix.containerType }}
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
+  #         push: false
+  #         load: true
+  #         context: .
+  #         build-args: |
+  #           MOUNT_DIRECTORY=${{ env.MOUNT_DIRECTORY }}
+  #           DEPLOYMENT=${{ env.DEPLOYMENT }}
+
+  #     - uses: Workiva/gha-docker-push@v3.0.16
+  #       with:
+  #         local-tag: cloudrunner_${{ matrix.containerType }}
+  #         name-suffix: cloudrunner_${{ matrix.containerType }}
+
+  # build-tableau-image:
+  #   runs-on: [self-hosted, medium, al2023]
+  #   steps:
+  #     - uses: Workiva/gha-setup-credentials@v2.0.7
+  #     - uses: actions/checkout@v4
+  #     - uses: docker/setup-buildx-action@v3
+  #     - name: Build Tableau Docker
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         file: ./docker/tableau/Dockerfile
+  #         tags: tableau
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
+  #         push: false
+  #         load: true
+  #         context: .
+
+  #     - uses: Workiva/gha-docker-push@v3.0.16
+  #       with:
+  #         local-tag: tableau
+  #         name-suffix: tableau
+
+  # create-windows-installer:
+  #   needs: [configure-variables, build-groundrunners]
+  #   secrets: inherit
+  #   uses: ./.github/workflows/create-and-sign-windows-installer.yml
+  #   with:
+  #     deploy_urls: ${{ needs.configure-variables.outputs.DEPLOY_URLS }}
+  #     wk-retention-days: ${{ needs.configure-variables.outputs.WK_RETENTION_DAYS }}
+
+  # generate-wk-package:
+  #   name: Package Helm Charts
+  #   runs-on: [self-hosted, small, al2023]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install slo-resources dependency chart
+  #       run: helm dependency update helm/
+  #     - run: helm package helm
+  #     - uses: workiva/gha-store-artifacts@v2.0.9
+  #       with:
+  #         HELM_CHARTS: onecloud-cloudrunner-deployment-*.tgz
+
+  # generate-veracode-artifact:
+  #   name: Generate Veracode
+  #   runs-on: [self-hosted, small, al2023]
+  #   container:
+  #     image: golang:1.20-alpine
+  #   steps:
+  #     - name: Install Dependencies
+  #       run: apk add bash openssh git
+  #     - uses: Workiva/gha-setup-credentials@v2.0.7
+  #     - uses: actions/checkout@v4
+  #     - run: ./.github/veracode.sh oc-droplet
+  #     - uses: Workiva/gha-store-artifacts@v2.0.9
+  #       with:
+  #         VERACODE: out/veracode/go.tar.gz
+
+  # complete-build:
+  #   runs-on: [ self-hosted, xs, al2023 ]
+  #   needs:
+  #     - build-groundrunners
+  #     - build-cloudrunner
+  #     - build-docker-agent
+  #     - build-tableau-image
+  #     - create-windows-installer
+  #     - generate-wk-package
+  #     - generate-veracode-artifact
+  #   steps:
+  #     - uses: Workiva/gha-setup-credentials@v2.0.7
+  #     - uses: Workiva/gha-build-complete@v1.0.1
+
+  # smoke-tests:
+  #   needs: [build-groundrunners]
+  #   secrets: inherit
+  #   uses: ./.github/workflows/smoke-test.yml
+
+  # chroot-tests:
+  #   needs: [build-cloudrunner]
+  #   secrets: inherit
+  #   uses: ./.github/workflows/chroot-test.yml
+
+  # integration-tests:
+  #   uses: ./.github/workflows/integration-test.yml
+  #   secrets: inherit

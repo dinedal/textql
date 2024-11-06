@@ -6,7 +6,7 @@ Allows you to easily execute SQL against structured text like CSV or TSV.
 
 Example session:
 
-![textql_usage_session](https://raw.github.com/OneCloudInc/textql/master/textql_usage.gif)
+![textql_usage_session](https://raw.github.com/Workiva/textql/master/textql_usage.gif)
 
 ## Major changes!
 
@@ -66,7 +66,7 @@ brew install textql
 **Build from source**
 
 ```bash
-go get -u github.com/OneCloudInc/textql/...
+go get -u github.com/Workiva/textql/...
 ```
 
 ## Docker

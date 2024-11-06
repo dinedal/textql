@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="20">
+	<testsuite name="github.com/Workiva/textql/inputs" tests="5" failures="0" errors="0" id="0" hostname="WK00758" time="1.223" timestamp="2024-11-06T15:07:08-05:00">
+		<properties>
+			<property name="coverage.statements.pct" value="77.80"></property>
+		</properties>
+		<testcase name="TestCSVInputFakesHeader" classname="github.com/Workiva/textql/inputs" time="0.000"></testcase>
+		<testcase name="TestCSVInputReadsHeader" classname="github.com/Workiva/textql/inputs" time="0.000"></testcase>
+		<testcase name="TestCSVInputReadsSimple" classname="github.com/Workiva/textql/inputs" time="0.000"></testcase>
+		<testcase name="TestCSVInputReadsBad" classname="github.com/Workiva/textql/inputs" time="0.000"></testcase>
+		<testcase name="TestCSVInputHasAName" classname="github.com/Workiva/textql/inputs" time="0.000"></testcase>
+		<system-out><![CDATA[	github.com/Workiva/textql/outputs		coverage: 0.0% of statements
+	github.com/Workiva/textql/sqlparser		coverage: 0.0% of statements
+	github.com/Workiva/textql/textql		coverage: 0.0% of statements
+	github.com/Workiva/textql/util		coverage: 0.0% of statements
+	github.com/Workiva/textql/test_util		coverage: 0.0% of statements]]></system-out>
+	</testsuite>
+	<testsuite name="github.com/Workiva/textql/sqlparser/sqltypes" tests="7" failures="0" errors="0" id="1" hostname="WK00758" time="1.403" timestamp="2024-11-06T15:07:08-05:00">
+		<properties>
+			<property name="coverage.statements.pct" value="69.40"></property>
+		</properties>
+		<testcase name="TestNull" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+		<testcase name="TestNumeric" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+		<testcase name="TestTime" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+		<testcase name="TestBuildNumeric" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+		<testcase name="TestString" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+		<testcase name="TestBuildValue" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+		<testcase name="TestEncode" classname="github.com/Workiva/textql/sqlparser/sqltypes" time="0.000"></testcase>
+	</testsuite>
+	<testsuite name="github.com/Workiva/textql/storage" tests="8" failures="0" errors="0" id="2" hostname="WK00758" time="1.390" timestamp="2024-11-06T15:07:09-05:00">
+		<properties>
+			<property name="coverage.statements.pct" value="77.30"></property>
+		</properties>
+		<testcase name="TestSQLiteStorageLoadInput" classname="github.com/Workiva/textql/storage" time="0.000"></testcase>
+		<testcase name="TestSQLiteStorageSaveTo" classname="github.com/Workiva/textql/storage" time="0.010"></testcase>
+		<testcase name="TestSQLiteStorageExecuteSQLStringNormalSQL" classname="github.com/Workiva/textql/storage" time="0.000"></testcase>
+		<testcase name="TestSQLiteStorageExecuteSQLStringMissingSelect" classname="github.com/Workiva/textql/storage" time="0.000"></testcase>
+		<testcase name="TestSQLiteStorageExecuteSQLStringMissingFromOuterQuery" classname="github.com/Workiva/textql/storage" time="0.000"></testcase>
+		<testcase name="TestSQLiteStorageExecuteSQLStringMissingFromSubQuery" classname="github.com/Workiva/textql/storage" time="0.000"></testcase>
+		<testcase name="TestWhitespaceLoadsAsNull" classname="github.com/Workiva/textql/storage" time="0.010"></testcase>
+		<testcase name="TestSQLiteStorageExec" classname="github.com/Workiva/textql/storage" time="0.000"></testcase>
+	</testsuite>
+</testsuites>
